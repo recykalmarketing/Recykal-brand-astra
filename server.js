@@ -84,7 +84,7 @@ async function main() {
     const state = crypto.randomBytes(16).toString("hex");
     req.session.oauthState = state;
     const scope = ["openid", "email", "profile"].concat(DRIVE ? ["https://www.googleapis.com/auth/drive.readonly"] : []).join(" ");
-    const q = new URLSearchParams({ client_id: CLIENT_ID, redirect_uri: BASE_URL + "/auth/callback", response_type: "code", scope, state, hd: DOMAIN,
+    const q = new URLSearchParams({ client_id: CLIENT_ID, redirect_uri: BASE_URL + "/auth/callback", response_type: "code", scope, state,
       prompt: req.query.switch ? "select_account consent" : "select_account", include_granted_scopes: "true" });
     res.redirect("https://accounts.google.com/o/oauth2/v2/auth?" + q);
   });
@@ -96,12 +96,14 @@ async function main() {
         body: new URLSearchParams({ code: String(req.query.code), client_id: CLIENT_ID, client_secret: CLIENT_SECRET, redirect_uri: BASE_URL + "/auth/callback", grant_type: "authorization_code" }) });
       const tok = await tr.json();
       if (!tr.ok || !tok.id_token) { console.warn("Google token error", tok.error); return res.redirect("/?error=google"); }
-      // Google checks the ID token's signature and expiry; we check it was issued to this app, for a verified @recykal.com account.
+      // Google checks the ID token's signature and expiry; we check it was issued to this app, for a verified @recykal.com account
+      // that belongs to a Google Workspace (hd is set). hd is the Workspace's primary domain, which can differ from recykal.com
+      // when recykal.com is a secondary domain; the "Internal" sign-in screen already limits sign-in to that one Workspace.
       const ir = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(tok.id_token));
       const info = await ir.json();
       const email = String(info.email || "").toLowerCase();
       if (!ir.ok || info.aud !== CLIENT_ID || String(info.email_verified) !== "true") return res.redirect("/?error=google");
-      if (!email.endsWith("@" + DOMAIN) || info.hd !== DOMAIN) return res.redirect("/?error=domain");
+      if (!email.endsWith("@" + DOMAIN) || !info.hd) return res.redirect("/?error=domain");
       const sid = crypto.randomBytes(18).toString("hex");
       req.session = { email, sid };
       if (tok.access_token) tokens.set(sid, { token: tok.access_token, exp: Date.now() + (Number(tok.expires_in) || 3600) * 1000 - 60000 });
