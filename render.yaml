@@ -1,0 +1,25 @@
+# Render Blueprint: New → Blueprint → pick this repository. Render asks for the values marked sync: false.
+services:
+  - type: web
+    name: brand-astra
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL          # Neon connection string (free Postgres that doesn't expire)
+        sync: false
+      - key: GOOGLE_CLIENT_ID      # Google Cloud → APIs & Services → Credentials → OAuth client (Web)
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SMTP_USER             # optional: marketing@recykal.com, to send email
+        sync: false
+      - key: SMTP_PASS             # optional: a Google app password for that account
+        sync: false
