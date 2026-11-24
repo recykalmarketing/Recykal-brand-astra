@@ -9,9 +9,10 @@
 
 const BRAND_CHECK = (() => {
   const R = BRAND.ruleById;
-  const RATIO = { slide: 16 / 9, landscape: 16 / 9, square: 1, portrait: 1080 / 1350, story: 1080 / 1920 };
-  const PX = { slide: [1920, 1080], landscape: [1920, 1080], square: [1080, 1080], portrait: [1080, 1350], story: [1080, 1920] };
-  const MARGIN = { square: 50 / 1080, portrait: 50 / 1080, landscape: 60 / 1920, story: 100 / 1080, slide: 0.03 };   // share of the width
+  const RATIO = { slide: 16 / 9, landscape: 16 / 9, square: 1, portrait: 1080 / 1350, story: 1080 / 1920, document: 210 / 297 };
+  const PX = { slide: [1920, 1080], landscape: [1920, 1080], square: [1080, 1080], portrait: [1080, 1350], story: [1080, 1920], document: [1240, 1754] };   // A4 at 150 dpi
+  const MARGIN = { square: 50 / 1080, portrait: 50 / 1080, landscape: 60 / 1920, story: 100 / 1080, slide: 0.03, document: 12 / 210 };   // share of the width
+  const LETTER = 8.5 / 11;                                   // brand documents: A4, or US Letter for US partners
   const STOCK = /\b(shutterstock|istock(photo)?|getty ?images|adobe ?stock|depositphotos|dreamstime|123rf|alamy|freepik|vecteezy|stock photo)\b/i;
   const FOOTER = /private\s*(&|and)\s*confidential|©|all rights reserved/i;
   const ACCENT_GREEN = ["#34AB8B", "#1DC797", "#049769"], ACCENT_PURPLE = ["#6E5CE1", "#6E5CFA", "#8460D4"];
@@ -449,7 +450,11 @@ const BRAND_CHECK = (() => {
 
     // Y1 · size and ratio (and, for exported images, enough pixels)
     const want = RATIO[format];
-    if (want && ratio) {
+    if (want && ratio && format === "document") {
+      const a4 = Math.abs(ratio - want) / want < 0.02, letter = Math.abs(ratio - LETTER) / LETTER < 0.02;
+      set("Y1", a4 || letter ? "pass" : "fail", a4 ? "A4 portrait pages." : letter ? "US Letter portrait pages (A4 is preferred)." : `Page ratio ${ratio.toFixed(3)}; a brand document is A4 portrait (210 × 297 mm, ratio 0.707)${ratio > 1 ? " and this page is landscape" : ""}.`,
+        "", a4 || letter ? "" : "Set the page size to A4 portrait (File → Page setup in Google Docs) and export again.");
+    } else if (want && ratio) {
       const ok = Math.abs(ratio - want) / want < 0.02;
       set("Y1", ok ? "pass" : "fail", `Page ratio ${ratio.toFixed(3)}${doc.kind === "image" ? ` (${W} × ${H} px)` : ""}; ${FORMAT_NAME(format)} needs ${want.toFixed(3)} (${PX[format].join(" × ")}).`, "", ok ? "" : `Set the page size to ${PX[format].join(" × ")} and export again.`);
       if (ok && doc.kind === "image" && W < PX[format][0] * 0.9) set("Y1", "fail", `The export is only ${W} × ${H} px; it needs ${PX[format].join(" × ")} so it stays sharp.`, "", `Export at ${PX[format].join(" × ")} px or larger.`);
@@ -616,13 +621,13 @@ const BRAND_CHECK = (() => {
 
     // Y6 · margins and safe zones (text positions)
     if (doc.textKnown && doc.kind === "pdf") {
-      const mg = MARGIN[format] || 0.03; const mgY = mg * (W / H); const out = [];
+      const mg = MARGIN[format] || 0.03; const mgY = format === "document" ? 0.02 : mg * (W / H); const out = [];   // documents: headers and footers sit in the top and bottom margins
       pages.forEach((pg) => pg.texts.forEach((t) => {
         if (t.footer || !hasWords(t.str) || (isSlides && (t.y > 0.9 || /www\.|@|\+91/.test(t.str)))) return;
         if (t.x < mg * 0.8 || t.x + t.w > 1 - mg * 0.8 || t.y < mgY * 0.8 || (t.y + t.h > 1 - mgY * 0.8 && !isSlides)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`);
         else if (format === "story" && (t.y < 250 / 1920 || t.y + t.h > 1 - 250 / 1920)) out.push(`“${t.str.trim().slice(0, 24)}” in the story's top or bottom 250 px (${label(pg)})`);
       }));
-      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", `Keep text at least ${Math.round(mg * PX[format === "other" ? "slide" : format][0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
+      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", format === "document" ? "Keep text inside the template's side margins (at least 12 mm from the page edge)." : `Keep text at least ${Math.round(mg * PX[format === "other" ? "slide" : format][0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
       else if (pages.some((p) => p.texts.length)) set("Y6", "pass", "All text sits inside the margins.");
     } else if (doc.kind === "pptx") {
       const out = []; pages.forEach((pg) => pg.texts.forEach((t) => { if (!t.inherited && hasWords(t.str) && (t.x < -0.002 || t.y < -0.002 || t.x + t.w > 1.002 || t.y + t.h > 1.002)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`); }));
@@ -690,7 +695,7 @@ const BRAND_CHECK = (() => {
     return { qc: ev.qc, score: ev.score, decision, needsHuman: ev.needsHuman, report };
   }
   const SEV = { critical: 0, major: 1, minor: 2 };
-  const FORMAT_NAME = (f) => ({ slide: "a presentation", landscape: "a banner", square: "a social post", portrait: "a portrait post", story: "a story" })[f] || "this format";
+  const FORMAT_NAME = (f) => ({ slide: "a presentation", landscape: "a banner", square: "a social post", portrait: "a portrait post", story: "a story", document: "a brand document" })[f] || "this format";
   function allCaps(text) {
     const out = [];
     String(text || "").split(/[\n.!?]+/).forEach((s) => { const words = s.trim().split(/\s+/).filter((w) => /[A-Za-z]{2,}/.test(w)); if (words.length >= 4 && words.every((w) => w === w.toUpperCase()) && words.filter((w) => !BRAND.ACRONYMS.has(w.replace(/[^A-Z0-9]/g, ""))).length >= 3) out.push(s.trim().slice(0, 40)); });

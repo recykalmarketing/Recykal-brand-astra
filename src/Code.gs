@@ -526,7 +526,7 @@ function setup() {
 //   computer can't judge (logo artwork, imagery, alignment, proofreading) by eye.
 // =====================================================================
 
-const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "other"];
+const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const QC_FILE_LIMIT_ = 15 * 1024 * 1024;

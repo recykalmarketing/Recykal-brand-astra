@@ -620,7 +620,7 @@ const BRAND = (() => {
   const groups = [
     ["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["layout", "Template & layout"], ["imagery", "Imagery"], ["copy", "Copy & facts"],
   ];
-  const ALL = ["slide", "square", "portrait", "story", "landscape", "other"];
+  const ALL = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
   const DIGITAL = ["square", "portrait", "story", "landscape"];
   // sev: critical (−25, caps the score at 59) · major (−10, caps at 84) · minor (−3). m: measured exactly by code where the file allows it.
   const rules = [
@@ -629,7 +629,7 @@ const BRAND = (() => {
     { id: "L3", g: "logo", sev: "critical", t: "Logo not distorted", d: "Never stretch, squash, rotate, tilt or skew the logo.", ref: "p.9" },
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
-    { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
+    { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides; the logo in the header of brand documents, as in the Brand Document Template.", ref: "p.3, Deck 1–17" },
     { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Retearn, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
     { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
@@ -641,12 +641,13 @@ const BRAND = (() => {
     { id: "T2", g: "type", sev: "minor", m: true, t: "Clear type hierarchy", d: "Headlines in Bold or SemiBold, body in Regular or Medium; slide titles pair a light word with a bold word, as in “Our Solutions”.", ref: "p.22, Deck 3–16" },
     { id: "T3", g: "type", sev: "minor", m: true, t: "No faux styling", d: "No all-caps paragraphs, underlines for emphasis, outlined, shadowed or stretched type.", ref: "p.22" },
 
-    { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080.", ref: "p.23–26" },
+    { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
     { id: "Y2", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
     { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide"], t: "Footer on every slide", d: `“Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right, with the current year.`, ref: "Deck 1–16" },
     { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide"], t: "Master deck accents", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
     { id: "Y5", g: "layout", sev: "major", m: true, f: DIGITAL, t: "Digital template placement", d: "Logo with tagline top-left inside the margin (50 px posts, 60 px banners, 100 px stories); www.recykal.com bottom-left with the short black bar beneath it.", ref: "p.24–26" },
     { id: "Y6", g: "layout", sev: "minor", m: true, t: "Margins and safe zones", d: "Text inside the margins; nothing important in the top or bottom 250 px of a story.", ref: "p.24–26" },
+    { id: "Y8", g: "layout", sev: "major", f: ["document"], t: "Brand Document Template", d: "Built on the Brand Document Template: Recykal logo in the header, Poppins headings and body text, the template's colours, margins, header and footer kept as they are, and no extra decorative shapes.", ref: "Brand Document Template" },
     { id: "Y7", g: "layout", sev: "minor", t: "Clean alignment", d: "Elements aligned to a grid with consistent spacing and one clear focal point; no clutter or overlapping elements.", ref: "Deck 2–16" },
 
     { id: "I1", g: "imagery", sev: "major", m: true, t: "Sharp images", d: "No pixelated, stretched or badly cropped photos, screenshots or icons. Mark n/a if there are no images.", ref: "Deck 7–16" },
@@ -888,9 +889,10 @@ const BRAND = (() => {
 
 const BRAND_CHECK = (() => {
   const R = BRAND.ruleById;
-  const RATIO = { slide: 16 / 9, landscape: 16 / 9, square: 1, portrait: 1080 / 1350, story: 1080 / 1920 };
-  const PX = { slide: [1920, 1080], landscape: [1920, 1080], square: [1080, 1080], portrait: [1080, 1350], story: [1080, 1920] };
-  const MARGIN = { square: 50 / 1080, portrait: 50 / 1080, landscape: 60 / 1920, story: 100 / 1080, slide: 0.03 };   // share of the width
+  const RATIO = { slide: 16 / 9, landscape: 16 / 9, square: 1, portrait: 1080 / 1350, story: 1080 / 1920, document: 210 / 297 };
+  const PX = { slide: [1920, 1080], landscape: [1920, 1080], square: [1080, 1080], portrait: [1080, 1350], story: [1080, 1920], document: [1240, 1754] };   // A4 at 150 dpi
+  const MARGIN = { square: 50 / 1080, portrait: 50 / 1080, landscape: 60 / 1920, story: 100 / 1080, slide: 0.03, document: 12 / 210 };   // share of the width
+  const LETTER = 8.5 / 11;                                   // brand documents: A4, or US Letter for US partners
   const STOCK = /\b(shutterstock|istock(photo)?|getty ?images|adobe ?stock|depositphotos|dreamstime|123rf|alamy|freepik|vecteezy|stock photo)\b/i;
   const FOOTER = /private\s*(&|and)\s*confidential|©|all rights reserved/i;
   const ACCENT_GREEN = ["#34AB8B", "#1DC797", "#049769"], ACCENT_PURPLE = ["#6E5CE1", "#6E5CFA", "#8460D4"];
@@ -1328,7 +1330,11 @@ const BRAND_CHECK = (() => {
 
     // Y1 · size and ratio (and, for exported images, enough pixels)
     const want = RATIO[format];
-    if (want && ratio) {
+    if (want && ratio && format === "document") {
+      const a4 = Math.abs(ratio - want) / want < 0.02, letter = Math.abs(ratio - LETTER) / LETTER < 0.02;
+      set("Y1", a4 || letter ? "pass" : "fail", a4 ? "A4 portrait pages." : letter ? "US Letter portrait pages (A4 is preferred)." : `Page ratio ${ratio.toFixed(3)}; a brand document is A4 portrait (210 × 297 mm, ratio 0.707)${ratio > 1 ? " and this page is landscape" : ""}.`,
+        "", a4 || letter ? "" : "Set the page size to A4 portrait (File → Page setup in Google Docs) and export again.");
+    } else if (want && ratio) {
       const ok = Math.abs(ratio - want) / want < 0.02;
       set("Y1", ok ? "pass" : "fail", `Page ratio ${ratio.toFixed(3)}${doc.kind === "image" ? ` (${W} × ${H} px)` : ""}; ${FORMAT_NAME(format)} needs ${want.toFixed(3)} (${PX[format].join(" × ")}).`, "", ok ? "" : `Set the page size to ${PX[format].join(" × ")} and export again.`);
       if (ok && doc.kind === "image" && W < PX[format][0] * 0.9) set("Y1", "fail", `The export is only ${W} × ${H} px; it needs ${PX[format].join(" × ")} so it stays sharp.`, "", `Export at ${PX[format].join(" × ")} px or larger.`);
@@ -1495,13 +1501,13 @@ const BRAND_CHECK = (() => {
 
     // Y6 · margins and safe zones (text positions)
     if (doc.textKnown && doc.kind === "pdf") {
-      const mg = MARGIN[format] || 0.03; const mgY = mg * (W / H); const out = [];
+      const mg = MARGIN[format] || 0.03; const mgY = format === "document" ? 0.02 : mg * (W / H); const out = [];   // documents: headers and footers sit in the top and bottom margins
       pages.forEach((pg) => pg.texts.forEach((t) => {
         if (t.footer || !hasWords(t.str) || (isSlides && (t.y > 0.9 || /www\.|@|\+91/.test(t.str)))) return;
         if (t.x < mg * 0.8 || t.x + t.w > 1 - mg * 0.8 || t.y < mgY * 0.8 || (t.y + t.h > 1 - mgY * 0.8 && !isSlides)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`);
         else if (format === "story" && (t.y < 250 / 1920 || t.y + t.h > 1 - 250 / 1920)) out.push(`“${t.str.trim().slice(0, 24)}” in the story's top or bottom 250 px (${label(pg)})`);
       }));
-      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", `Keep text at least ${Math.round(mg * PX[format === "other" ? "slide" : format][0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
+      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", format === "document" ? "Keep text inside the template's side margins (at least 12 mm from the page edge)." : `Keep text at least ${Math.round(mg * PX[format === "other" ? "slide" : format][0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
       else if (pages.some((p) => p.texts.length)) set("Y6", "pass", "All text sits inside the margins.");
     } else if (doc.kind === "pptx") {
       const out = []; pages.forEach((pg) => pg.texts.forEach((t) => { if (!t.inherited && hasWords(t.str) && (t.x < -0.002 || t.y < -0.002 || t.x + t.w > 1.002 || t.y + t.h > 1.002)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`); }));
@@ -1569,7 +1575,7 @@ const BRAND_CHECK = (() => {
     return { qc: ev.qc, score: ev.score, decision, needsHuman: ev.needsHuman, report };
   }
   const SEV = { critical: 0, major: 1, minor: 2 };
-  const FORMAT_NAME = (f) => ({ slide: "a presentation", landscape: "a banner", square: "a social post", portrait: "a portrait post", story: "a story" })[f] || "this format";
+  const FORMAT_NAME = (f) => ({ slide: "a presentation", landscape: "a banner", square: "a social post", portrait: "a portrait post", story: "a story", document: "a brand document" })[f] || "this format";
   function allCaps(text) {
     const out = [];
     String(text || "").split(/[\n.!?]+/).forEach((s) => { const words = s.trim().split(/\s+/).filter((w) => /[A-Za-z]{2,}/.test(w)); if (words.length >= 4 && words.every((w) => w === w.toUpperCase()) && words.filter((w) => !BRAND.ACRONYMS.has(w.replace(/[^A-Z0-9]/g, ""))).length >= 3) out.push(s.trim().slice(0, 40)); });
@@ -1633,14 +1639,21 @@ const BRAND_CHECK = (() => {
       "Colours from the Recykal palette",
       "Text readable from a distance on event screens and LinkedIn covers",
       "Partner logos, if any, smaller than the Recykal logo and evenly spaced"] },
-    other: { name: "Document / email", size: "A4, email, other", tpl: null, checks: [
-      "Uses the approved letterhead, email or report template",
+    document: { name: "Brand document", size: "A4 · 210 × 297 mm", tpl: null, checks: [
+      "Built on the Brand Document Template, not a blank or old document",
+      "Recykal logo in the header, unaltered, with clear space around it",
+      "Headings in Poppins Bold or SemiBold; body text in Poppins Regular",
+      "A4 portrait pages, with text inside the template's margins",
+      "Colours from the Recykal palette; product sections use that product's colours",
+      "Spelling, product names and figures checked against the fact sheet"] },
+    other: { name: "Email / other", size: "Email, letter, other", tpl: null, checks: [
+      "Uses the approved email or letter template",
       "Poppins throughout, no other fonts",
       "Logo black on white or white on black, unaltered, with clear space",
       "Colours from the Recykal palette",
       "Spelling, product names and figures checked against the brand kit"] },
   };
-  const FORMAT_FOR_KIND = { "Presentation (PPT)": "slide", "Social media post": "square", "Poster / flyer": "portrait", "Video": "story" };
+  const FORMAT_FOR_KIND = { "Presentation (PPT)": "slide", "Social media post": "square", "Poster / flyer": "portrait", "Video": "story", "Document / report": "document" };
   const QC = [
     ["logo", "Logo", "Right file, unaltered, clear space, placement"],
     ["colour", "Colour", "Primary, secondary (≤10%) and product colours only"],
@@ -1766,6 +1779,7 @@ const BRAND_CHECK = (() => {
   function uploadProblem(f) {
     const pdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name), img = /^image\/(png|jpeg|webp)$/.test(f.type), pptx = /\.pptx$/i.test(f.name) || /presentationml/.test(f.type);
     if (/\.(ppt|key)$/i.test(f.name)) return "Save the deck as .pptx (PowerPoint 2007 or later) or export it as PDF, then upload that.";
+    if (/\.(docx?|odt|pages|rtf)$/i.test(f.name) || /wordprocessingml|msword/.test(f.type)) return "For a document, download it as PDF (File → Download → PDF in Google Docs, or Save as PDF in Word) and upload that, or paste its Google Docs link.";
     if (!pdf && !img && !pptx) return "Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.";
     if (img && f.size > 5 * 1048576) return "This image is over 5 MB. Export a smaller version (1080–2000 px wide is enough).";
     if ((pdf || pptx) && f.size > 15 * 1048576) return `This ${pptx ? "deck" : "PDF"} is over 15 MB. Compress the pictures, or share it as a Google Drive link instead.`;
@@ -2534,7 +2548,7 @@ const BRAND_CHECK = (() => {
   // ----- Brand QC tool -----
   function qcFormatPicker(cur, onPick) {
     return h("div", { class: "formats", role: "group", "aria-label": "Format" }, Object.entries(FORMATS).map(([k, f]) => h("button", { type: "button", class: "fmt", "aria-pressed": String(cur === k), onclick: () => onPick(k) },
-      h("div", { class: "art" }, f.tpl ? tplSvg(f.tpl) : h("span", { class: "small", text: "A4 · Email" })), h("b", { text: f.name }), h("span", { text: f.size }))));
+      h("div", { class: "art" }, f.tpl ? tplSvg(f.tpl) : k === "document" ? docThumb() : h("span", { class: "small", text: "Email · other" })), h("b", { text: f.name }), h("span", { text: f.size }))));
   }
   function qcChecklist(fmtKey, checks, onToggle, idp) {
     return h("div", { class: "checks" }, FORMATS[fmtKey].checks.map((t, i) => h("label", { class: "check" },
@@ -2552,7 +2566,7 @@ const BRAND_CHECK = (() => {
     let r = null;
     try { if (/^image\//.test(f.type)) { const b = await createImageBitmap(f); r = b.width / b.height; b.close && b.close(); } } catch (e) {}
     if (r == null) return null;
-    const best = Object.entries({ slide: 16 / 9, square: 1, portrait: 0.8, story: 0.5625 }).sort((a, b) => Math.abs(a[1] - r) - Math.abs(b[1] - r))[0];
+    const best = Object.entries({ slide: 16 / 9, square: 1, portrait: 0.8, story: 0.5625, document: 210 / 297 }).sort((a, b) => Math.abs(a[1] - r) - Math.abs(b[1] - r))[0];
     return Math.abs(best[1] - r) / best[1] < 0.03 ? (best[0] === "slide" && S.qc.format === "landscape" ? "landscape" : best[0]) : null;
   }
   function viewQC() {
@@ -2640,7 +2654,10 @@ const BRAND_CHECK = (() => {
             h("button", { class: "btn btn-primary", disabled: !S.uid || null, onclick: () => openSubmit({ fromQc: true }) }, "Submit for review")),
           FORMATS[q.format].tpl ? h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Template" }), h("span", { class: "sub", text: FORMATS[q.format].size })),
             h("div", { class: "tpl" }, h("div", { class: "art" }, tplSvg(FORMATS[q.format].tpl))),
-            h("div", { class: "actions" }, ...tplLinkBtn(q.format), S.downloads ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadTpl(FORMATS[q.format].tpl) }, "Download SVG") : null)) : null)),
+            h("div", { class: "actions" }, ...tplLinkBtn(q.format), S.downloads ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadTpl(FORMATS[q.format].tpl) }, "Download SVG") : null))
+          : q.format === "document" ? h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Template" }), h("span", { class: "sub", text: FORMATS.document.size })),
+            h("div", { class: "tpl" }, h("div", { class: "art" }, docThumb())), h("p", { class: "small", text: "Start every proposal, report or letter from the Brand Document Template, then download it as PDF to check it here." }),
+            h("div", { class: "actions" }, ...tplLinkBtn("document"))) : null)),
     ];
   }
   async function downloadTpl(key) {
@@ -2671,8 +2688,11 @@ const BRAND_CHECK = (() => {
         h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from." })),
     ];
   }
+  /** A small A4 page: the Brand Document Template's look, for the format picker. */
+  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="62" height="88" role="img" aria-label="A4 brand document"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><image href="${LOGO_URI}" x="16" y="16" width="60" height="22"/><rect x="16" y="56" width="120" height="8" rx="2" fill="#0B0F17"/>${[74, 84, 94, 104, 122, 132, 142, 160, 170, 180, 190].map((y, i) => `<rect x="16" y="${y}" width="${i % 4 === 3 ? 110 : 178}" height="4" rx="2" fill="#C9D1DE"/>`).join("")}<rect x="16" y="276" width="178" height="1.5" fill="#E3E8F0"/><rect x="16" y="282" width="60" height="3" rx="1.5" fill="#C9D1DE"/></svg>` });
   function tplLinkBtn(key) {
-    const url = S.tplLinks[key];
+    const url = key === "document" ? BRAND_FILES[1][1] : S.tplLinks[key];
+    if (key === "document") return [h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Access the Brand Document Template ↗")];
     return [url ? h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Use template ↗") : null,
       S.isAdmin ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => openTplLink(key) }, url ? "Edit link" : "Add Google template link") : null];
   }
@@ -2801,7 +2821,7 @@ const BRAND_CHECK = (() => {
       rules: () => [h("div", { class: "card" }, h("p", { text: `Brand Astra checks every file against these ${BRAND.rules.length} rules from the Recykal Marketing Brand Guidelines (cited as p.N) and the company deck (cited as Deck N). Each file starts at 100. A failed critical rule costs ${BRAND.POINTS.critical} points and blocks approval; a major rule costs ${BRAND.POINTS.major} and means changes are needed; a minor rule costs ${BRAND.POINTS.minor}. 85 or more is approved. Rules marked “measured” are decided from the file itself; the brand team checks the rest by eye.` })),
         h("div", { class: "rulebook" }, BRAND.groups.map(([g, label]) => h("div", { class: "card" }, h("h3", { text: label }),
           h("div", { class: "qc-rules" }, BRAND.rules.filter((r) => r.g === g).map((r) => h("div", { class: "qc-rule" }, h("span", { class: "chip sev-" + r.sev, text: SEV_LABEL[r.sev] }),
-            h("div", { style: "min-width:0" }, h("b", { text: r.t }), h("span", { class: "meta", text: ` · ${r.id}${r.ref ? " · " + r.ref : ""}${r.m ? " · measured exactly" : ""}${r.f.length < 6 ? " · " + r.f.map((k) => FORMATS[k].name).join(", ") + " only" : ""}` }),
+            h("div", { style: "min-width:0" }, h("b", { text: r.t }), h("span", { class: "meta", text: ` · ${r.id}${r.ref ? " · " + r.ref : ""}${r.m ? " · measured exactly" : ""}${r.f.length < Object.keys(FORMATS).length ? " · " + r.f.map((k) => FORMATS[k].name).join(", ") + " only" : ""}` }),
               h("div", { class: "small", text: r.d }))))))))],
     };
     return [h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "kit" })),

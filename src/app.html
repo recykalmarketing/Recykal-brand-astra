@@ -608,14 +608,21 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       "Colours from the Recykal palette",
       "Text readable from a distance on event screens and LinkedIn covers",
       "Partner logos, if any, smaller than the Recykal logo and evenly spaced"] },
-    other: { name: "Document / email", size: "A4, email, other", tpl: null, checks: [
-      "Uses the approved letterhead, email or report template",
+    document: { name: "Brand document", size: "A4 · 210 × 297 mm", tpl: null, checks: [
+      "Built on the Brand Document Template, not a blank or old document",
+      "Recykal logo in the header, unaltered, with clear space around it",
+      "Headings in Poppins Bold or SemiBold; body text in Poppins Regular",
+      "A4 portrait pages, with text inside the template's margins",
+      "Colours from the Recykal palette; product sections use that product's colours",
+      "Spelling, product names and figures checked against the fact sheet"] },
+    other: { name: "Email / other", size: "Email, letter, other", tpl: null, checks: [
+      "Uses the approved email or letter template",
       "Poppins throughout, no other fonts",
       "Logo black on white or white on black, unaltered, with clear space",
       "Colours from the Recykal palette",
       "Spelling, product names and figures checked against the brand kit"] },
   };
-  const FORMAT_FOR_KIND = { "Presentation (PPT)": "slide", "Social media post": "square", "Poster / flyer": "portrait", "Video": "story" };
+  const FORMAT_FOR_KIND = { "Presentation (PPT)": "slide", "Social media post": "square", "Poster / flyer": "portrait", "Video": "story", "Document / report": "document" };
   const QC = [
     ["logo", "Logo", "Right file, unaltered, clear space, placement"],
     ["colour", "Colour", "Primary, secondary (≤10%) and product colours only"],
@@ -741,6 +748,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   function uploadProblem(f) {
     const pdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name), img = /^image\/(png|jpeg|webp)$/.test(f.type), pptx = /\.pptx$/i.test(f.name) || /presentationml/.test(f.type);
     if (/\.(ppt|key)$/i.test(f.name)) return "Save the deck as .pptx (PowerPoint 2007 or later) or export it as PDF, then upload that.";
+    if (/\.(docx?|odt|pages|rtf)$/i.test(f.name) || /wordprocessingml|msword/.test(f.type)) return "For a document, download it as PDF (File → Download → PDF in Google Docs, or Save as PDF in Word) and upload that, or paste its Google Docs link.";
     if (!pdf && !img && !pptx) return "Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.";
     if (img && f.size > 5 * 1048576) return "This image is over 5 MB. Export a smaller version (1080–2000 px wide is enough).";
     if ((pdf || pptx) && f.size > 15 * 1048576) return `This ${pptx ? "deck" : "PDF"} is over 15 MB. Compress the pictures, or share it as a Google Drive link instead.`;
@@ -1513,7 +1521,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   // ----- Brand QC tool -----
   function qcFormatPicker(cur, onPick) {
     return h("div", { class: "formats", role: "group", "aria-label": "Format" }, Object.entries(FORMATS).map(([k, f]) => h("button", { type: "button", class: "fmt", "aria-pressed": String(cur === k), onclick: () => onPick(k) },
-      h("div", { class: "art" }, f.tpl ? tplSvg(f.tpl) : h("span", { class: "small", text: "A4 · Email" })), h("b", { text: f.name }), h("span", { text: f.size }))));
+      h("div", { class: "art" }, f.tpl ? tplSvg(f.tpl) : k === "document" ? docThumb() : h("span", { class: "small", text: "Email · other" })), h("b", { text: f.name }), h("span", { text: f.size }))));
   }
   function qcChecklist(fmtKey, checks, onToggle, idp) {
     return h("div", { class: "checks" }, FORMATS[fmtKey].checks.map((t, i) => h("label", { class: "check" },
@@ -1531,7 +1539,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     let r = null;
     try { if (/^image\//.test(f.type)) { const b = await createImageBitmap(f); r = b.width / b.height; b.close && b.close(); } } catch (e) {}
     if (r == null) return null;
-    const best = Object.entries({ slide: 16 / 9, square: 1, portrait: 0.8, story: 0.5625 }).sort((a, b) => Math.abs(a[1] - r) - Math.abs(b[1] - r))[0];
+    const best = Object.entries({ slide: 16 / 9, square: 1, portrait: 0.8, story: 0.5625, document: 210 / 297 }).sort((a, b) => Math.abs(a[1] - r) - Math.abs(b[1] - r))[0];
     return Math.abs(best[1] - r) / best[1] < 0.03 ? (best[0] === "slide" && S.qc.format === "landscape" ? "landscape" : best[0]) : null;
   }
   function viewQC() {
@@ -1619,7 +1627,10 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
             h("button", { class: "btn btn-primary", disabled: !S.uid || null, onclick: () => openSubmit({ fromQc: true }) }, "Submit for review")),
           FORMATS[q.format].tpl ? h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Template" }), h("span", { class: "sub", text: FORMATS[q.format].size })),
             h("div", { class: "tpl" }, h("div", { class: "art" }, tplSvg(FORMATS[q.format].tpl))),
-            h("div", { class: "actions" }, ...tplLinkBtn(q.format), S.downloads ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadTpl(FORMATS[q.format].tpl) }, "Download SVG") : null)) : null)),
+            h("div", { class: "actions" }, ...tplLinkBtn(q.format), S.downloads ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadTpl(FORMATS[q.format].tpl) }, "Download SVG") : null))
+          : q.format === "document" ? h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Template" }), h("span", { class: "sub", text: FORMATS.document.size })),
+            h("div", { class: "tpl" }, h("div", { class: "art" }, docThumb())), h("p", { class: "small", text: "Start every proposal, report or letter from the Brand Document Template, then download it as PDF to check it here." }),
+            h("div", { class: "actions" }, ...tplLinkBtn("document"))) : null)),
     ];
   }
   async function downloadTpl(key) {
@@ -1650,8 +1661,11 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from." })),
     ];
   }
+  /** A small A4 page: the Brand Document Template's look, for the format picker. */
+  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="62" height="88" role="img" aria-label="A4 brand document"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><image href="${LOGO_URI}" x="16" y="16" width="60" height="22"/><rect x="16" y="56" width="120" height="8" rx="2" fill="#0B0F17"/>${[74, 84, 94, 104, 122, 132, 142, 160, 170, 180, 190].map((y, i) => `<rect x="16" y="${y}" width="${i % 4 === 3 ? 110 : 178}" height="4" rx="2" fill="#C9D1DE"/>`).join("")}<rect x="16" y="276" width="178" height="1.5" fill="#E3E8F0"/><rect x="16" y="282" width="60" height="3" rx="1.5" fill="#C9D1DE"/></svg>` });
   function tplLinkBtn(key) {
-    const url = S.tplLinks[key];
+    const url = key === "document" ? BRAND_FILES[1][1] : S.tplLinks[key];
+    if (key === "document") return [h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Access the Brand Document Template ↗")];
     return [url ? h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Use template ↗") : null,
       S.isAdmin ? h("button", { class: "btn btn-ghost btn-sm", onclick: () => openTplLink(key) }, url ? "Edit link" : "Add Google template link") : null];
   }
@@ -1780,7 +1794,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       rules: () => [h("div", { class: "card" }, h("p", { text: `Brand Astra checks every file against these ${BRAND.rules.length} rules from the Recykal Marketing Brand Guidelines (cited as p.N) and the company deck (cited as Deck N). Each file starts at 100. A failed critical rule costs ${BRAND.POINTS.critical} points and blocks approval; a major rule costs ${BRAND.POINTS.major} and means changes are needed; a minor rule costs ${BRAND.POINTS.minor}. 85 or more is approved. Rules marked “measured” are decided from the file itself; the brand team checks the rest by eye.` })),
         h("div", { class: "rulebook" }, BRAND.groups.map(([g, label]) => h("div", { class: "card" }, h("h3", { text: label }),
           h("div", { class: "qc-rules" }, BRAND.rules.filter((r) => r.g === g).map((r) => h("div", { class: "qc-rule" }, h("span", { class: "chip sev-" + r.sev, text: SEV_LABEL[r.sev] }),
-            h("div", { style: "min-width:0" }, h("b", { text: r.t }), h("span", { class: "meta", text: ` · ${r.id}${r.ref ? " · " + r.ref : ""}${r.m ? " · measured exactly" : ""}${r.f.length < 6 ? " · " + r.f.map((k) => FORMATS[k].name).join(", ") + " only" : ""}` }),
+            h("div", { style: "min-width:0" }, h("b", { text: r.t }), h("span", { class: "meta", text: ` · ${r.id}${r.ref ? " · " + r.ref : ""}${r.m ? " · measured exactly" : ""}${r.f.length < Object.keys(FORMATS).length ? " · " + r.f.map((k) => FORMATS[k].name).join(", ") + " only" : ""}` }),
               h("div", { class: "small", text: r.d }))))))))],
     };
     return [h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "kit" })),

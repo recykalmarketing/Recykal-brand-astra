@@ -42,7 +42,7 @@ const BRAND = (() => {
   const groups = [
     ["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["layout", "Template & layout"], ["imagery", "Imagery"], ["copy", "Copy & facts"],
   ];
-  const ALL = ["slide", "square", "portrait", "story", "landscape", "other"];
+  const ALL = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
   const DIGITAL = ["square", "portrait", "story", "landscape"];
   // sev: critical (−25, caps the score at 59) · major (−10, caps at 84) · minor (−3). m: measured exactly by code where the file allows it.
   const rules = [
@@ -51,7 +51,7 @@ const BRAND = (() => {
     { id: "L3", g: "logo", sev: "critical", t: "Logo not distorted", d: "Never stretch, squash, rotate, tilt or skew the logo.", ref: "p.9" },
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
-    { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
+    { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides; the logo in the header of brand documents, as in the Brand Document Template.", ref: "p.3, Deck 1–17" },
     { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Retearn, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
     { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
@@ -63,12 +63,13 @@ const BRAND = (() => {
     { id: "T2", g: "type", sev: "minor", m: true, t: "Clear type hierarchy", d: "Headlines in Bold or SemiBold, body in Regular or Medium; slide titles pair a light word with a bold word, as in “Our Solutions”.", ref: "p.22, Deck 3–16" },
     { id: "T3", g: "type", sev: "minor", m: true, t: "No faux styling", d: "No all-caps paragraphs, underlines for emphasis, outlined, shadowed or stretched type.", ref: "p.22" },
 
-    { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080.", ref: "p.23–26" },
+    { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
     { id: "Y2", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
     { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide"], t: "Footer on every slide", d: `“Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right, with the current year.`, ref: "Deck 1–16" },
     { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide"], t: "Master deck accents", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
     { id: "Y5", g: "layout", sev: "major", m: true, f: DIGITAL, t: "Digital template placement", d: "Logo with tagline top-left inside the margin (50 px posts, 60 px banners, 100 px stories); www.recykal.com bottom-left with the short black bar beneath it.", ref: "p.24–26" },
     { id: "Y6", g: "layout", sev: "minor", m: true, t: "Margins and safe zones", d: "Text inside the margins; nothing important in the top or bottom 250 px of a story.", ref: "p.24–26" },
+    { id: "Y8", g: "layout", sev: "major", f: ["document"], t: "Brand Document Template", d: "Built on the Brand Document Template: Recykal logo in the header, Poppins headings and body text, the template's colours, margins, header and footer kept as they are, and no extra decorative shapes.", ref: "Brand Document Template" },
     { id: "Y7", g: "layout", sev: "minor", t: "Clean alignment", d: "Elements aligned to a grid with consistent spacing and one clear focal point; no clutter or overlapping elements.", ref: "Deck 2–16" },
 
     { id: "I1", g: "imagery", sev: "major", m: true, t: "Sharp images", d: "No pixelated, stretched or badly cropped photos, screenshots or icons. Mark n/a if there are no images.", ref: "Deck 7–16" },
@@ -827,7 +828,7 @@ function setup() {
 //   computer can't judge (logo artwork, imagery, alignment, proofreading) by eye.
 // =====================================================================
 
-const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "other"];
+const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const QC_FILE_LIMIT_ = 15 * 1024 * 1024;
