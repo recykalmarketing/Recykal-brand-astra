@@ -20,7 +20,7 @@ Brand Astra creates its two tables on first start.
 
 1. In Render, click **New → Blueprint** and connect this GitHub repository. Render reads `render.yaml` and proposes a free web service named **brand-astra**.
 2. When it asks for values, fill in **DATABASE_URL** with the Neon connection string. Leave the Google and email values empty for now, then click **Apply**.
-3. When the deploy finishes, open the service's address, for example `https://brand-astra.onrender.com`. It shows **Brand Astra isn't set up yet** and the exact redirect address for step 3. Copy that address.
+3. When the deploy finishes, open the service's address, for example `https://brand-astra.onrender.com`. Until every setting is in, it shows the **demo** (sample data kept only in each visitor's browser, no sign-in), so you can share it for previews. Add `/setup` to the address, for example `https://brand-astra.onrender.com/setup`, to see which settings are still missing and the exact redirect address for step 3. Copy that address.
 
 ## 3. Turn on Google sign-in
 

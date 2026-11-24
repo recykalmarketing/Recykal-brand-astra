@@ -8,7 +8,8 @@ Outputs (in the parent folder):
   brand-astra.html                      the app: runs inside Google Apps Script (opened on its own, it points to the company link)
   brand-astra-apps-script/Index.html    same file, for pasting into Apps Script
   brand-astra-apps-script/Code.gs       server code (rulebook + Code.gs)
-  brand-astra-render/app/               the same Index.html and Code.gs, for the Render (Node) server
+  brand-astra-render/app/               the same Index.html and Code.gs, for the Render (Node) server, plus
+                                        Demo.html: the sample-data preview the server shows until it is set up
 Run: python3 build.py
 The sample-data preview (code between /*@DEMO_START@*/ and /*@DEMO_END@*/) is left out unless you run
 python3 build.py --demo, which also writes brand-check-demo.html for a hosted preview.
@@ -26,27 +27,33 @@ assert app.count("/*@BRAND_RULES@*/") == 1, "app.html needs one /*@BRAND_RULES@*
 assert app.count("/*@BRAND_CHECK@*/") == 1, "app.html needs one /*@BRAND_CHECK@*/ marker"
 app = app.replace("/*@BRAND_RULES@*/", rules).replace("/*@BRAND_CHECK@*/", check)
 DEMO = "--demo" in sys.argv
-if not DEMO:
-    app, n = re.subn(r"\n[ \t]*/\*@DEMO_START@\*/.*?/\*@DEMO_END@\*/[ \t]*", "", app, flags=re.S)
-    assert n >= 2, "expected the demo blocks"
-else:
-    app = app.replace("/*@DEMO_START@*/", "").replace("/*@DEMO_END@*/", "")
 
-m = re.match(r"\s*<title>(.*?)</title>\n", app)
-assert m, "app.html must start with its <title>"
-body = app[m.end():]
+def page(app, demo):
+    """The full HTML page, with the sample-data preview kept (demo) or removed (production)."""
+    if demo:
+        app = app.replace("/*@DEMO_START@*/", "").replace("/*@DEMO_END@*/", "")
+    else:
+        app, n = re.subn(r"\n[ \t]*/\*@DEMO_START@\*/.*?/\*@DEMO_END@\*/[ \t]*", "", app, flags=re.S)
+        assert n >= 2, "expected the demo blocks"
+    m = re.match(r"\s*<title>(.*?)</title>\n", app)
+    assert m, "app.html must start with its <title>"
+    body = app[m.end():]
+    full = (
+        "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
+        "<base target=\"_top\">\n<title>Brand Astra</title>\n</head>\n<body>\n" + body + "\n</body>\n</html>\n"
+    )
+    return full, body
 
-full = (
-    "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
-    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-    "<base target=\"_top\">\n<title>Brand Astra</title>\n</head>\n<body>\n" + body + "\n</body>\n</html>\n"
-)
-artifact = "<title>Brand Astra Demo</title>\n" + body
+full, body = page(app, DEMO)
+demo_full, demo_body = page(app, True)          # always built: the Render server shows it until it is set up
+artifact = "<title>Brand Astra Demo</title>\n" + demo_body
 
 if IN_REPO:
     os.makedirs(os.path.join(OUT, "app"), exist_ok=True)
     open(os.path.join(OUT, "app", "Index.html"), "w", encoding="utf-8").write(full)
     open(os.path.join(OUT, "app", "Code.gs"), "w", encoding="utf-8").write(code)
+    open(os.path.join(OUT, "app", "Demo.html"), "w", encoding="utf-8").write(demo_full)
 else:
     os.makedirs(os.path.join(OUT, "brand-astra-apps-script"), exist_ok=True)
     open(os.path.join(OUT, "brand-astra.html"), "w", encoding="utf-8").write(full)
@@ -60,18 +67,19 @@ else:
         os.makedirs(os.path.join(repo, "app"), exist_ok=True)
         open(os.path.join(repo, "app", "Index.html"), "w", encoding="utf-8").write(full)
         open(os.path.join(repo, "app", "Code.gs"), "w", encoding="utf-8").write(code)
+        open(os.path.join(repo, "app", "Demo.html"), "w", encoding="utf-8").write(demo_full)
         os.makedirs(os.path.join(repo, "src"), exist_ok=True)
         for f in ("app.html", "rules.js", "check.js", "Code.gs", "build.py"):
             shutil.copyfile(os.path.join(HERE, f), os.path.join(repo, "src", f))
 
 # Syntax-check the page script and the server code with Node, if available.
-js = full.split("<script>")[1].split("</script>")[0]
 tmp = os.path.join(HERE, ".check")
 os.makedirs(tmp, exist_ok=True)
-open(os.path.join(tmp, "page.js"), "w", encoding="utf-8").write(js)
+open(os.path.join(tmp, "page.js"), "w", encoding="utf-8").write(full.split("<script>")[1].split("</script>")[0])
+open(os.path.join(tmp, "demo.js"), "w", encoding="utf-8").write(demo_full.split("<script>")[1].split("</script>")[0])
 open(os.path.join(tmp, "code.js"), "w", encoding="utf-8").write(code)
-for f in ("page.js", "code.js"):
+for f in ("page.js", "demo.js", "code.js"):
     r = subprocess.run(["node", "--check", os.path.join(tmp, f)], capture_output=True, text=True)
     if r.returncode:
         print(r.stderr); sys.exit(1)
-print("built:", "demo" if DEMO else "production", len(full), "bytes · syntax OK")
+print("built:", "demo" if DEMO else "production", len(full), "bytes, plus the demo page", len(demo_full), "bytes · syntax OK")

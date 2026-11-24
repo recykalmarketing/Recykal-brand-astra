@@ -18,7 +18,8 @@ const CLIENT_ID = process.env.GOOGLE_CLIENT_ID, CLIENT_SECRET = process.env.GOOG
 const DEV_LOGIN = !PROD && !CLIENT_ID && process.env.DEV_LOGIN === "1";   // local testing only: sign in as any @recykal.com address
 const DRIVE = process.env.GOOGLE_DRIVE !== "0";                            // read access to the user's own Google files, to check Slides/Docs links
 const SESSION_SECRET = process.env.SESSION_SECRET || (PROD ? null : "local-only-secret");
-// On Render, the app only opens once its database and Google sign-in are set; until then every page lists what's missing.
+// On Render, the app only opens once its database and Google sign-in are set; until then the address shows the demo
+// and /setup lists what's missing.
 const MISSING = PROD ? [!process.env.DATABASE_URL && "DATABASE_URL (the Neon connection string)", !(CLIENT_ID && CLIENT_SECRET) && "GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (the Google sign-in client)",
   !SESSION_SECRET && "SESSION_SECRET (any long random text)"].filter(Boolean) : [];
 
@@ -37,15 +38,21 @@ function setupPage(missing) {
   <p>Add these under <b>Environment</b> on the Render service, then save (Render restarts the app):</p>
   <ul>${missing.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
   <p>For Google sign-in, use this redirect address: <code>${esc(BASE_URL)}/auth/callback</code></p>
-  <p>The steps are in DEPLOY.md in the repository.</p></body></html>`;
+  <p>The steps are in DEPLOY.md in the repository. Until then, the main address shows the demo with sample data.</p></body></html>`;
 }
 
 async function main() {
   if (MISSING.length) {
+    // Not set up yet: the address shows the demo (sample data kept only in each visitor's browser, no sign-in),
+    // and /setup lists what's still missing. Once every setting is in, the real app replaces the demo.
+    const demo = fs.readFileSync(path.join(__dirname, "app", "Demo.html"), "utf8");
     const server = express();
+    server.disable("x-powered-by");
     server.get("/healthz", (req, res) => res.send("ok"));
-    server.use((req, res) => res.status(503).type("html").send(setupPage(MISSING)));
-    server.listen(Number(process.env.PORT || 3000), () => console.log("Brand Astra is waiting for setup: " + MISSING.join("; ")));
+    server.get("/setup", (req, res) => res.status(503).type("html").set("Cache-Control", "no-store").send(setupPage(MISSING)));
+    server.get("/", (req, res) => res.type("html").set("Cache-Control", "no-cache").send(demo));
+    server.use((req, res) => res.redirect("/"));
+    server.listen(Number(process.env.PORT || 3000), () => console.log("Brand Astra demo (waiting for setup: " + MISSING.join("; ") + ")"));
     return;
   }
   const store = await openStore();

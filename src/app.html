@@ -2354,7 +2354,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const bar = $("#demobar"); bar.hidden = false;
     const btn = (id, label) => h("button", { class: "btn btn-sm " + (S.uid === id ? "btn-dark" : "btn-ghost"), "aria-pressed": String(S.uid === id), onclick: () => bootDemo(id) }, label);
     bar.querySelector(".in").replaceChildren(h("span", { style: "min-width:0" }, h("b", { text: S.isAdmin ? "Preview · Brand team view (marketing@recykal.com). " : "Preview · Employee view (what your colleagues see). " }),
-        "Sample data, saved only in this browser. ", window.claude ? null : h("span", { class: "hint", text: "To go live for everyone, deploy it with Google Apps Script (SETUP.md)." })), h("span", { class: "spacer" }),
+        "Sample data, saved only in this browser. ", h("span", { class: "hint", text: "The live version shares work across the team and signs you in with your Recykal Google account." })), h("span", { class: "spacer" }),
       h("span", { class: "actions" }, $(".tour-card") ? null : h("button", { class: "btn btn-sm btn-tour", onclick: () => startTour() }, "▶ Start guided tour"), h("span", { class: "hint", text: "View as" }), btn("u_demo_brand", "Brand team view (you)"), btn("u_demo_anita", "Employee view"),
         h("button", { class: "btn btn-sm btn-ghost", title: "Delete your changes and restore the sample data", onclick: () => resetDemo() }, "Reset sample data")));
   }
