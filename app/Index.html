@@ -438,8 +438,8 @@ dialog.drawer { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: m
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 9px; font-weight: 500; font-size: 13px; z-index: 70; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
 .notice { border-radius: var(--radius); padding: 12px 14px; background: var(--warn-soft); color: var(--warn); font-size: 13px; font-weight: 500; }
 /* Sign-in: form on the left (theme-aware), fixed brand visual on the right */
-.login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); background: var(--bg); overflow-y: auto; }
-.lg-left { display: grid; grid-template-rows: auto 1fr auto; gap: 24px; padding-block: max(28px, env(safe-area-inset-top, 0px)) max(22px, env(safe-area-inset-bottom, 0px)); padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: 40px; min-height: 100%; background: var(--card); }
+.login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); background: var(--card); overflow-y: auto; }
+.lg-left { display: grid; grid-template-rows: auto 1fr auto; gap: 24px; padding-block: max(28px, env(safe-area-inset-top, 0px)) max(22px, env(safe-area-inset-bottom, 0px)); padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: 40px; min-height: 100%; }
 .lg-logo { width: 176px; height: auto; display: block; background: #fff; border-radius: 10px; box-sizing: content-box; }
 :root[data-ui="dark"] .lg-logo { padding: 10px 12px; }
 .lg-card { align-self: center; justify-self: center; width: min(430px, 100%); display: grid; gap: 18px; }
@@ -462,19 +462,15 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
 .lg-secure { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 11.5px; color: var(--faint); border-top: 1px solid var(--line); padding-top: 16px; text-align: center; }
 .lg-secure svg { width: 14px; height: 14px; flex: none; }
 .lg-foot { display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: var(--faint); }
-.lg-right { position: relative; overflow: hidden; background: radial-gradient(110% 70% at 85% 0%, #024C8A 0%, #06223F 42%, #05080F 100%); color: #fff; display: grid; }
-.lg-right::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px); background-size: 22px 22px; mask-image: linear-gradient(180deg, #000, transparent 85%); }
+.lg-right { position: relative; display: grid; color: var(--fg); }
 .lg-art { position: relative; display: grid; align-content: center; gap: 56px; padding: 64px 56px; }
-.lg-slash { position: absolute; width: 5px; border-radius: 3px; transform: rotate(16deg); }
-.lg-slash.s1 { left: 12%; top: -40px; height: 170px; background: #005DFF; }
-.lg-slash.s2 { left: 5%; bottom: -60px; height: 340px; background: #1DC797; }
-.lg-corner { position: absolute; right: 0; bottom: 0; width: 120px; height: 330px; background: #567DE8; clip-path: polygon(100% 0, 100% 100%, 0 100%); opacity: .95; }
 .lg-pitch { position: relative; max-width: 470px; display: grid; gap: 12px; }
-.lg-kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #8FB0FF; font-weight: 600; }
-.lg-pitch p { font-size: 32px; line-height: 1.25; font-weight: 400; color: #E9EEF8; }
-.lg-pitch b { font-weight: 700; color: #fff; }
+.lg-kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.lg-pitch p { font-size: 32px; line-height: 1.25; font-weight: 400; color: var(--fg); }
+.lg-pitch b { font-weight: 700; color: var(--fg); }
+.lg-pitch p > * { display: block; }
 .lg-cards { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 270px)); gap: 20px; justify-content: start; }
-.lg-float { --card-2: #EEF2F8; --fg: #0B0F17; --bar-ok: #049769; background: #fff; color: #0B0F17; border-radius: 16px; padding: 18px 20px; box-shadow: 0 18px 40px rgba(0, 0, 0, .35); display: grid; gap: 10px; }
+.lg-float { --card-2: #EEF2F8; --fg: #0B0F17; --bar-ok: #049769; background: #fff; color: #0B0F17; border: 1px solid #E3E8F0; border-radius: 16px; padding: 18px 20px; box-shadow: 0 2px 4px rgba(10, 20, 40, .04), 0 18px 40px rgba(10, 20, 40, .12); display: grid; gap: 10px; }
 .lg-float .t { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #5A6477; }
 .lg-float .row { display: flex; align-items: center; gap: 12px; }
 .lg-float b { display: block; font-size: 15px; font-weight: 600; }
@@ -3063,16 +3059,15 @@ const BRAND_CHECK = (() => {
   function loginArt() {
     const sw = ["#000000", "#005DFF", "#024C8A", "#8460D4", "#567DE8", "#1DC797", "#049769", "#0000AF", "#3E7D44"];
     return h("div", { class: "lg-art" },
-      h("span", { class: "lg-slash s1" }), h("span", { class: "lg-slash s2" }), h("span", { class: "lg-corner" }),
       h("div", { class: "lg-pitch" },
         h("div", { class: "lg-kicker", text: "Sustainable Circularity" }),
-        h("p", null, "One place to make every Recykal deck, post and poster ", h("b", { text: "on brand" }), " before it goes out.")),
+        h("p", null, h("span", { text: "Every creation." }), h("span", { text: "Every communication." }), h("b", { text: "Unmistakably Recykal." }))),
       h("div", { class: "lg-cards" },
         h("div", { class: "lg-float f1" }, h("div", { class: "t", text: "Brand QC" }),
           h("div", { class: "row" }, ring(92, 64), h("div", null, h("b", { text: "Ready to submit" }), h("span", { text: "Q4 pitch deck · 16:9" })))),
         h("div", { class: "lg-float f2" }, h("div", { class: "t", text: "Primary palette" }), h("div", { class: "sw" }, sw.map((c) => h("i", { style: "background:" + c })))),
         h("div", { class: "lg-float f3" }, h("div", { class: "row" }, h("span", { class: "ok", html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg>' }),
-          h("div", null, h("b", { text: "Approved" }), h("span", { text: "Diwali post · QC 96" })))),
+          h("div", null, h("b", { text: "Approved" }), h("span", { text: "Social post · QC 96" })))),
         h("div", { class: "lg-float f4" }, h("div", { class: "row" }, h("div", { class: "aa", text: "Aa" }), h("div", null, h("b", { text: "Poppins" }), h("span", { text: "Regular · Medium · Bold" }))))));
   }
   function loginScreen(o) {
