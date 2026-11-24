@@ -297,6 +297,10 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .drop { border: 1.5px dashed var(--line-2); border-radius: 12px; padding: 22px 16px; display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; text-align: center; cursor: pointer; background: var(--card-2); }
 .drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
 .drop.has { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 12px 14px; }
+.drop-x { flex: none; align-self: flex-start; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; padding: 0; border: 1px solid var(--line-2); background: var(--card); color: var(--muted); cursor: pointer; }
+.drop-x svg { width: 15px; height: 15px; }
+.drop-x:hover, .drop-x:focus-visible { color: var(--bad); border-color: var(--bad); }
+.drop-x:disabled { opacity: .4; cursor: default; }
 .drop img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); flex: none; }
 .up-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--card); display: grid; place-items: center; color: var(--accent); } .up-ic svg { width: 20px; height: 20px; }
 .pdf-ic { width: 56px; height: 68px; border-radius: 6px; background: #E0475A; color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; flex: none; }
@@ -430,8 +434,8 @@ dialog.drawer { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: m
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 9px; font-weight: 500; font-size: 13px; z-index: 70; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
 .notice { border-radius: var(--radius); padding: 12px 14px; background: var(--warn-soft); color: var(--warn); font-size: 13px; font-weight: 500; }
 /* Sign-in: form on the left (theme-aware), fixed brand visual on the right */
-.login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); background: var(--card); overflow-y: auto; }
-.lg-left { display: grid; grid-template-rows: auto 1fr auto; gap: 24px; padding-block: max(28px, env(safe-area-inset-top, 0px)) max(22px, env(safe-area-inset-bottom, 0px)); padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: 40px; min-height: 100%; }
+.login { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); grid-template-rows: minmax(0, 1fr) auto; background: var(--card); overflow-y: auto; }
+.lg-left { display: grid; grid-template-rows: auto 1fr; gap: 24px; padding-block: max(28px, env(safe-area-inset-top, 0px)) 24px; padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: 40px; min-height: 100%; }
 .lg-logo { width: 176px; height: auto; display: block; background: #fff; border-radius: 10px; box-sizing: content-box; }
 :root[data-ui="dark"] .lg-logo { padding: 10px 12px; }
 .lg-card { align-self: center; justify-self: center; width: min(430px, 100%); display: grid; gap: 18px; }
@@ -453,7 +457,7 @@ dialog.drawer { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: m
 a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
 .lg-secure { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 11.5px; color: var(--faint); border-top: 1px solid var(--line); padding-top: 16px; text-align: center; }
 .lg-secure svg { width: 14px; height: 14px; flex: none; }
-.lg-foot { display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: var(--faint); }
+.lg-foot { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: var(--faint); padding: 0 max(40px, env(safe-area-inset-right, 0px)) max(22px, env(safe-area-inset-bottom, 0px)) max(40px, env(safe-area-inset-left, 0px)); }
 .lg-right { position: relative; display: grid; color: var(--fg); }
 .lg-art { position: relative; display: grid; align-content: center; gap: 56px; padding: 64px 56px; }
 .lg-pitch { position: relative; max-width: 470px; display: grid; gap: 12px; }
@@ -476,7 +480,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
 .lg-float.f2 { transform: translateY(-10px) rotate(1.2deg); align-self: start; }
 .lg-float.f3 { transform: translateY(6px) rotate(1deg); }
 .lg-float.f4 { transform: translateY(-18px) rotate(-1deg); }
-@media (max-width: 920px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-right { display: none; } .lg-left { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); } .lg-card h1 { font-size: 28px; } }
+@media (max-width: 920px) { .login { grid-template-columns: minmax(0, 1fr); } .lg-right { display: none; } .lg-left { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); } .lg-foot { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); } .lg-card h1 { font-size: 28px; } }
 @media (max-width: 640px) {
   #submit-top span { display: none; } #submit-top { padding: 9px 11px; }
   .top-in > div:not(.spacer) { flex: 1 1 auto; } .top h1 { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -787,9 +791,8 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
           h("p", { class: "lg-sub", text: "Run a Brand QC on your deck or post, submit it for review, and track every review in one place. Employees and the marketing team sign in the same way." }),
           msg ? h("div", { class: "notice", text: msg }) : null,
           h("a", { class: "btn btn-primary lg-btn", href: o.url, style: "justify-content:center;gap:10px" }, h("span", { class: "g-ic", html: g, style: "display:inline-flex;background:#fff;border-radius:50%;padding:3px" }), "Sign in with Google"),
-          h("div", { class: "lg-secure" }, h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' }), `Secured by Google sign-in · @${o.domain} accounts only`)),
-        h("footer", { class: "lg-foot" }, h("span", { text: "© " + new Date().getFullYear() + " Recykal" }), h("span", { text: "Private & Confidential" }))),
-      h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt())));
+          h("div", { class: "lg-secure" }, h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' }), `Secured by Google sign-in · @${o.domain} accounts only`))),
+      h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt()), loginFoot()));
   }
   /** Opened outside Google Apps Script (for example the file on its own): point people to the company link. */
   function notDeployed() {
@@ -800,9 +803,8 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
           h("div", { class: "lg-eyebrow", text: "Recykal brand portal" }),
           h("h1", null, "Open ", h("span", { class: "lg-prod" }, "Brand ", h("b", { text: "Astra" })), " from its company link"),
           h("p", { class: "lg-sub", text: "Brand Astra runs on Recykal's Google Workspace. Open the link the marketing team shared and sign in with your @recykal.com Google account." }),
-          h("div", { class: "lg-secure", text: "Setting it up? Deploy this file with Google Apps Script, as SETUP.md describes." })),
-        h("footer", { class: "lg-foot" }, h("span", { text: "© " + new Date().getFullYear() + " Recykal" }), h("span", { text: "Private & Confidential" }))),
-      h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt())));
+          h("div", { class: "lg-secure", text: "Setting it up? Deploy this file with Google Apps Script, as SETUP.md describes." }))),
+      h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt()), loginFoot()));
   }
   function subscribe() {
     const onErr = (e) => console.warn("db", e && e.code, e && e.message);
@@ -1534,13 +1536,21 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         q.fileErr = ""; q.fileReport = null; render();
         guessFormat(f).then((k) => { if (k && q.upload && q.upload.file === f) { q.format = k; q.checks = {}; render(); } });
       };
+      const removeFile = () => {
+        if (q.upload && q.upload.preview) URL.revokeObjectURL(q.upload.preview);
+        if (q.upload && q.upload.link && q.link === q.upload.link) q.link = "";
+        q.upload = null; q.fileErr = ""; q.fileReport = null; render();
+        const d = $(".ai-card .drop"); if (d) d.focus();
+      };
       const input = h("input", { type: "file", id: "qc-file", hidden: true, accept: UPLOAD_ACCEPT, onchange: (e) => { if (e.target.files[0]) pickFile(e.target.files[0]); e.target.value = ""; } });
       const drop = h("div", { class: "drop" + (q.upload ? " has" : ""), tabindex: "0", role: "button", "aria-label": "Choose a PowerPoint, PDF or image to check",
         onclick: () => input.click(), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } },
         ondragover: (e) => { e.preventDefault(); e.currentTarget.classList.add("over"); }, ondragleave: (e) => e.currentTarget.classList.remove("over"),
         ondrop: (e) => { e.preventDefault(); e.currentTarget.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) pickFile(f); } },
         q.upload ? [q.upload.preview ? h("img", { src: q.upload.preview, alt: "" }) : h("span", { class: "pdf-ic", text: /\.pptx$/i.test(q.upload.name) ? "PPTX" : "PDF" }),
-            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:anywhere", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` }))]
+            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:anywhere", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
+            h("button", { type: "button", class: "drop-x", "aria-label": "Remove " + q.upload.name, title: "Remove this file", disabled: q.fileBusy || null,
+              onclick: (e) => { e.stopPropagation(); removeFile(); }, onkeydown: (e) => e.stopPropagation(), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' })]
           : [h("span", { class: "up-ic" }, icon("upload")), h("b", { text: "Drop your PowerPoint, PDF or image here, or click to choose" }), h("span", { class: "small", text: "PPTX or PDF up to 15 MB · PNG, JPG or WEBP up to 5 MB" })]);
       const checkBtn = h("button", { class: "btn btn-primary", disabled: q.fileBusy || null, onclick: run }, q.fileBusy ? "Checking…" : "Check my file");
       const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.checks = {}; q.fileReport = null; render(); } },
@@ -2058,6 +2068,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
 
     // ----- Sign-in screen (Google account confirmation, first-visit profile) -----
   const TEAMS = ["Sales", "Marketing", "EPR", "DRS", "Recykal.Market", "Recommerce", "Infra Business", "Sustainability Suite", "Product", "Technology", "Operations", "Finance", "People & Culture", "Leadership", "Other"];
+  function loginFoot() { return h("footer", { class: "lg-foot" }, h("span", { text: "© " + new Date().getFullYear() + " Recykal" }), h("span", { text: "Private & Confidential" })); }
   function loginArt() {
     const sw = ["#000000", "#005DFF", "#024C8A", "#8460D4", "#567DE8", "#1DC797", "#049769", "#0000AF", "#3E7D44"];
     return h("div", { class: "lg-art" },
@@ -2123,9 +2134,8 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       const wrap = h("div", { class: "login", role: "dialog", "aria-modal": "true", "aria-label": "Sign in to Brand Astra" },
         h("section", { class: "lg-left" },
           h("img", { class: "lg-logo", src: LOGO_URI, alt: "Recykal — Sustainable Circularity" }),
-          form,
-          h("footer", { class: "lg-foot" }, h("span", { text: "© 2026 Recykal" }), h("span", { text: "Private & Confidential" }))),
-        h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt()));
+          form),
+        h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt()), loginFoot());
       document.body.append(wrap);
       showAccess(); if (role === "marketing" && !o.isAdmin) btn.disabled = true;
       setTimeout(() => (o.isNew ? name : btn).focus(), 50);
