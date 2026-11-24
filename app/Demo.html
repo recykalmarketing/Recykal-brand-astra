@@ -401,11 +401,28 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 
 /* Brand kit */
 .kit-nav { display: flex; gap: 8px; flex-wrap: wrap; }
-.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 16px 12px; }
 .sw { appearance: none; border: 0; padding: 0; background: none; text-align: left; cursor: pointer; display: grid; gap: 4px; }
 .sw .c { aspect-ratio: 1.4; border-radius: 8px; display: block; max-width: 100%; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
 .sw .nm { font-size: 12.5px; font-weight: 600; }
 .sw .hx { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sw .use { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.pal-note { font-size: 13px; color: var(--muted); max-width: 72ch; margin-top: -4px; }
+.prod-pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px 36px; }
+.pp { display: grid; gap: 10px; align-content: start; }
+.pp-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.pp-head b { font-size: 13.5px; }
+.pp-chips { display: flex; flex-wrap: wrap; gap: 12px 10px; }
+.pp-chip { appearance: none; border: 0; padding: 0; background: none; cursor: pointer; display: grid; gap: 5px; width: 58px; text-align: left; }
+.pp-chip .c { height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
+.pp-chip .hx { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rm-sec { display: grid; gap: 14px; }
+.rm-sec > h3.rm-h { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+.rm-ratio { display: flex; height: 14px; border-radius: 999px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line-2); }
+.rm-ratio i { display: block; }
+.kv { display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 8px 16px; font-size: 13px; margin: 0; }
+.kv dt { font-weight: 600; } .kv dd { margin: 0; color: var(--muted); }
+@media (max-width: 640px) { .kv { grid-template-columns: 1fr; gap: 2px; } .kv dd { margin-bottom: 8px; } }
 .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
 .tpl .art { background: #fff; border: 1px solid #E3E8F0; border-radius: 8px; display: grid; place-items: center; height: 200px; padding: 10px; overflow: hidden; }
 .tpl .art svg { max-height: 180px; max-width: 100%; width: auto; height: auto; box-shadow: 0 0 0 1px #E3E8F0; }
@@ -516,7 +533,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     <div><div class="nav-label">Workspace</div><nav class="nav" id="nav"></nav></div>
     <div id="due-wrap"><div class="nav-label">Due soon</div><div class="due-list" id="due"></div></div>
     <div class="side-foot">
-      <div class="palette-strip" aria-hidden="true"><span style="background:#005DFF"></span><span style="background:#024C8A"></span><span style="background:#567DE8"></span><span style="background:#1DC797"></span><span style="background:#049769"></span><span style="background:#0000AF"></span><span style="background:#3E7D44"></span></div>
+      <div class="palette-strip" aria-hidden="true"><span style="background:#005DFF"></span><span style="background:#00573F"></span><span style="background:#567DE8"></span><span style="background:#1DC797"></span><span style="background:#049769"></span><span style="background:#024C8A"></span><span style="background:#0000AF"></span><span style="background:#8460D4"></span></div>
       <div class="me" id="me"></div>
     </div>
   </aside>
@@ -550,18 +567,28 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
 // ---------- Recykal brand rulebook ----------
 // The single source of truth for Brand QC. build.py puts this file at the top of Code.gs (scoring and saving results)
 // and inside the page script (the automatic check in check.js, the Brand kit and the demo), so both always use the same rules.
-// Sources: "Recykal Marketing Brand Guidelines" (26 pages, cited as p.N) and the Recykal company deck
-// (Recykal_Deck-3, 17 slides, cited as Deck N). Change a rule here, run build.py, and both sides pick it up.
+// Sources: "Recykal Marketing Brand Guidelines" (26 pages, cited as p.N), the Recykal company deck
+// (Recykal_Deck-3, 17 slides, cited as Deck N) and the Recykal.Market Brand Guidelines v1.0 (cited as RM §N). Change a rule here, run build.py, and both sides pick it up.
 
 const BRAND = (() => {
-  const BRAND_ = { get primary() { return primary; }, get products() { return products; }, get gradients() { return gradients; }, get facts() { return facts; }, get contact() { return contact; }, get groups() { return groups; }, get rules() { return rules; } };
+  const BRAND_ = { get primary() { return primary; }, get secondary() { return secondary; }, get products() { return products; }, get gradients() { return gradients; }, get facts() { return facts; }, get contact() { return contact; }, get groups() { return groups; }, get rules() { return rules; } };
+  // Primary palette (p.10). Recykal.Market Green (RM §3) replaces Fern Green.
   const primary = [
-    ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Midnight Blue", "#024C8A"], ["Medium Purple", "#8460D4"], ["Blue", "#567DE8"],
-    ["Bright Green", "#1DC797"], ["Dark Green", "#049769"], ["Duke Blue", "#0000AF"], ["Fern Green", "#3E7D44"],
+    ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Recykal.Market Green", "#00573F"], ["Blue", "#567DE8"], ["Bright Green", "#1DC797"],
+    ["Dark Green", "#049769"], ["Midnight Blue", "#024C8A"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
   ];
+  // Secondary palette: the Recykal.Market supporting colours (RM §3.2). Accents only, at most 10% of a slide, page or post.
+  const secondary = [
+    ["Near Black", "#1D1D1F", "High-emphasis text, premium details"], ["Stone Grey", "#6B6B6B", "Secondary text, captions, labels"],
+    ["Line Grey", "#E5E5EA", "Borders, dividers, card outlines"], ["Soft Surface", "#F5F5F7", "Alternate bands, image stages"],
+    ["Green Tint", "#D9E8E2", "Tags, selected filters, soft highlights"], ["Error Red", "#D64045", "Errors and critical warnings only"],
+    ["Info Blue", "#4A90B8", "System information only"],
+  ];
+  const SECONDARY_SHARE = 10;
   // Product palettes (p.11–21). A product's colours are allowed only on material about that product.
   const products = [
-    { name: "Recykal Marketplace", short: "Marketplace", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#1DC797", "#567DE8"], secondary: ["#CAFFF0", "#C8D8FF"], ref: "p.11–12" },
+    // Recykal.Market: white-first, black-led, green for action only, in a 70 / 20 / 10 ratio (RM §3).
+    { name: "Recykal.Market", short: "Recykal.Market", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#00573F", "#000000", "#FFFFFF"], secondary: ["#F5F5F7", "#D9E8E2", "#1D1D1F", "#6B6B6B"], ratio: "70% white · 20% black · 10% green", ref: "RM §3" },
     { name: "EPR Platform", short: "EPR", re: /\b(EPR|extended producer responsibility)\b/i, primary: ["#005DFF"], secondary: ["#FB4A59", "#F5EFB9", "#48B16E"], ref: "p.13–14" },
     { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund|retearn|reklaim)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
     { name: "Restyle", short: "Restyle", re: /\brestyle\b/i, primary: ["#0000AF", "#3E7D44", "#6A7F8A"], secondary: ["#02A0DD", "#03BADF", "#E5FF76", "#BACCD3"], pastel: ["#96E8FB", "#C0F2F9"], ref: "p.17–19" },
@@ -584,14 +611,14 @@ const BRAND = (() => {
   // sev: critical (−25, caps the score at 59) · major (−10, caps at 84) · minor (−3). m: measured exactly by code where the file allows it.
   const rules = [
     { id: "L1", g: "logo", sev: "critical", t: "Official logo artwork", d: "Use the supplied logo: the Recykal mark with the lowercase “recykal” wordmark. Never retype the wordmark in another font or redraw the mark.", ref: "p.2–5, p.9" },
-    { id: "L2", g: "logo", sev: "critical", t: "Black or white logo only", d: "Black logo on white or light backgrounds, white logo on black. A logo on Bright Blue, Midnight Blue, Blue, Bright Green, Dark Green, Duke Blue, Fern Green or a gradient is a listed misuse.", ref: "p.7–8" },
+    { id: "L2", g: "logo", sev: "critical", t: "Black or white logo only", d: "Black logo on white or light backgrounds, white logo on black. A logo on Bright Blue, Recykal.Market Green, Blue, Bright Green, Dark Green, Midnight Blue, Duke Blue, Medium Purple or a gradient is a listed misuse.", ref: "p.7–8, RM §2" },
     { id: "L3", g: "logo", sev: "critical", t: "Logo not distorted", d: "Never stretch, squash, rotate, tilt or skew the logo.", ref: "p.9" },
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
     { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
     { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
-    { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, white, neutral greys, or the palette of the product being shown.", ref: "p.10" },
+    { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
     { id: "C2", g: "colour", sev: "major", m: true, t: "Product colours stay with their product", d: "A product palette is used only on that product's material, e.g. the EPR Platform red #FB4A59 doesn't belong on a Marketplace slide.", ref: "p.12–21; Rezolv and Smart Center from the earlier brand kit" },
     { id: "C3", g: "colour", sev: "major", m: true, t: "No unapproved gradients", d: "Solid colours only. The one approved gradient is Rethink+ purple #6E5CFA to coral #DF6347, on Rethink+ material.", ref: "p.8, p.21" },
     { id: "C4", g: "colour", sev: "minor", m: true, t: "Readable contrast", d: "Text is easy to read against its background (aim for 4.5:1 for body text).", ref: "p.10" },
@@ -623,6 +650,7 @@ const BRAND = (() => {
     { id: "W7", g: "copy", sev: "minor", m: true, t: "Acronyms spelled out", d: "“Extended Producer Responsibility (EPR)”, “Deposit Refund System (DRS)” and “Alternative Fuel & Raw Material (AFR)” on first use for external audiences.", ref: "Deck 7, 14" },
     { id: "W8", g: "copy", sev: "minor", m: true, t: "Claims backed up", d: "No superlatives such as world-class, best or revolutionary without a number, award or source.", ref: "Deck 2" },
     { id: "W9", g: "copy", sev: "major", t: "Proofread", d: "No typos, grammar errors, placeholder text (Lorem ipsum, XX, TBD) or inconsistent numbers.", ref: "" },
+    { id: "W11", g: "copy", sev: "major", m: true, t: "Recykal.Market language", d: "On Recykal.Market material, sound like a verified B2B marketplace: procure, source, list, enquire, verified, traceable. No guaranteed prices, buyers or sales, no “cheapest” or “waste revolution” lines, no brokerage or scrap-dealing language, and never imply Recykal physically recycles the material.", ref: "RM §8" },
     { id: "W10", g: "copy", sev: "minor", m: true, t: "Contact details", d: "www.recykal.com, marketing@recykal.com and +91 7799996255 exactly as in the deck.", ref: "Deck 17" },
   ];
   rules.forEach((r) => { r.f = r.f || ALL; });
@@ -659,7 +687,8 @@ const BRAND = (() => {
     { re: /~?\s?(\d+)\s*%\s*collection rate/gi, ok: 90, say: "~90% collection rate", ref: "Deck 9" },
   ];
 
-  // Copy rules. Each hit points at a rule; "tip" hits are shown but never fail a rule.
+  const MARKET = /\brecykal\.?\s?market\b|\bmarketplace\b/i;
+  // Copy rules. Each hit points at a rule; "tip" hits are shown but never fail a rule. "when": the text must match it.
   const copyRules = [
     { r: "W1", re: /\b(recycal|recykle|recykel|recykall|rekykal|re-kykal|recykl|recykel)\b/gi, sev: "error", msg: (m) => `Spell the company name “Recykal”, not “${m}”.` },
     { r: "W1", re: /(?<![\w.@/-])recykal(?![\w.@])/g, sev: "warn", msg: () => "Write “Recykal” with a capital R. The lowercase form belongs only to the logo." },
@@ -687,6 +716,13 @@ const BRAND = (() => {
     { r: "W9", re: /\b(lorem ipsum|dolor sit amet|TBD|TBC|placeholder|insert (text|image|logo) here)\b|\[[^\]]{0,30}(insert|add|tbd)[^\]]{0,30}\]|\bXX+\b|\b00\/00\b/gi, sev: "error", msg: (m) => `Placeholder text left in: “${m}”.` },
     { r: "W9", re: /!{2,}|\?{2,}/g, sev: "warn", msg: () => "Use one exclamation or question mark at most." },
     { r: "W9", re: /\b(\w+) \1\b/g, sev: "warn", test: (m) => !/^(\d+) \1$/.test(m) && !/^(that that|had had)$/i.test(m), msg: (m) => `Repeated word: “${m}”.` },
+    // Recykal.Market language (RM §8): only when the text is about Recykal.Market.
+    { r: "W11", when: MARKET, re: /\bguarantee(d|s)?\s+(?:\w+\s+){0,2}(prices?|rates?|buyers?|sellers?|sales?|orders?|supply|profits?|returns?)\b/gi, sev: "error", msg: (m) => `Don't promise “${m}”. Talk about price visibility, verified buyers and faster enquiries instead.` },
+    { r: "W11", when: MARKET, re: /\b(cheapest|cheap scrap|lowest price|best price|grab now|final offer|waste sale|cheapest deal|sell everything)\b/gi, sev: "error", msg: (m) => `“${m}” sounds like a scrap bazaar. Use “Request pricing”, “Explore materials” or “List material”.` },
+    { r: "W11", when: MARKET, re: /\b(brokerage|broker|scrap deal(ing|er)?s?|waste dumping|informal buyers?)\b/gi, sev: "warn", msg: (m) => `Avoid “${m}”. Recykal.Market is a verified B2B marketplace for recyclable materials.` },
+    { r: "W11", when: MARKET, re: /\b(waste revolution|save the planet|ban plastics?|say no to plastics?|anti[- ]plastic|plastic is evil|blockchain)\b/gi, sev: "warn", msg: (m) => `Avoid “${m}”. Keep sustainability as a business outcome: traceability and better material movement.` },
+    { r: "W11", when: MARKET, re: /\bwe recycle\b|\brecykal recycles\b|\brecycled by recykal\b/gi, sev: "warn", msg: () => "Don't imply Recykal physically recycles the material. It enables the trade between verified buyers and sellers." },
+    { r: "W11", when: MARKET, re: /\b(trade|trading|directory|listing page)\b/gi, sev: "tip", msg: (m) => `Prefer “procure”, “source” or “list material” over “${m}”, unless it names a business line.` },
     { r: "W10", re: /\b(?:www\.)?recykal\.(?!com\b|market\b)[a-z]{2,}\b/gi, sev: "warn", msg: (m) => `The website is “www.recykal.com”, not “${m}”.` },
     { r: "W10", re: /\bmarketing@recykal\.(?!com\b)[a-z]+\b|\b(?:info|contact|hello)@recykal\.com\b/gi, sev: "warn", msg: () => "Use “marketing@recykal.com” as the contact email." },
     { r: "W10", re: /(?:\+91|\b91)[\s-]?\d[\d\s-]{8,12}\d/g, sev: "warn", test: (m) => m.replace(/\D/g, "").slice(-10) !== "7799996255", msg: (m) => `“${m}” isn't the company number. Use “+91 7799996255”, or check it's meant to be a personal number.` },
@@ -702,6 +738,7 @@ const BRAND = (() => {
     text = String(text);
     const applies = (id) => !opts.format || ruleById[id].f.indexOf(opts.format) >= 0;
     copyRules.forEach((cr) => {
+      if (cr.when && !cr.when.test(text)) return;
       cr.re.lastIndex = 0; const seen = {}; let m;
       while ((m = cr.re.exec(text))) {
         const w = m[0].trim();
@@ -743,12 +780,13 @@ const BRAND = (() => {
   const isNeutral = (hex) => { const l = lab(hex); return Math.hypot(l[1], l[2]) <= 10; };
   const productColours = (p) => p.primary.concat(p.secondary, p.pastel || []);
   const primaryHex = primary.map((p) => p[1]);
+  const secondaryHex = secondary.map((p) => p[1]);
   /** Classify one colour used in a place whose text is `context`. → {kind: ok|near|product|off, nearest, product} */
   function classifyColour(hex, context) {
     hex = String(hex).toUpperCase();
     if (isNeutral(hex)) return { kind: "ok" };
     const here = products.filter((p) => p.re.test(context || ""));
-    const allowed = primaryHex.concat(templateAccents, [].concat.apply([], here.map(productColours)));
+    const allowed = primaryHex.concat(secondaryHex, templateAccents, [].concat.apply([], here.map(productColours)));
     const n = nearest(hex, allowed);
     if (n.dist <= 8) return { kind: "ok" };                                  // within ΔE 8: the same colour after export and colour profiles
     for (const p of products) { if (here.indexOf(p) >= 0) continue; const q = nearest(hex, productColours(p)); if (q.dist <= 6) return { kind: "product", product: p.name, nearest: nearest(hex, primaryHex).hex }; }
@@ -782,7 +820,7 @@ const BRAND = (() => {
   }
 
   /** Run the exact copy rules on a text and record measured results in m (a failure always overrides a pass). Returns the hits. */
-  const COPY_RULE_IDS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9", "W10", "Y3"];
+  const COPY_RULE_IDS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9", "W10", "W11", "Y3"];
   function copyMeasured(text, format, audience, m) {
     const hits = checkCopy(text, { format: format, audience: audience });
     COPY_RULE_IDS.forEach((id) => {
@@ -821,7 +859,7 @@ const BRAND = (() => {
     return { score: score, decision: decision, qc: qc, deductions: deductions, needsHuman: needsHuman };
   }
 
-  return { colourFindings, copyMeasured, PIXEL_MIN_PCT, smallOffPalette, primary, products, templateAccents, gradients, contact, year, groups, rules, ruleById, POINTS, CAP, facts, copyRules, ACRONYMS,
+  return { colourFindings, copyMeasured, PIXEL_MIN_PCT, smallOffPalette, primary, secondary, SECONDARY_SHARE, products, templateAccents, gradients, contact, year, groups, rules, ruleById, POINTS, CAP, facts, copyRules, ACRONYMS,
     checkCopy, classifyColour, evaluate, hexRgb, dist, nearest, isNeutral, productColours };
 })();
 
@@ -1544,6 +1582,7 @@ const BRAND_CHECK = (() => {
 })();
 
   const PALETTE = BRAND.primary.map(([n, hex]) => [n, hex, "Primary"]);
+  const swatch = (n, hex, use) => h("button", { class: "sw", onclick: () => copyText(hex), title: "Copy " + hex }, h("span", { class: "c", style: "background:" + hex }), h("span", { class: "nm", text: n }), h("span", { class: "hx", text: hex }), use ? h("span", { class: "use", text: use }) : null);
   const PRODUCT_COLOURS = BRAND.products.map((p) => [p.name, BRAND.productColours(p)]);
   const KINDS = ["Presentation (PPT)", "Social media post", "Poster / flyer", "Email / newsletter", "Video", "Document / report", "Other"];
   const FORMATS = {
@@ -1590,7 +1629,7 @@ const BRAND_CHECK = (() => {
   const FORMAT_FOR_KIND = { "Presentation (PPT)": "slide", "Social media post": "square", "Poster / flyer": "portrait", "Video": "story" };
   const QC = [
     ["logo", "Logo", "Right file, unaltered, clear space, placement"],
-    ["colour", "Colour", "Only Recykal palette and product colours"],
+    ["colour", "Colour", "Primary, secondary (≤10%) and product colours only"],
     ["type", "Typography", "Poppins only, clear hierarchy"],
     ["layout", "Template & layout", "Right template and size, margins, footer"],
     ["imagery", "Imagery", "Sharp, relevant, on-brand photos and icons"],
@@ -1602,7 +1641,7 @@ const BRAND_CHECK = (() => {
   const FACTS = BRAND.facts;
   const PRODUCTS = [
     ["Recykal", "Company name in text. Lowercase “recykal” appears only inside the logo.", "recykal, RECYKAL, Recycal"],
-    ["Recykal.Market", "Three pillars, one brand: Marketplace (B2B recyclables), Recommerce (IT assets & electronics), Infra Business (processing infrastructure).", "Recykal Market, Recykal marketplace app"],
+    ["Recykal.Market", "A verified B2B marketplace for recyclable materials. Three pillars, one brand: Marketplace (B2B recyclables), Recommerce (IT assets & electronics), Infra Business (processing infrastructure). Voice and words: Brand kit → Recykal.Market.", "Recykal Market, Recykal marketplace app"],
     ["Deposit Refund System (DRS)", "Deposit charged at purchase, refunded on return. DRS Platform (software) and IoT devices; dDRS is the product logo.", "Deposit Return System"],
     ["Retearn", "Recykal's hardware arm. Devices: reklaim Ace, reklaim Pro, reklaim Neo, reklaim Mini, reklaim Go.", "ReTearn, Reklaim"],
     ["Sustainability Suite", "EPR and AFR: helping brands and governments close the loop.", "Sustainability Solutions"],
@@ -2645,20 +2684,73 @@ const BRAND_CHECK = (() => {
     dlg.showModal();
   }
 
+  // ----- Brand kit: Recykal.Market (Recykal.Market Brand Guidelines v1.0, sections 1–8 and 12) -----
+  function marketKit() {
+    const sec = (title, ...kids) => h("section", { class: "rm-sec" }, h("h3", { class: "rm-h", text: title }), ...kids);
+    const card = (title, ...kids) => h("div", { class: "card" }, title ? h("h3", { text: title }) : null, ...kids);
+    const list = (items, cls) => h("ul", { class: "rules" }, items.map((t) => h("li", null, h("span", { class: cls, text: cls === "do" ? "✓" : "✕" }), h("span", { text: t }))));
+    const kv = (rows) => h("dl", { class: "kv" }, rows.map(([k, v]) => [h("dt", { text: k }), h("dd", { text: v })]));
+    const table = (head, rows) => h("div", { class: "table-wrap", style: "box-shadow:none" }, h("table", { class: "words" },
+      h("thead", null, h("tr", null, head.map((t) => h("th", { text: t })))), h("tbody", null, rows.map((r) => h("tr", null, r.map((c, i) => h("td", { class: i === r.length - 1 && head[i] === "Avoid" ? "muted" : null, text: c })))))));
+    const chip = (hex, name, use) => h("button", { class: "sw", onclick: () => copyText(hex), title: "Copy " + hex }, h("span", { class: "c", style: "background:" + hex }), h("span", { class: "nm", text: name }), h("span", { class: "hx", text: hex }), h("span", { class: "use", text: use }));
+    return [
+      h("div", { class: "card" }, h("div", { class: "quote" }, "A verified ", h("b", { text: "B2B marketplace" }), " for recyclable materials: clear, operational, confident and commercially useful."),
+        h("div", { class: "small", text: "Recykal.Market Brand Guidelines v1.0 · sections 1–8 and 12. Recykal's own rules still apply; these add what is specific to Recykal.Market." })),
+      sec("1 · Brand foundation",
+        h("div", { style: "display:grid;gap:14px" },
+          card("Personality", kv([["Trustworthy", "Honest, transparent, consistent. Data-driven; never over-promise."], ["Progressive", "Modern thinking that moves waste management forward."], ["Grounded", "Built for India's on-ground realities."], ["Enabling", "A platform, not a gatekeeper: equal access, less friction."], ["Purposeful", "Every feature, colour and word carries intent."]])),
+          card("Voice: we are / we are not", table(["Attribute", "We are", "Avoid"], [["Confidence", "Clear, direct, evidence-based", "Arrogant, loud, boastful"], ["Simplicity", "Plain language, actionable", "Jargon-heavy, overly technical"], ["Empathy", "Understanding, local context", "Patronising or distant"], ["Optimism", "Solution-focused", "Greenwashing or naive"], ["Precision", "Specific, measurable claims", "Vague or aspirational-only"]])))),
+      sec("2 · Logo",
+        h("div", { class: "grid-2" },
+          card("Lockups", kv([["Horizontal", "Primary: digital, print, outdoor and all wide formats."], ["Vertical", "Square formats, app icons, social avatars."], ["Reversed", "All-white lockup on dark, black, charcoal or photo backgrounds."], ["Wordmark", "“Recykal” Poppins Regular, “Market” Poppins Bold, both #000000 or white."]])),
+          card("Clear space and size", kv([["Clear space", "1× the cap height of the “M” in Market, on all four sides."], ["Digital minimum", "120 px wide (horizontal) · 40 px (symbol)."], ["Print minimum", "25 mm (horizontal) · 8 mm (symbol)."], ["Outdoor minimum", "100 mm (horizontal) · 30 mm (symbol)."], ["Backgrounds", "White #FFFFFF, Ivory #F7F8F3, Warm Neutral #F5F5F7, Carbon Black #000000."]]))),
+        card(null, list(["Stretch, squash, skew, rotate or flip the logo", "Add shadows, gradients or outlines", "Recreate it in another font or use it below minimum size", "Change “Market” from black or white", "Put the full-colour logo on a busy photo"], "dont"))),
+      sec("3 · Colour",
+        card(null, h("div", { class: "card-head" }, h("h3", { text: "White-first, black-led, green for action" }), h("span", { class: "sub", text: "70% white · 20% black · 10% green" })),
+          h("div", { class: "rm-ratio", role: "img", "aria-label": "70% white, 20% black, 10% green" }, h("i", { style: "flex:70;background:#FFFFFF" }), h("i", { style: "flex:20;background:#000000" }), h("i", { style: "flex:10;background:#00573F" })),
+          h("div", { class: "swatches" }, chip("#FFFFFF", "Pure White", "Backgrounds, cards, page surfaces"), chip("#000000", "Carbon Black", "Type, logo, headlines"), chip("#00573F", "Action Green", "CTAs, active and selected states"), chip("#F5F5F7", "Soft Surface", "Alternate bands, image stages"))),
+        h("div", { class: "grid-2" },
+          card("Use green for", list(["Primary buttons and important links", "Read more, active tabs, selected filters, progress", "Hover, focus or selected outlines", "Small highlights that help people act"], "do")),
+          card("Don't use green for", list(["Full backgrounds, big hero blocks or heavy decoration", "Long body text", "Several competing CTAs in one view", "Decorative gradients"], "dont")))),
+      sec("4 · Typography",
+        card("Poppins for everything", h("p", { class: "muted", style: "font-size:13px", text: "Light to ExtraBold for promotions and communications; Light to Bold in the apps. Left-align body text; never justify." }),
+          table(["Role", "Size", "Weight", "Use"], [["Display", "56–72 px", "800", "Hero headlines, outdoor"], ["H1", "40 px", "700", "Page titles"], ["H2", "28 px", "600", "Section heads"], ["H3", "20 px", "600", "Sub-sections"], ["Body", "15–16 px", "400", "Paragraphs, 1.7 line height"], ["Caption", "12 px", "400", "Labels, meta"], ["Overline", "10 px", "600", "Letter-spaced labels"]]))),
+      sec("5–7 · Spacing, icons and imagery",
+        h("div", { class: "grid-3" },
+          card("Spacing", kv([["Grid", "8 pt base, 12 columns; 16 px gutters (web), 12 px (mobile)."], ["Scale", "4 · 8 · 16 · 24 · 32 · 48 · 64 · 96 px."], ["Rule", "Every measurement divides by 8; white space is rest for the eye."]])),
+          card("Icons", kv([["Style", "Outlined only, 1.5 px stroke, 2 px corner radius."], ["Library", "Phosphor or Lucide; custom icons match the stroke."], ["Sizes", "16, 20, 24, 32, 48 px on a 24 px grid."]])),
+          card("Imagery", kv([["Show", "Real collectors, recyclers and the material journey: bales, flakes, sorted metal, trucks, warehouses."], ["Treatment", "Clean, natural, neutral whites; products on white or #F5F5F7."], ["Avoid", "Plastic-looking stock, unrealistic greens, Western-context images."]])))),
+      sec("8 · Language",
+        h("div", { class: "grid-3" }, [["Trust", "Verified buyers and sellers, quality clarity, less uncertainty."], ["Speed", "Faster discovery, quicker listing, smoother enquiries."], ["Transparency", "Price visibility, material specifications, digital records."], ["Traceability", "Documentation and audit readiness as a confidence layer."], ["Scale", "Wider material availability and buyer demand across India."], ["Ease", "Familiar, structured, closer to online procurement."]].map(([t, d]) => card(t, h("p", { class: "muted", style: "font-size:13px", text: d })))),
+        h("div", { class: "grid-2" },
+          card("Words we use", kv([["Buying", "procure, source, discover, browse, compare, enquire, request pricing, shortlist suppliers"], ["Selling", "list material, reach verified buyers, receive enquiries, manage listings, fulfil orders"], ["Trust", "verified, traceable, documented, audit-ready, transparent, compliance-ready"]])),
+          card("Words we avoid", list(["Trade, trading, brokerage, scrap dealing, cheap scrap, informal buyers", "Guaranteed prices, buyers, sales or profits", "“Waste revolution”, “save the planet”, anti-plastic or guilt-led lines", "Implying Recykal physically recycles the material", "Calling it only a directory or listing page; blockchain or sci-fi claims"], "dont"))),
+        card("Approved copy patterns", table(["Use", "Say", "Avoid"], [["Hero line", "Procure scrap like you shop online.", "India's biggest waste revolution."], ["Buyer pitch", "Discover verified recyclable material suppliers with clearer specifications and faster enquiries.", "Buy any scrap instantly at the cheapest rate."], ["Seller pitch", "List your recyclable materials and reach serious buyers through a structured digital commerce experience.", "Sell everything immediately with guaranteed orders."], ["Promise", "Built for verified discovery, transparent material information and smoother recyclable material trade.", "A simple marketplace for all waste."], ["CTA", "List Material · Explore Categories · Request Enquiry · Talk to Recykal.Market", "Grab Now · Cheapest Deal · Final Offer"], ["Empty state", "No active listings yet. Add material details to start receiving enquiries.", "Nothing here."]])),
+        h("div", { class: "small", text: "Brand QC flags these words automatically on any copy that mentions Recykal.Market (rule W11)." })),
+      sec("12 · Social media",
+        card("Sizes", table(["Platform", "Size (px)", "Image rule"], [["Facebook / Instagram ad", "1080 × 1080", "Material image inside a contained product stage"], ["Facebook post", "1200 × 628", "Product stage on the right; never a full-bleed crop"], ["Google display ad", "1200 × 628 or 1200 × 675", "Small product thumbnail; CTA first"], ["LinkedIn post", "1200 × 628", "Premium split layout, contained product visual"], ["Carousel", "1080 × 1080 per slide", "Images only on proof or product slides"]])),
+        card("Composition", kv([["Logo", "Horizontal Recykal.Market logo top-left, with clear space; never over product textures."], ["Headline", "6–10 words; details go in the caption."], ["Images", "On a light grey #F5F5F7 stage, contained, never cropped; text never on busy bales."], ["Green", "#00573F only for the CTA, price, chips and key proof; the rest black, white and soft grey."], ["Carousel", "One idea per slide: hook, problem, solution, proof, CTA."], ["By channel", "LinkedIn: calm and proof-led. Facebook and Instagram: one benefit, one action. Google Ads: high-intent, explicit CTA."]]))),
+    ];
+  }
+
   // ----- Brand kit -----
   function viewKit() {
-    const secs = [["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["templates", "Templates"], ["voice", "Voice & words"], ["facts", "Fact sheet"], ["rules", "QC rulebook"]];
+    const secs = [["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["templates", "Templates"], ["voice", "Voice & words"], ["market", "Recykal.Market"], ["facts", "Fact sheet"], ["rules", "QC rulebook"]];
     const logoBox = (bg, cap, white) => h("div", { style: "display:grid;gap:8px" }, h("div", { style: `background:${bg};border:1px solid var(--line);border-radius:10px;padding:40px 24px;display:grid;place-items:center` }, h("img", { src: LOGO_URI, alt: "Recykal — Sustainable Circularity", style: "width:min(260px,100%);height:auto;display:block" + (white ? ";filter:brightness(0) invert(1)" : "") })), h("span", { class: "small", text: cap }));
     const body = {
       logo: () => [h("div", { class: "grid-2" }, logoBox("#FFFFFF", "Black logo on white or light backgrounds (Guidelines p.7)"), logoBox("#000000", "White logo on black (Guidelines p.7)", true)),
         h("div", { class: "card" }, h("p", { text: "The two boomerangs in the Recykal mark stand for circularity: what goes around as waste comes back around, recycled or reused. Use the primary logo (mark beside the wordmark) or the secondary logo (mark above it), each with or without the “Sustainable Circularity” tagline (p.2–5)." })),
         h("div", { class: "grid-2" }, h("div", { class: "card" }, h("h3", { text: "Do" }), h("ul", { class: "rules" }, ["Use the supplied logo file exactly as it is", "Black logo on white or light backgrounds; white logo on black", "Keep the safe space around it free of text and graphics (p.6)", "Full logo with tagline on covers, posts and banners; the mark alone top-right on inner slides", "Scale proportionally from a corner"].map((t) => h("li", null, h("span", { class: "do", text: "✓" }), h("span", { text: t }))))),
-          h("div", { class: "card" }, h("h3", { text: "Don't (p.8–9)" }), h("ul", { class: "rules" }, ["Put the logo on Bright Blue, Midnight Blue, Blue, Green, Duke Blue, Fern Green or a gradient", "Place it on a busy photo", "Stretch, squash, rotate or tilt it", "Retype the wordmark in another font, set it in capitals or outline it", "Swap the mark to the right, or re-space or resize the mark against the wordmark"].map((t) => h("li", null, h("span", { class: "dont", text: "✕" }), h("span", { text: t }))))))],
+          h("div", { class: "card" }, h("h3", { text: "Don't (p.8–9)" }), h("ul", { class: "rules" }, ["Put the logo on a brand colour (Bright Blue, Recykal.Market Green, Blue, the greens, Midnight Blue, Duke Blue, Medium Purple) or a gradient", "Place it on a busy photo", "Stretch, squash, rotate or tilt it", "Retype the wordmark in another font, set it in capitals or outline it", "Swap the mark to the right, or re-space or resize the mark against the wordmark"].map((t) => h("li", null, h("span", { class: "dont", text: "✕" }), h("span", { text: t }))))))],
       colour: () => [h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Primary palette" }), h("span", { class: "sub", text: "Click a colour to copy its HEX" })),
-        h("div", { class: "swatches" }, PALETTE.map(([n, hex]) => h("button", { class: "sw", onclick: () => copyText(hex), title: "Copy " + hex }, h("span", { class: "c", style: "background:" + hex }), h("span", { class: "nm", text: n }), h("span", { class: "hx", text: hex }))))),
+        h("div", { class: "swatches" }, PALETTE.map(([n, hex]) => swatch(n, hex)))),
+        h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Secondary palette" }), h("span", { class: "sub", text: `Accents only · up to ${BRAND.SECONDARY_SHARE}% of a design` })),
+          h("p", { class: "pal-note", text: `Supporting colours, never the lead. Together they should cover no more than ${BRAND.SECONDARY_SHARE}% of a slide, page or post, and only where the design clearly needs them. Use Error Red and Info Blue for system messages alone.` }),
+          h("div", { class: "swatches" }, BRAND.secondary.map(([n, hex, use]) => swatch(n, hex, use)))),
         h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Product colours" }), h("span", { class: "sub", text: "Use only on that product's material" })),
-          h("div", { class: "grid-3" }, PRODUCT_COLOURS.map(([n, cs]) => h("div", { style: "display:grid;gap:6px" }, h("b", { style: "font-size:13px", text: n }),
-            h("div", { style: "display:flex;gap:6px" }, cs.map((c) => h("button", { class: "sw", style: "flex:1", title: "Copy " + c, onclick: () => copyText(c) }, h("span", { class: "c", style: "background:" + c + ";aspect-ratio:1.2" }), h("span", { class: "hx", text: c }))))))))],
+          h("div", { class: "prod-pal" }, BRAND.products.map((pr) => h("div", { class: "pp" },
+            h("div", { class: "pp-head" }, h("b", { text: pr.name }), pr.ratio ? h("span", { class: "small", text: pr.ratio }) : null),
+            h("div", { class: "pp-chips" }, BRAND.productColours(pr).map((c) => h("button", { class: "pp-chip", title: "Copy " + c, onclick: () => copyText(c) }, h("span", { class: "c", style: "background:" + c }), h("span", { class: "hx", text: c })))))))) ],
       type: () => [h("div", { class: "card" }, h("div", { style: "font-size:13px;color:var(--muted)", text: "Poppins · the only Recykal typeface" }),
         h("div", { style: "font-size:46px;line-height:1.05" }, h("span", { style: "font-weight:400", text: "Our " }), h("span", { style: "font-weight:700", text: "Solutions" })),
         h("p", { style: "max-width:62ch", text: "Pair a Regular word with a Bold word in titles, the way the company deck does: “Our Solutions”, “Deposit Refund System”. Use Bold for headlines and big numbers, Medium or Regular for body copy and captions." }),
@@ -2678,6 +2770,7 @@ const BRAND_CHECK = (() => {
           h("thead", null, h("tr", null, ["Write", "What it is", "Not"].map((t) => h("th", { text: t })))),
           h("tbody", null, PRODUCTS.map(([a, b, c]) => h("tr", null, h("td", { text: a }), h("td", { text: b }), h("td", { class: "muted", text: c || "—" }))),
             [["waste", "Everything Recykal handles", "garbage, trash, junk"], ["waste collectors", "People in the informal sector", "rag pickers"], ["behaviour, colour, organisation", "Indian/British spelling", "behavior, color"]].map(([a, b, c]) => h("tr", null, h("td", { text: a }), h("td", { text: b }), h("td", { class: "muted", text: c })))))))],
+      market: () => marketKit(),
       facts: () => [h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["Topic", "Approved wording", "Source"].map((t) => h("th", { text: t })))),
           h("tbody", null, FACTS.map(([t, v, src]) => h("tr", null, h("td", { style: "font-weight:600;white-space:nowrap", text: t }), h("td", { text: v }), h("td", { class: "fact-src", text: src }))))))],
       rules: () => [h("div", { class: "card" }, h("p", { text: `Brand Astra checks every file against these ${BRAND.rules.length} rules from the Recykal Marketing Brand Guidelines (cited as p.N) and the company deck (cited as Deck N). Each file starts at 100. A failed critical rule costs ${BRAND.POINTS.critical} points and blocks approval; a major rule costs ${BRAND.POINTS.major} and means changes are needed; a minor rule costs ${BRAND.POINTS.minor}. 85 or more is approved. Rules marked “measured” are decided from the file itself; the brand team checks the rest by eye.` })),
@@ -3072,7 +3165,7 @@ const BRAND_CHECK = (() => {
   const TEAMS = ["Sales", "Marketing", "EPR", "DRS", "Recykal.Market", "Recommerce", "Infra Business", "Sustainability Suite", "Product", "Technology", "Operations", "Finance", "People & Culture", "Leadership", "Other"];
   function loginFoot() { return h("footer", { class: "lg-foot" }, h("span", { text: "© " + new Date().getFullYear() + " Recykal" }), h("span", { text: "Private & Confidential" })); }
   function loginArt() {
-    const sw = ["#000000", "#005DFF", "#024C8A", "#8460D4", "#567DE8", "#1DC797", "#049769", "#0000AF", "#3E7D44"];
+    const sw = BRAND.primary.map((p) => p[1]);
     return h("div", { class: "lg-art" },
       h("div", { class: "lg-pitch" },
         h("div", { class: "lg-kicker", text: "Sustainable Circularity" }),
@@ -3286,7 +3379,7 @@ const BRAND_CHECK = (() => {
     W8: ["Claims without a number, award or source: “The best recycling partner in India”.", "", "Back each claim with a figure from the fact sheet, an award or a source, or remove it."],
   };
   const DEMO_POOL = ["T2", "Y6", "C4", "T2", "Y4", "Y6", "C4", "T3", "W6", "C1", "Y3", "I1", "C2", "Y5", "T1", "C3", "Y2", "W8", "Y1"];
-  const DEMO_MEASURED = ["C1", "C2", "C3", "C4", "T1", "T2", "T3", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "I1", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W10"];
+  const DEMO_MEASURED = ["C1", "C2", "C3", "C4", "T1", "T2", "T3", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "I1", "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W10", "W11"];
   function demoAiReport(failIds, seedText, format, copyHits) {
     format = FORMATS[format] ? format : "other";
     const fails = {};

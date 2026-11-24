@@ -1,18 +1,28 @@
 // ---------- Recykal brand rulebook ----------
 // The single source of truth for Brand QC. build.py puts this file at the top of Code.gs (scoring and saving results)
 // and inside the page script (the automatic check in check.js, the Brand kit and the demo), so both always use the same rules.
-// Sources: "Recykal Marketing Brand Guidelines" (26 pages, cited as p.N) and the Recykal company deck
-// (Recykal_Deck-3, 17 slides, cited as Deck N). Change a rule here, run build.py, and both sides pick it up.
+// Sources: "Recykal Marketing Brand Guidelines" (26 pages, cited as p.N), the Recykal company deck
+// (Recykal_Deck-3, 17 slides, cited as Deck N) and the Recykal.Market Brand Guidelines v1.0 (cited as RM §N). Change a rule here, run build.py, and both sides pick it up.
 
 const BRAND = (() => {
-  const BRAND_ = { get primary() { return primary; }, get products() { return products; }, get gradients() { return gradients; }, get facts() { return facts; }, get contact() { return contact; }, get groups() { return groups; }, get rules() { return rules; } };
+  const BRAND_ = { get primary() { return primary; }, get secondary() { return secondary; }, get products() { return products; }, get gradients() { return gradients; }, get facts() { return facts; }, get contact() { return contact; }, get groups() { return groups; }, get rules() { return rules; } };
+  // Primary palette (p.10). Recykal.Market Green (RM §3) replaces Fern Green.
   const primary = [
-    ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Midnight Blue", "#024C8A"], ["Medium Purple", "#8460D4"], ["Blue", "#567DE8"],
-    ["Bright Green", "#1DC797"], ["Dark Green", "#049769"], ["Duke Blue", "#0000AF"], ["Fern Green", "#3E7D44"],
+    ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Recykal.Market Green", "#00573F"], ["Blue", "#567DE8"], ["Bright Green", "#1DC797"],
+    ["Dark Green", "#049769"], ["Midnight Blue", "#024C8A"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
   ];
+  // Secondary palette: the Recykal.Market supporting colours (RM §3.2). Accents only, at most 10% of a slide, page or post.
+  const secondary = [
+    ["Near Black", "#1D1D1F", "High-emphasis text, premium details"], ["Stone Grey", "#6B6B6B", "Secondary text, captions, labels"],
+    ["Line Grey", "#E5E5EA", "Borders, dividers, card outlines"], ["Soft Surface", "#F5F5F7", "Alternate bands, image stages"],
+    ["Green Tint", "#D9E8E2", "Tags, selected filters, soft highlights"], ["Error Red", "#D64045", "Errors and critical warnings only"],
+    ["Info Blue", "#4A90B8", "System information only"],
+  ];
+  const SECONDARY_SHARE = 10;
   // Product palettes (p.11–21). A product's colours are allowed only on material about that product.
   const products = [
-    { name: "Recykal Marketplace", short: "Marketplace", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#1DC797", "#567DE8"], secondary: ["#CAFFF0", "#C8D8FF"], ref: "p.11–12" },
+    // Recykal.Market: white-first, black-led, green for action only, in a 70 / 20 / 10 ratio (RM §3).
+    { name: "Recykal.Market", short: "Recykal.Market", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#00573F", "#000000", "#FFFFFF"], secondary: ["#F5F5F7", "#D9E8E2", "#1D1D1F", "#6B6B6B"], ratio: "70% white · 20% black · 10% green", ref: "RM §3" },
     { name: "EPR Platform", short: "EPR", re: /\b(EPR|extended producer responsibility)\b/i, primary: ["#005DFF"], secondary: ["#FB4A59", "#F5EFB9", "#48B16E"], ref: "p.13–14" },
     { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund|retearn|reklaim)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
     { name: "Restyle", short: "Restyle", re: /\brestyle\b/i, primary: ["#0000AF", "#3E7D44", "#6A7F8A"], secondary: ["#02A0DD", "#03BADF", "#E5FF76", "#BACCD3"], pastel: ["#96E8FB", "#C0F2F9"], ref: "p.17–19" },
@@ -35,14 +45,14 @@ const BRAND = (() => {
   // sev: critical (−25, caps the score at 59) · major (−10, caps at 84) · minor (−3). m: measured exactly by code where the file allows it.
   const rules = [
     { id: "L1", g: "logo", sev: "critical", t: "Official logo artwork", d: "Use the supplied logo: the Recykal mark with the lowercase “recykal” wordmark. Never retype the wordmark in another font or redraw the mark.", ref: "p.2–5, p.9" },
-    { id: "L2", g: "logo", sev: "critical", t: "Black or white logo only", d: "Black logo on white or light backgrounds, white logo on black. A logo on Bright Blue, Midnight Blue, Blue, Bright Green, Dark Green, Duke Blue, Fern Green or a gradient is a listed misuse.", ref: "p.7–8" },
+    { id: "L2", g: "logo", sev: "critical", t: "Black or white logo only", d: "Black logo on white or light backgrounds, white logo on black. A logo on Bright Blue, Recykal.Market Green, Blue, Bright Green, Dark Green, Midnight Blue, Duke Blue, Medium Purple or a gradient is a listed misuse.", ref: "p.7–8, RM §2" },
     { id: "L3", g: "logo", sev: "critical", t: "Logo not distorted", d: "Never stretch, squash, rotate, tilt or skew the logo.", ref: "p.9" },
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
     { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
     { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
-    { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, white, neutral greys, or the palette of the product being shown.", ref: "p.10" },
+    { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
     { id: "C2", g: "colour", sev: "major", m: true, t: "Product colours stay with their product", d: "A product palette is used only on that product's material, e.g. the EPR Platform red #FB4A59 doesn't belong on a Marketplace slide.", ref: "p.12–21; Rezolv and Smart Center from the earlier brand kit" },
     { id: "C3", g: "colour", sev: "major", m: true, t: "No unapproved gradients", d: "Solid colours only. The one approved gradient is Rethink+ purple #6E5CFA to coral #DF6347, on Rethink+ material.", ref: "p.8, p.21" },
     { id: "C4", g: "colour", sev: "minor", m: true, t: "Readable contrast", d: "Text is easy to read against its background (aim for 4.5:1 for body text).", ref: "p.10" },
@@ -74,6 +84,7 @@ const BRAND = (() => {
     { id: "W7", g: "copy", sev: "minor", m: true, t: "Acronyms spelled out", d: "“Extended Producer Responsibility (EPR)”, “Deposit Refund System (DRS)” and “Alternative Fuel & Raw Material (AFR)” on first use for external audiences.", ref: "Deck 7, 14" },
     { id: "W8", g: "copy", sev: "minor", m: true, t: "Claims backed up", d: "No superlatives such as world-class, best or revolutionary without a number, award or source.", ref: "Deck 2" },
     { id: "W9", g: "copy", sev: "major", t: "Proofread", d: "No typos, grammar errors, placeholder text (Lorem ipsum, XX, TBD) or inconsistent numbers.", ref: "" },
+    { id: "W11", g: "copy", sev: "major", m: true, t: "Recykal.Market language", d: "On Recykal.Market material, sound like a verified B2B marketplace: procure, source, list, enquire, verified, traceable. No guaranteed prices, buyers or sales, no “cheapest” or “waste revolution” lines, no brokerage or scrap-dealing language, and never imply Recykal physically recycles the material.", ref: "RM §8" },
     { id: "W10", g: "copy", sev: "minor", m: true, t: "Contact details", d: "www.recykal.com, marketing@recykal.com and +91 7799996255 exactly as in the deck.", ref: "Deck 17" },
   ];
   rules.forEach((r) => { r.f = r.f || ALL; });
@@ -110,7 +121,8 @@ const BRAND = (() => {
     { re: /~?\s?(\d+)\s*%\s*collection rate/gi, ok: 90, say: "~90% collection rate", ref: "Deck 9" },
   ];
 
-  // Copy rules. Each hit points at a rule; "tip" hits are shown but never fail a rule.
+  const MARKET = /\brecykal\.?\s?market\b|\bmarketplace\b/i;
+  // Copy rules. Each hit points at a rule; "tip" hits are shown but never fail a rule. "when": the text must match it.
   const copyRules = [
     { r: "W1", re: /\b(recycal|recykle|recykel|recykall|rekykal|re-kykal|recykl|recykel)\b/gi, sev: "error", msg: (m) => `Spell the company name “Recykal”, not “${m}”.` },
     { r: "W1", re: /(?<![\w.@/-])recykal(?![\w.@])/g, sev: "warn", msg: () => "Write “Recykal” with a capital R. The lowercase form belongs only to the logo." },
@@ -138,6 +150,13 @@ const BRAND = (() => {
     { r: "W9", re: /\b(lorem ipsum|dolor sit amet|TBD|TBC|placeholder|insert (text|image|logo) here)\b|\[[^\]]{0,30}(insert|add|tbd)[^\]]{0,30}\]|\bXX+\b|\b00\/00\b/gi, sev: "error", msg: (m) => `Placeholder text left in: “${m}”.` },
     { r: "W9", re: /!{2,}|\?{2,}/g, sev: "warn", msg: () => "Use one exclamation or question mark at most." },
     { r: "W9", re: /\b(\w+) \1\b/g, sev: "warn", test: (m) => !/^(\d+) \1$/.test(m) && !/^(that that|had had)$/i.test(m), msg: (m) => `Repeated word: “${m}”.` },
+    // Recykal.Market language (RM §8): only when the text is about Recykal.Market.
+    { r: "W11", when: MARKET, re: /\bguarantee(d|s)?\s+(?:\w+\s+){0,2}(prices?|rates?|buyers?|sellers?|sales?|orders?|supply|profits?|returns?)\b/gi, sev: "error", msg: (m) => `Don't promise “${m}”. Talk about price visibility, verified buyers and faster enquiries instead.` },
+    { r: "W11", when: MARKET, re: /\b(cheapest|cheap scrap|lowest price|best price|grab now|final offer|waste sale|cheapest deal|sell everything)\b/gi, sev: "error", msg: (m) => `“${m}” sounds like a scrap bazaar. Use “Request pricing”, “Explore materials” or “List material”.` },
+    { r: "W11", when: MARKET, re: /\b(brokerage|broker|scrap deal(ing|er)?s?|waste dumping|informal buyers?)\b/gi, sev: "warn", msg: (m) => `Avoid “${m}”. Recykal.Market is a verified B2B marketplace for recyclable materials.` },
+    { r: "W11", when: MARKET, re: /\b(waste revolution|save the planet|ban plastics?|say no to plastics?|anti[- ]plastic|plastic is evil|blockchain)\b/gi, sev: "warn", msg: (m) => `Avoid “${m}”. Keep sustainability as a business outcome: traceability and better material movement.` },
+    { r: "W11", when: MARKET, re: /\bwe recycle\b|\brecykal recycles\b|\brecycled by recykal\b/gi, sev: "warn", msg: () => "Don't imply Recykal physically recycles the material. It enables the trade between verified buyers and sellers." },
+    { r: "W11", when: MARKET, re: /\b(trade|trading|directory|listing page)\b/gi, sev: "tip", msg: (m) => `Prefer “procure”, “source” or “list material” over “${m}”, unless it names a business line.` },
     { r: "W10", re: /\b(?:www\.)?recykal\.(?!com\b|market\b)[a-z]{2,}\b/gi, sev: "warn", msg: (m) => `The website is “www.recykal.com”, not “${m}”.` },
     { r: "W10", re: /\bmarketing@recykal\.(?!com\b)[a-z]+\b|\b(?:info|contact|hello)@recykal\.com\b/gi, sev: "warn", msg: () => "Use “marketing@recykal.com” as the contact email." },
     { r: "W10", re: /(?:\+91|\b91)[\s-]?\d[\d\s-]{8,12}\d/g, sev: "warn", test: (m) => m.replace(/\D/g, "").slice(-10) !== "7799996255", msg: (m) => `“${m}” isn't the company number. Use “+91 7799996255”, or check it's meant to be a personal number.` },
@@ -153,6 +172,7 @@ const BRAND = (() => {
     text = String(text);
     const applies = (id) => !opts.format || ruleById[id].f.indexOf(opts.format) >= 0;
     copyRules.forEach((cr) => {
+      if (cr.when && !cr.when.test(text)) return;
       cr.re.lastIndex = 0; const seen = {}; let m;
       while ((m = cr.re.exec(text))) {
         const w = m[0].trim();
@@ -194,12 +214,13 @@ const BRAND = (() => {
   const isNeutral = (hex) => { const l = lab(hex); return Math.hypot(l[1], l[2]) <= 10; };
   const productColours = (p) => p.primary.concat(p.secondary, p.pastel || []);
   const primaryHex = primary.map((p) => p[1]);
+  const secondaryHex = secondary.map((p) => p[1]);
   /** Classify one colour used in a place whose text is `context`. → {kind: ok|near|product|off, nearest, product} */
   function classifyColour(hex, context) {
     hex = String(hex).toUpperCase();
     if (isNeutral(hex)) return { kind: "ok" };
     const here = products.filter((p) => p.re.test(context || ""));
-    const allowed = primaryHex.concat(templateAccents, [].concat.apply([], here.map(productColours)));
+    const allowed = primaryHex.concat(secondaryHex, templateAccents, [].concat.apply([], here.map(productColours)));
     const n = nearest(hex, allowed);
     if (n.dist <= 8) return { kind: "ok" };                                  // within ΔE 8: the same colour after export and colour profiles
     for (const p of products) { if (here.indexOf(p) >= 0) continue; const q = nearest(hex, productColours(p)); if (q.dist <= 6) return { kind: "product", product: p.name, nearest: nearest(hex, primaryHex).hex }; }
@@ -233,7 +254,7 @@ const BRAND = (() => {
   }
 
   /** Run the exact copy rules on a text and record measured results in m (a failure always overrides a pass). Returns the hits. */
-  const COPY_RULE_IDS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9", "W10", "Y3"];
+  const COPY_RULE_IDS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W9", "W10", "W11", "Y3"];
   function copyMeasured(text, format, audience, m) {
     const hits = checkCopy(text, { format: format, audience: audience });
     COPY_RULE_IDS.forEach((id) => {
@@ -272,7 +293,7 @@ const BRAND = (() => {
     return { score: score, decision: decision, qc: qc, deductions: deductions, needsHuman: needsHuman };
   }
 
-  return { colourFindings, copyMeasured, PIXEL_MIN_PCT, smallOffPalette, primary, products, templateAccents, gradients, contact, year, groups, rules, ruleById, POINTS, CAP, facts, copyRules, ACRONYMS,
+  return { colourFindings, copyMeasured, PIXEL_MIN_PCT, smallOffPalette, primary, secondary, SECONDARY_SHARE, products, templateAccents, gradients, contact, year, groups, rules, ruleById, POINTS, CAP, facts, copyRules, ACRONYMS,
     checkCopy, classifyColour, evaluate, hexRgb, dist, nearest, isNeutral, productColours };
 })();
 
