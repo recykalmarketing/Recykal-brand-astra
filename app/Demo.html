@@ -545,7 +545,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     <div><div class="nav-label">Workspace</div><nav class="nav" id="nav"></nav></div>
     <div id="due-wrap"><div class="nav-label">Due soon</div><div class="due-list" id="due"></div></div>
     <div class="side-foot">
-      <div class="palette-strip" aria-hidden="true"><span style="background:#005DFF"></span><span style="background:#00573F"></span><span style="background:#567DE8"></span><span style="background:#1DC797"></span><span style="background:#049769"></span><span style="background:#024C8A"></span><span style="background:#0000AF"></span><span style="background:#8460D4"></span></div>
+      <div class="palette-strip" aria-hidden="true"><span style="background:#005DFF"></span><span style="background:#00573F"></span><span style="background:#567DE8"></span><span style="background:#1DC797"></span><span style="background:#049769"></span><span style="background:#024CBA"></span><span style="background:#0000AF"></span><span style="background:#8460D4"></span></div>
       <div class="me" id="me"></div>
     </div>
   </aside>
@@ -587,7 +587,7 @@ const BRAND = (() => {
   // Primary palette (p.10). Recykal.Market Green (RM §3) replaces Fern Green.
   const primary = [
     ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Recykal.Market Green", "#00573F"], ["Blue", "#567DE8"], ["Bright Green", "#1DC797"],
-    ["Dark Green", "#049769"], ["Midnight Blue", "#024C8A"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
+    ["Dark Green", "#049769"], ["Midnight Blue", "#024CBA"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
   ];
   // Secondary palette: the Recykal.Market supporting colours (RM §3.2). Accents only, at most 10% of a slide, page or post.
   const secondary = [
@@ -3296,10 +3296,10 @@ const BRAND_CHECK = (() => {
   const PEOPLE = {
     u_demo_anita: ["Anita Rao", "Sales", "#005DFF"], u_demo_brand: ["Recykal Marketing", "Marketing", "#005DFF"],
     u_demo_rahul: ["Rahul Menon", "Recykal.Market", "#049769"], u_demo_sneha: ["Sneha Kulkarni", "People & Culture", "#8460D4"],
-    u_demo_vikram: ["Vikram Shah", "EPR", "#024C8A"], u_demo_priya: ["Priya Nair", "Sales", "#3E7D44"],
+    u_demo_vikram: ["Vikram Shah", "EPR", "#024CBA"], u_demo_priya: ["Priya Nair", "Sales", "#00573F"],
     u_demo_arjun: ["Arjun Reddy", "Rezolv", "#0000AF"], u_demo_kavya: ["Kavya Sharma", "DRS", "#049769"],
     u_demo_rohit: ["Rohit Verma", "Finance", "#567DE8"], u_demo_fatima: ["Fatima Khan", "Product", "#8460D4"],
-    u_demo_naveen: ["Naveen Kumar", "Recykal.Market", "#024C8A"], u_demo_divya: ["Divya Menon", "EPR", "#3E7D44"],
+    u_demo_naveen: ["Naveen Kumar", "Recykal.Market", "#024CBA"], u_demo_divya: ["Divya Menon", "EPR", "#00573F"],
   };
   function avatarFor(id) {
     const p = PEOPLE[id] || ["?", "", "#566176"]; const ini = p[0].split(" ").map((w) => w[0]).slice(0, 2).join("");
@@ -3607,7 +3607,7 @@ const BRAND_CHECK = (() => {
     
     // ----- Google Apps Script mode: Google sign-in, data in a Google Sheet via Code.gs -----
   const gs = (fn, ...args) => new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler((e) => reject({ code: "server", message: (e && e.message) || String(e) }))[fn](...args));
-  const AV_COLORS = ["#005DFF", "#024C8A", "#8460D4", "#567DE8", "#049769", "#0000AF", "#3E7D44"];
+  const AV_COLORS = ["#005DFF", "#024CBA", "#8460D4", "#567DE8", "#049769", "#0000AF", "#00573F"];
   function avatarOf(email, name) {
     let hsh = 0; for (const c of email) hsh = (hsh * 31 + c.charCodeAt(0)) | 0;
     const ini = (name || email).split(/[\s.@]+/).filter(Boolean).map((w) => w[0].toUpperCase()).slice(0, 2).join("");

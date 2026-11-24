@@ -9,7 +9,7 @@ const BRAND = (() => {
   // Primary palette (p.10). Recykal.Market Green (RM §3) replaces Fern Green.
   const primary = [
     ["Black", "#000000"], ["Bright Blue", "#005DFF"], ["Recykal.Market Green", "#00573F"], ["Blue", "#567DE8"], ["Bright Green", "#1DC797"],
-    ["Dark Green", "#049769"], ["Midnight Blue", "#024C8A"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
+    ["Dark Green", "#049769"], ["Midnight Blue", "#024CBA"], ["Duke Blue", "#0000AF"], ["Medium Purple", "#8460D4"],
   ];
   // Secondary palette: the Recykal.Market supporting colours (RM §3.2). Accents only, at most 10% of a slide, page or post.
   const secondary = [
