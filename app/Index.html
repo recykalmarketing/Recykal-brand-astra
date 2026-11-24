@@ -401,6 +401,16 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 
 /* Brand kit */
 .kit-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+.kit-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kit-links > .small { font-weight: 600; margin-right: 4px; }
+.kl-ic { font-size: 10px; font-weight: 600; letter-spacing: .04em; padding: 2px 6px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
+.logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.logo-tile { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; background: var(--card); }
+.lt-art { background: #FFFFFF; height: 150px; display: grid; place-items: center; padding: 28px; border-bottom: 1px solid var(--line); }
+.logo-tile.dark .lt-art { background: #000000; }
+.lt-art img { max-width: 100%; max-height: 80px; width: auto; height: auto; display: block; }
+.lt-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; flex-wrap: wrap; }
+.lt-foot b { display: block; font-size: 13px; } .lt-foot .actions { gap: 6px; }
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 16px 12px; }
 .sw { appearance: none; border: 0; padding: 0; background: none; text-align: left; cursor: pointer; display: grid; gap: 4px; }
 .sw .c { aspect-ratio: 1.4; border-radius: 8px; display: block; max-width: 100%; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
@@ -415,6 +425,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .pp-chips { display: flex; flex-wrap: wrap; gap: 12px 10px; }
 .pp-chip { appearance: none; border: 0; padding: 0; background: none; cursor: pointer; display: grid; gap: 5px; width: 58px; text-align: left; }
 .pp-chip .c { height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
+.pp-div { width: 1px; align-self: stretch; background: var(--line-2); margin: 0 4px 18px; }
 .pp-chip .hx { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .rm-sec { display: grid; gap: 14px; }
 .rm-sec > h3.rm-h { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
@@ -590,7 +601,9 @@ const BRAND = (() => {
     // Recykal.Market: white-first, black-led, green for action only, in a 70 / 20 / 10 ratio (RM §3).
     { name: "Recykal.Market", short: "Recykal.Market", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#00573F", "#000000", "#FFFFFF"], secondary: ["#F5F5F7", "#D9E8E2", "#1D1D1F", "#6B6B6B"], ratio: "70% white · 20% black · 10% green", ref: "RM §3" },
     { name: "EPR Platform", short: "EPR", re: /\b(EPR|extended producer responsibility)\b/i, primary: ["#005DFF"], secondary: ["#FB4A59", "#F5EFB9", "#48B16E"], ref: "p.13–14" },
-    { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund|retearn|reklaim)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
+    { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
+    // Retearn Brand Guidelines p.8: primary Royal Purple and Muted Magenta; secondary Soft Violet, Forest Green and Skyline Blue.
+    { name: "Retearn", short: "Retearn", re: /\b(retearn|reklaim)\b/i, primary: ["#6A398C", "#9C539C"], secondary: ["#A16DC9", "#5B8563", "#00B4D8"], ref: "Retearn guidelines p.8" },
     { name: "Restyle", short: "Restyle", re: /\brestyle\b/i, primary: ["#0000AF", "#3E7D44", "#6A7F8A"], secondary: ["#02A0DD", "#03BADF", "#E5FF76", "#BACCD3"], pastel: ["#96E8FB", "#C0F2F9"], ref: "p.17–19" },
     { name: "Rethink+", short: "Rethink+", re: /\brethink\s?\+?/i, primary: ["#6E5CFA", "#DF6347"], secondary: ["#468646", "#FFC20D", "#FFA800"], ref: "p.20–21" },
     // Not in the Marketing Brand Guidelines; kept from the earlier Recykal brand kit at the brand team's request.
@@ -616,7 +629,7 @@ const BRAND = (() => {
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
     { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
-    { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
+    { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Retearn, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
     { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
     { id: "C2", g: "colour", sev: "major", m: true, t: "Product colours stay with their product", d: "A product palette is used only on that product's material, e.g. the EPR Platform red #FB4A59 doesn't belong on a Marketplace slide.", ref: "p.12–21; Rezolv and Smart Center from the earlier brand kit" },
@@ -2729,14 +2742,25 @@ const BRAND_CHECK = (() => {
     ];
   }
 
+  const BRAND_FILES = [
+    ["Recykal Brand Deck", "https://docs.google.com/presentation/d/1ppIO9QQiXhR_Fz1Ue87i7DpBNAiM_UkwNfgyQDP4g-s/edit?usp=sharing", "Slides"],
+    ["Brand Deck Template", "https://docs.google.com/presentation/d/1Uo0sWrncmGYm49hRUjk-91H9WizrE0Pt5jsnFZ4BEkw/edit?usp=sharing", "Slides"],
+    ["Brand Document Template", "https://docs.google.com/document/d/12lU4bS_laDkCyjFF9vfmVtehgV90XhEs/edit", "Docs"],
+  ];
   // ----- Brand kit -----
   function viewKit() {
     const secs = [["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["templates", "Templates"], ["voice", "Voice & words"], ["market", "Recykal.Market"], ["facts", "Fact sheet"], ["rules", "QC rulebook"]];
     const logoBox = (bg, cap, white) => h("div", { style: "display:grid;gap:8px" }, h("div", { style: `background:${bg};border:1px solid var(--line);border-radius:10px;padding:40px 24px;display:grid;place-items:center` }, h("img", { src: LOGO_URI, alt: "Recykal — Sustainable Circularity", style: "width:min(260px,100%);height:auto;display:block" + (white ? ";filter:brightness(0) invert(1)" : "") })), h("span", { class: "small", text: cap }));
     const body = {
-      logo: () => [h("div", { class: "grid-2" }, logoBox("#FFFFFF", "Black logo on white or light backgrounds (Guidelines p.7)"), logoBox("#000000", "White logo on black (Guidelines p.7)", true)),
+      logo: () => [h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Logos" }), h("span", { class: "sub", text: "Download each version as SVG (print, design files) or PNG (slides, documents)" })),
+          h("div", { class: "logo-grid" }, BRAND_LOGOS().map((lg) => [[false, "On light", "black"], [true, "On dark", "white"]].map(([dark, label, tone]) => {
+            const svg = dark ? whiteSvg(lg.svg) : lg.svg, file = `${lg.file}-${tone}`;
+            return h("div", { class: "logo-tile" + (dark ? " dark" : "") }, h("div", { class: "lt-art" }, h("img", { src: svgUri(svg), alt: `${lg.name} logo, ${tone}` })),
+              h("div", { class: "lt-foot" }, h("div", { style: "min-width:0" }, h("b", { text: `${lg.name} · ${tone}` }), h("span", { class: "small", text: label + " backgrounds" })),
+                h("div", { class: "actions" }, h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadLogo(svg, file, "svg") }, "SVG"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadLogo(svg, file, "png") }, "PNG"))));
+          })))),
         h("div", { class: "card" }, h("p", { text: "The two boomerangs in the Recykal mark stand for circularity: what goes around as waste comes back around, recycled or reused. Use the primary logo (mark beside the wordmark) or the secondary logo (mark above it), each with or without the “Sustainable Circularity” tagline (p.2–5)." })),
-        h("div", { class: "grid-2" }, h("div", { class: "card" }, h("h3", { text: "Do" }), h("ul", { class: "rules" }, ["Use the supplied logo file exactly as it is", "Black logo on white or light backgrounds; white logo on black", "Keep the safe space around it free of text and graphics (p.6)", "Full logo with tagline on covers, posts and banners; the mark alone top-right on inner slides", "Scale proportionally from a corner"].map((t) => h("li", null, h("span", { class: "do", text: "✓" }), h("span", { text: t }))))),
+        h("div", { class: "grid-2" }, h("div", { class: "card" }, h("h3", { text: "Do" }), h("ul", { class: "rules" }, ["Use the supplied logo file exactly as it is: download it above", "Black logo on white or light backgrounds; white logo on black", "Retearn: use the supplied “retearn · A Recykal Venture” lockup, black or white only", "Keep the safe space around it free of text and graphics (p.6)", "Full logo with tagline on covers, posts and banners; the mark alone top-right on inner slides", "Scale proportionally from a corner"].map((t) => h("li", null, h("span", { class: "do", text: "✓" }), h("span", { text: t }))))),
           h("div", { class: "card" }, h("h3", { text: "Don't (p.8–9)" }), h("ul", { class: "rules" }, ["Put the logo on a brand colour (Bright Blue, Recykal.Market Green, Blue, the greens, Midnight Blue, Duke Blue, Medium Purple) or a gradient", "Place it on a busy photo", "Stretch, squash, rotate or tilt it", "Retype the wordmark in another font, set it in capitals or outline it", "Swap the mark to the right, or re-space or resize the mark against the wordmark"].map((t) => h("li", null, h("span", { class: "dont", text: "✕" }), h("span", { text: t }))))))],
       colour: () => [h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Primary palette" }), h("span", { class: "sub", text: "Click a colour to copy its HEX" })),
         h("div", { class: "swatches" }, PALETTE.map(([n, hex]) => swatch(n, hex)))),
@@ -2746,7 +2770,9 @@ const BRAND_CHECK = (() => {
         h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Product colours" }), h("span", { class: "sub", text: "Use only on that product's material" })),
           h("div", { class: "prod-pal" }, BRAND.products.map((pr) => h("div", { class: "pp" },
             h("div", { class: "pp-head" }, h("b", { text: pr.name }), pr.ratio ? h("span", { class: "small", text: pr.ratio }) : null),
-            h("div", { class: "pp-chips" }, BRAND.productColours(pr).map((c) => h("button", { class: "pp-chip", title: "Copy " + c, onclick: () => copyText(c) }, h("span", { class: "c", style: "background:" + c }), h("span", { class: "hx", text: c })))))))) ],
+            h("div", { class: "pp-chips" }, [["Primary", pr.primary], ["Secondary", pr.secondary.concat(pr.pastel || [])]].map(([lab, cs], i) => [i ? h("i", { class: "pp-div", "aria-hidden": "true" }) : null,
+              cs.map((c) => h("button", { class: "pp-chip", title: `${lab} · copy ${c}`, onclick: () => copyText(c) }, h("span", { class: "c", style: "background:" + c }), h("span", { class: "hx", text: c })))]))))),
+          h("div", { class: "small", text: "Each product: primary colours first, then its secondary colours after the divider." })) ],
       type: () => [h("div", { class: "card" }, h("div", { style: "font-size:13px;color:var(--muted)", text: "Poppins · the only Recykal typeface" }),
         h("div", { style: "font-size:46px;line-height:1.05" }, h("span", { style: "font-weight:400", text: "Our " }), h("span", { style: "font-weight:700", text: "Solutions" })),
         h("p", { style: "max-width:62ch", text: "Pair a Regular word with a Bold word in titles, the way the company deck does: “Our Solutions”, “Deposit Refund System”. Use Bold for headlines and big numbers, Medium or Regular for body copy and captions." }),
@@ -2777,6 +2803,8 @@ const BRAND_CHECK = (() => {
     };
     return [h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "kit" })),
       h("p", { text: "Logo, colour, type, templates, voice, approved facts and the QC rulebook, taken from the Recykal Marketing Brand Guidelines and the company deck." }))),
+      h("div", { class: "kit-links" }, h("span", { class: "small", text: "Brand files" }), BRAND_FILES.map(([label, url, kind]) =>
+        h("a", { class: "btn btn-ghost btn-sm", href: url, target: "_blank", rel: "noopener" }, h("span", { class: "kl-ic", text: kind }), label, h("span", { "aria-hidden": "true", text: "↗" })))),
       h("div", { class: "seg kit-nav", role: "group", "aria-label": "Brand kit section", style: "flex-wrap:wrap" }, secs.map(([k, l]) => h("button", { "aria-pressed": String(S.kitSec === k), onclick: () => { S.kitSec = k; render(); } }, l))),
       ...body[S.kitSec]()];
   }
@@ -3264,7 +3292,7 @@ const BRAND_CHECK = (() => {
       appUrl ? h("a", { class: "btn btn-dark btn-sm", href: "https://accounts.google.com/AccountChooser?continue=" + encodeURIComponent(appUrl), target: "_top" }, "Switch Google account") : null));
   }
   const blobDownloads = { save: async ({ filename, data }) => {
-    const type = filename.endsWith(".csv") ? "text/csv" : filename.endsWith(".svg") ? "image/svg+xml" : "application/octet-stream";
+    const type = filename.endsWith(".csv") ? "text/csv" : filename.endsWith(".svg") ? "image/svg+xml" : filename.endsWith(".png") ? "image/png" : "application/octet-stream";
     const url = URL.createObjectURL(new Blob([data], { type })); const a = h("a", { href: url, download: filename }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
   } };
   /** The sign-in page: Google has already verified the @recykal.com account; the person confirms it and picks how to sign in. */
@@ -3331,6 +3359,31 @@ const BRAND_CHECK = (() => {
   $("#menu").addEventListener("click", () => { $("#side").classList.add("open"); const sc = h("div", { class: "scrim", onclick: () => { $("#side").classList.remove("open"); sc.remove(); } }); document.body.append(sc); });
   $("#submit-top").addEventListener("click", () => openSubmit(S.view === "qc" ? { fromQc: true } : {}));
   const LOGO_URI = $("#logo-img").src;
+  // Logos offered for download in the Brand kit. Each has a black version (for light backgrounds) and a white one (for dark).
+  const RETEARN_SVG = `<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 403.39 130.61"><g id="Layer_1-2" data-name="Layer 1"><g><g><path d="M7.73,75.41H0V15.13h7.73v10.71c3.31-7.4,10.27-11.81,20.65-11.81v8.06h-2.1c-10.05,0-18.55,4.53-18.55,19.65v33.67Z"/><path d="M66.03,76.3c-17.11,0-29.59-11.93-29.59-31.03s12.26-31.03,29.59-31.03,28.49,12.59,28.49,27.93c0,2.43,0,3.98-.22,6.07h-50.02c.66,14.13,10.49,21.53,21.75,21.53,10.27,0,17.23-5.41,19.43-13.47h8.17c-2.76,11.37-12.48,19.99-27.6,19.99ZM44.28,41.96h42.4c.33-14.02-9.83-21.09-20.98-21.09s-20.54,7.07-21.42,21.09Z"/><path d="M110.87,21.64h-8.39v-6.51h8.39V0h7.84v15.13h16.56v6.51h-16.56v37.43c0,7.4,2.54,9.72,9.49,9.72h7.07v6.62h-8.28c-10.49,0-16.12-4.31-16.12-16.34V21.64Z"/><path d="M249.56,13.25c9.83,0,16.56,4.64,20.21,9.72v-8.72h15.57v61.17h-15.57v-8.94c-3.64,5.3-10.6,9.94-20.32,9.94-15.46,0-27.83-12.7-27.83-31.8s12.37-31.36,27.94-31.36ZM253.54,26.83c-8.28,0-16.12,6.18-16.12,17.78s7.84,18.22,16.12,18.22,16.23-6.4,16.23-18-7.73-18-16.23-18Z"/><path d="M315.93,75.41h-15.46V14.24h15.46v9.49c3.87-6.29,10.27-10.38,18.77-10.38v16.23h-4.09c-9.17,0-14.69,3.53-14.69,15.35v30.48Z"/><path d="M387.93,41.63c0-9.83-5.41-15.13-13.58-15.13s-13.8,5.3-13.8,15.13v33.79h-15.46V14.24h15.46v7.62c3.98-5.19,10.6-8.5,18.44-8.5,14.24,0,24.4,9.28,24.4,26.17v35.89h-15.46v-33.79Z"/><path d="M187.45,43.59c-7.74,0-15.48,0-23.23,0-1.8,0-2.01.22-1.89,2,.6,9.29,6.86,16.44,16.05,17.78,6.97,1.02,12.83-1.41,17.38-6.87.63-.75.63-1.31-.11-1.99-1.6-1.5-3.17-3.04-4.7-4.61-.29-.3-.59-.92-.46-1.23.13-.31.77-.57,1.18-.57,6.54-.03,13.08-.02,19.62-.03.95,0,1.35.38,1.34,1.32-.01,6.58,0,13.17-.03,19.75,0,.42-.27,1.06-.58,1.19-.31.13-.94-.15-1.25-.44-1.42-1.33-2.79-2.71-4.14-4.12-.75-.78-1.29-.75-2.03.06-6.73,7.36-15.14,10.98-25.07,10.51-14.88-.69-26.4-11.38-29.23-24.64-3.66-17.11,6.52-33.49,23.51-37.56,17.1-4.1,34.24,6.56,38.08,24.01.28,1.28.36,2.61.57,3.91.19,1.15-.25,1.54-1.41,1.54-7.87-.03-15.73-.02-23.6-.02ZM195.38,32.76c-4.36-4.78-9.52-6.91-15.76-6.59-4.56.23-10.98,3.5-12.59,6.59h28.35Z"/></g><g><path d="M53.42,117.57h-8.76l-1.5,4.27h-3.58l7.49-20.95h3.97l7.49,20.95h-3.61l-1.5-4.27ZM49.06,105.05l-3.43,9.72h6.83l-3.4-9.72Z"/><g><path d="M261.76,100.92h3.61l-7.86,20.92h-3.97l-7.89-20.92h3.67l6.2,17.4,6.23-17.4Z"/><path d="M275.36,122.11c-4.76,0-8.28-3.37-8.28-8.58s3.37-8.55,8.28-8.55,8.07,3.28,8.07,8.16c0,.57-.03,1.11-.12,1.69h-12.67c.24,2.74,2.2,4.39,4.73,4.39,2.11,0,3.28-1.02,3.91-2.32h3.7c-.93,2.89-3.55,5.21-7.62,5.21ZM270.67,112.06h9.18c-.06-2.56-2.08-4.18-4.63-4.18-2.32,0-4.18,1.57-4.55,4.18Z"/><path d="M298.57,112.57c0-3.04-1.66-4.61-4.15-4.61s-4.18,1.57-4.18,4.61v9.27h-3.43v-16.59h3.43v1.9c1.11-1.35,2.95-2.17,4.94-2.17,3.88,0,6.8,2.44,6.8,7.07v9.78h-3.4v-9.27Z"/><path d="M306.87,108.06h-1.96v-2.8h1.96v-4.12h3.46v4.12h4.03v2.8h-4.03v9.18c0,1.23.48,1.75,1.93,1.75h2.11v2.86h-2.71c-2.95,0-4.79-1.23-4.79-4.61v-9.18Z"/><path d="M332.54,121.84h-3.43v-1.99c-1.08,1.41-2.95,2.23-4.91,2.23-3.88,0-6.83-2.44-6.83-7.07v-9.75h3.4v9.24c0,3.04,1.66,4.61,4.15,4.61s4.18-1.56,4.18-4.61v-9.24h3.43v16.59Z"/><path d="M340.49,121.84h-3.43v-16.59h3.43v2.41c.96-1.66,2.62-2.68,4.97-2.68v3.55h-.87c-2.53,0-4.09,1.05-4.09,4.58v8.73Z"/><path d="M355.75,122.11c-4.76,0-8.28-3.37-8.28-8.58s3.37-8.55,8.28-8.55,8.07,3.28,8.07,8.16c0,.57-.03,1.11-.12,1.69h-12.67c.24,2.74,2.2,4.39,4.73,4.39,2.11,0,3.28-1.02,3.91-2.32h3.7c-.93,2.89-3.55,5.21-7.62,5.21ZM351.05,112.06h9.18c-.06-2.56-2.08-4.18-4.63-4.18-2.32,0-4.18,1.57-4.55,4.18Z"/></g><g><g><g><path d="M81.32,112.49c-1.71-3.46-3.55-6.98-3.83-10.86-.04-.61-.04-1.22,0-1.83,0-.33.05-.65.09-1,.02-.19,0-.77.15-.92-3.98,4.33-8.12,10.18-8.12,13.5,0,4.85,9,15.31,13.2,18.1,4.2,2.8,10.27.09,5.41-5.33-.55-.61-6.61-7.67-6.91-11.67"/><path d="M82.81,93.25c-1.42,1.02-2.74,2.16-3.93,3.43-.58,2.2-.59,4.51-.05,6.71.6,2.43,1.44,4.79,2.5,7.05.28-3.81,6.2-11.1,6.89-11.87,3.53-3.94,1.29-6.44-1.81-6.44-1.17,0-2.45.35-3.6,1.12"/></g><g><path d="M94.01,124.16c-4.86,5.42,1.21,8.13,5.41,5.33,1.42-1.02,2.74-2.17,3.94-3.44.58-2.2.59-4.51.04-6.71-.6-2.42-1.44-4.79-2.5-7.05-.29,3.84-6.2,11.11-6.89,11.87"/><path d="M100.92,110.24c1.7,3.47,3.55,6.98,3.83,10.89.04.61.04,1.21,0,1.82,0,.33-.05.65-.09,1,0,.2,0,.78-.15.93,3.98-4.35,8.11-10.21,8.11-13.53,0-4.85-9-15.31-13.2-18.1-4.2-2.79-10.26-.09-5.4,5.32.55.61,6.6,7.68,6.91,11.67"/></g></g><g><g><path d="M129.97,102.8c.18.19.26.45.25.71v2.62c0,.55-.3.86-.93.92-.69.05-1.37.22-2,.5-.68.3-1.29.73-1.8,1.29-.74.8-1.11,1.98-1.11,3.53v6.58c.01.25-.08.5-.25.68-.18.17-.43.26-.68.25h-2.75c-.25.02-.5-.07-.68-.25-.17-.18-.26-.43-.25-.68v-15.16c-.04-.48.32-.89.8-.93h2.89c.48-.04.89.32.93.8v1.48c.58-.77,1.35-1.39,2.23-1.81.85-.41,1.76-.66,2.69-.74.24-.03.49.05.67.22"/><path d="M136.06,119.41c-1.39-.6-2.6-1.56-3.5-2.78-1-1.33-1.5-3.07-1.5-5.2-.03-1.63.39-3.24,1.22-4.64.8-1.33,1.96-2.4,3.34-3.11,1.45-.74,3.07-1.12,4.7-1.1,1.49-.01,2.95.33,4.28,1,1.32.66,2.45,1.66,3.27,2.89.51.73.88,1.54,1.08,2.41.18.91.26,1.83.25,2.76.01.39-.11.77-.34,1.08-.23.29-.59.45-.96.44h-12.23c.18,1,.8,1.87,1.7,2.35.9.49,1.91.75,2.94.74.74.02,1.47-.11,2.17-.37.6-.25,1.14-.6,1.61-1.05.2-.2.46-.32.74-.34.2,0,.39.07.56.19l2,1.18c.28.11.48.38.5.68-.02.22-.11.44-.26.61-1.85,2.1-4.54,3.27-7.33,3.19-1.46,0-2.89-.32-4.23-.91M137.16,107.56c-.77.54-1.27,1.39-1.38,2.32h8.5c-.07-.57-.28-1.11-.62-1.58-.36-.5-.84-.92-1.39-1.2-.62-.32-1.31-.48-2-.46-1.11-.05-2.21.28-3.12.93"/><path d="M156.15,119.13c-1.39-.77-2.55-1.89-3.39-3.24-1.68-2.72-1.69-6.15-.03-8.88.83-1.36,2-2.48,3.4-3.25,1.41-.79,3-1.19,4.61-1.18,1.55-.02,3.08.34,4.46,1.05,1.36.72,2.51,1.76,3.37,3.03.11.15.17.32.19.5,0,.33-.21.58-.62.75l-2.44.95c-.14.06-.28.1-.44.1-.33-.03-.63-.21-.81-.5-.87-1.18-2.25-1.86-3.71-1.84-1.25-.04-2.46.46-3.33,1.36-.88.93-1.35,2.17-1.3,3.44-.01.86.2,1.7.61,2.45.38.73.95,1.33,1.65,1.75,2.08,1.15,4.68.65,6.2-1.18.19-.28.5-.45.83-.46.15,0,.29.03.43.09l2.23.87c.41.16.61.42.61.74,0,.17-.06.33-.15.46-1.67,2.78-4.26,4.17-7.77,4.18-1.62,0-3.21-.41-4.63-1.2"/><path d="M178.12,126.24h-3.15c-.54,0-.81-.22-.81-.65,0-.15.04-.29.1-.43l2.47-5.91-6.8-15.25c-.06-.15-.09-.31-.1-.46,0-.17.07-.34.2-.45.16-.12.37-.18.58-.17h3.4c.47-.03.9.26,1.05.71l4.03,10.11,3.67-10.08c.14-.48.59-.79,1.09-.74h3.37c.22-.01.44.05.62.19.15.12.22.31.22.5,0,.14-.04.27-.09.4l-8.79,21.52c-.15.45-.58.74-1.06.71"/></g><g><path d="M190.84,96.74c.18-.17.43-.26.68-.25h2.78c.48-.04.89.32.93.79v12.82l5.35-6.62c.26-.35.68-.55,1.12-.52h3.46c.21-.02.43.04.6.15.13.09.2.24.2.4-.02.22-.12.43-.28.59l-5.85,6.77,6.22,7.86c.14.17.22.37.25.59,0,.16-.08.31-.22.4-.18.11-.38.17-.59.16h-3.43c-.45.01-.88-.19-1.15-.56l-4-5-1.67,1.92v2.73c.01.25-.08.5-.25.68-.18.17-.43.26-.68.25h-2.78c-.25.02-.5-.07-.68-.25-.17-.18-.26-.43-.25-.68v-21.54c-.02-.25.06-.49.23-.68"/><path d="M221.73,119.63c-.17-.18-.26-.43-.25-.68v-.78c-.55.66-1.27,1.16-2.08,1.46-.98.41-2.03.62-3.09.61-1.59.04-3.16-.36-4.55-1.16-1.29-.76-2.32-1.88-2.97-3.23-.69-1.4-1.03-2.94-1-4.5-.02-1.56.33-3.11,1.03-4.5.67-1.32,1.69-2.42,2.96-3.19,1.38-.81,2.95-1.21,4.55-1.18,1.05-.02,2.09.18,3.06.59.82.33,1.53.86,2.09,1.55v-.84c-.01-.25.07-.5.25-.68.18-.17.43-.26.68-.25h2.72c.25-.01.5.08.68.25.17.18.26.43.25.68v15.16c.04.47-.3.88-.77.93-.05,0-.1,0-.16,0h-2.73c-.25.01-.49-.07-.67-.24M220.39,107.88c-1.92-1.77-4.87-1.77-6.79,0-.87.95-1.33,2.21-1.27,3.5-.05,1.28.42,2.52,1.3,3.45.88.9,2.11,1.39,3.37,1.34,1.27.07,2.51-.4,3.42-1.28.87-.95,1.33-2.21,1.26-3.5.06-1.3-.4-2.56-1.29-3.52h0Z"/><path d="M230.3,119.63c-.17-.18-.26-.43-.25-.68v-21.53c-.01-.25.07-.5.25-.68.18-.17.43-.26.68-.25h2.78c.48-.04.89.32.93.79v21.66c.01.25-.08.5-.25.68-.18.17-.43.26-.68.25h-2.78c-.25.02-.5-.07-.68-.24"/></g></g></g></g></g></g></svg>`;
+  const svgFromUri = (u) => { const b = u.split(",")[1] || ""; try { return decodeURIComponent(escape(atob(b))); } catch (e) { return atob(b); } };
+  const whiteSvg = (svg) => svg.replace(/<svg([^>]*)>/, '<svg$1><style>*{fill:#FFFFFF !important}</style>');
+  const svgUri = (svg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  const BRAND_LOGOS = () => {
+    const recykal = svgFromUri(LOGO_URI);
+    return [
+      { name: "Recykal", file: "recykal-logo", svg: recykal, note: "Primary logo with the “Sustainable Circularity” tagline (Guidelines p.2–7)" },
+      { name: "Retearn", file: "retearn-logo", svg: RETEARN_SVG, note: "Retearn, a Recykal venture (Retearn Brand Guidelines)" },
+    ];
+  };
+  /** A PNG of an SVG at `width` px, transparent background. */
+  function svgToPng(svg, width) {
+    const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1] || "0 0 400 130"; const [, , vw, vh] = vb.split(/[\s,]+/).map(Number);
+    const w = width, hgt = Math.round(width * vh / vw);
+    const sized = svg.replace(/<svg([^>]*)>/, (m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, "")} width="${w}" height="${hgt}">`);
+    return new Promise((res, rej) => { const img = new Image(); img.onload = () => { const c = document.createElement("canvas"); c.width = w; c.height = hgt; c.getContext("2d").drawImage(img, 0, 0, w, hgt); c.toBlob((b) => b ? res(b) : rej(new Error("PNG failed")), "image/png"); };
+      img.onerror = () => rej(new Error("Couldn't draw the logo")); img.src = svgUri(sized); });
+  }
+  async function downloadLogo(svg, filename, kind) {
+    if (!S.downloads) { toast("Downloads aren't available in this view"); return; }
+    try { await S.downloads.save({ filename: filename + "." + kind, data: kind === "png" ? await svgToPng(svg, 2400) : svg }); }
+    catch (e) { if (e.code !== "declined") toast("Couldn't download: " + (e.message || e.code)); }
+  }
   $("#dlg").addEventListener("click", (e) => { if (e.target.id === "dlg") e.target.close(); });
   render();
   boot().catch((e) => { console.error(e); S.noDb = true; S.ready = true; render(); });

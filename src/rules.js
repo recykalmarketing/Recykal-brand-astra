@@ -24,7 +24,9 @@ const BRAND = (() => {
     // Recykal.Market: white-first, black-led, green for action only, in a 70 / 20 / 10 ratio (RM §3).
     { name: "Recykal.Market", short: "Recykal.Market", re: /\b(recykal\.?\s?market(place)?|marketplace|recommerce|infra business)\b/i, primary: ["#00573F", "#000000", "#FFFFFF"], secondary: ["#F5F5F7", "#D9E8E2", "#1D1D1F", "#6B6B6B"], ratio: "70% white · 20% black · 10% green", ref: "RM §3" },
     { name: "EPR Platform", short: "EPR", re: /\b(EPR|extended producer responsibility)\b/i, primary: ["#005DFF"], secondary: ["#FB4A59", "#F5EFB9", "#48B16E"], ref: "p.13–14" },
-    { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund|retearn|reklaim)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
+    { name: "dDRS", short: "DRS", re: /\b(d?DRS|deposit refund)\b/i, primary: ["#049769"], secondary: ["#FFC484", "#FEF4EB", "#FC8B61"], ref: "p.15–16" },
+    // Retearn Brand Guidelines p.8: primary Royal Purple and Muted Magenta; secondary Soft Violet, Forest Green and Skyline Blue.
+    { name: "Retearn", short: "Retearn", re: /\b(retearn|reklaim)\b/i, primary: ["#6A398C", "#9C539C"], secondary: ["#A16DC9", "#5B8563", "#00B4D8"], ref: "Retearn guidelines p.8" },
     { name: "Restyle", short: "Restyle", re: /\brestyle\b/i, primary: ["#0000AF", "#3E7D44", "#6A7F8A"], secondary: ["#02A0DD", "#03BADF", "#E5FF76", "#BACCD3"], pastel: ["#96E8FB", "#C0F2F9"], ref: "p.17–19" },
     { name: "Rethink+", short: "Rethink+", re: /\brethink\s?\+?/i, primary: ["#6E5CFA", "#DF6347"], secondary: ["#468646", "#FFC20D", "#FFA800"], ref: "p.20–21" },
     // Not in the Marketing Brand Guidelines; kept from the earlier Recykal brand kit at the brand team's request.
@@ -50,7 +52,7 @@ const BRAND = (() => {
     { id: "L4", g: "logo", sev: "major", t: "Lockup unchanged", d: "Mark left of the wordmark (primary) or above it (secondary). Never swap sides, re-space or resize the mark against the wordmark, set the name in capitals, or outline it.", ref: "p.2–5, p.9" },
     { id: "L5", g: "logo", sev: "major", t: "Safe space and clean background", d: "Keep the safe space around the logo free of text and graphics. Never place it on a busy photo.", ref: "p.6, p.9" },
     { id: "L6", g: "logo", sev: "minor", t: "Right logo version for the format", d: "Full logo with the “Sustainable Circularity” tagline on covers, closing slides, posts and banners; the mark alone, top-right, on inner slides.", ref: "p.3, Deck 1–17" },
-    { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
+    { id: "L7", g: "logo", sev: "major", t: "Product logos as supplied", d: "Product lockups and app icons (Marketplace Seller/Buyer, EPR Platform, dDRS, Retearn, Restyle, Rethink+) used exactly as supplied, with the product name in its product colour. Mark n/a if none appear.", ref: "p.11–21" },
 
     { id: "C1", g: "colour", sev: "critical", m: true, t: "Recykal palette only", d: "Every colour comes from the primary palette, the secondary palette (accents only, at most 10% of the design), white, neutral greys, or the palette of the product being shown.", ref: "p.10, RM §3" },
     { id: "C2", g: "colour", sev: "major", m: true, t: "Product colours stay with their product", d: "A product palette is used only on that product's material, e.g. the EPR Platform red #FB4A59 doesn't belong on a Marketplace slide.", ref: "p.12–21; Rezolv and Smart Center from the earlier brand kit" },
