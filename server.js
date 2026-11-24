@@ -24,7 +24,7 @@ const MISSING = PROD ? [!process.env.DATABASE_URL && "DATABASE_URL (the Neon con
   !SESSION_SECRET && "SESSION_SECRET (any long random text)"].filter(Boolean) : [];
 
 // The functions of Code.gs the page may call. Everything else in Code.gs is internal.
-const API = new Set(["getState", "write", "saveProfile", "setMarketing", "requestMarketingAccess", "saveAutoCheck", "uploadForQc", "fileForQc"]);
+const API = new Set(["getState", "write", "saveProfile", "setMarketing", "requestMarketingAccess", "saveAutoCheck", "uploadForQc", "fileForQc", "logDownload", "getDownloads"]);
 const UPLOAD_TYPES = { "image/png": 5, "image/jpeg": 5, "image/webp": 5, "application/pdf": 15, "application/vnd.openxmlformats-officedocument.presentationml.presentation": 15 };
 const PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const GOOGLE_EXPORT = { "application/vnd.google-apps.presentation": "application/pdf", "application/vnd.google-apps.document": "application/pdf" };

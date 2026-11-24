@@ -401,8 +401,9 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 
 /* Brand kit */
 .kit-nav { display: flex; gap: 8px; flex-wrap: wrap; }
-.kit-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.kit-links > .small { font-weight: 600; margin-right: 4px; }
+.kit-files { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.kf { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); box-shadow: var(--shadow); }
+.kf > div { flex: 1; display: grid; } .kf b { font-size: 13.5px; } .kf .btn { flex: none; }
 .kl-ic { font-size: 10px; font-weight: 600; letter-spacing: .04em; padding: 2px 6px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
 .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .logo-tile { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; background: var(--card); }
@@ -2743,9 +2744,9 @@ const BRAND_CHECK = (() => {
   }
 
   const BRAND_FILES = [
-    ["Recykal Brand Deck", "https://docs.google.com/presentation/d/1ppIO9QQiXhR_Fz1Ue87i7DpBNAiM_UkwNfgyQDP4g-s/edit?usp=sharing", "Slides"],
-    ["Brand Deck Template", "https://docs.google.com/presentation/d/1Uo0sWrncmGYm49hRUjk-91H9WizrE0Pt5jsnFZ4BEkw/edit?usp=sharing", "Slides"],
-    ["Brand Document Template", "https://docs.google.com/document/d/12lU4bS_laDkCyjFF9vfmVtehgV90XhEs/edit", "Docs"],
+    ["Recykal Brand Deck", "https://docs.google.com/presentation/d/1ppIO9QQiXhR_Fz1Ue87i7DpBNAiM_UkwNfgyQDP4g-s/edit?usp=sharing", "Slides", "The company story, facts and visuals"],
+    ["Brand Document Template", "https://docs.google.com/document/d/12lU4bS_laDkCyjFF9vfmVtehgV90XhEs/edit", "Docs", "Proposals, reports and letters"],
+    ["Brand Deck Template", "https://docs.google.com/presentation/d/1Uo0sWrncmGYm49hRUjk-91H9WizrE0Pt5jsnFZ4BEkw/edit?usp=sharing", "Slides", "Start every new presentation here"],
   ];
   // ----- Brand kit -----
   function viewKit() {
@@ -2757,8 +2758,10 @@ const BRAND_CHECK = (() => {
             const svg = dark ? whiteSvg(lg.svg) : lg.svg, file = `${lg.file}-${tone}`;
             return h("div", { class: "logo-tile" + (dark ? " dark" : "") }, h("div", { class: "lt-art" }, h("img", { src: svgUri(svg), alt: `${lg.name} logo, ${tone}` })),
               h("div", { class: "lt-foot" }, h("div", { style: "min-width:0" }, h("b", { text: `${lg.name} · ${tone}` }), h("span", { class: "small", text: label + " backgrounds" })),
-                h("div", { class: "actions" }, h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadLogo(svg, file, "svg") }, "SVG"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadLogo(svg, file, "png") }, "PNG"))));
-          })))),
+                h("div", { class: "actions" }, ["svg", "png"].map((k) => h("button", { class: "btn btn-ghost btn-sm", onclick: () => openLogoDownload(`${lg.name} · ${tone}`, svg, file, k) }, k.toUpperCase())))));
+          }))),
+          h("div", { class: "small", text: "Every download asks what the logo is for. Your name, the date and your note are recorded for the marketing team." })),
+        S.isAdmin ? downloadLogCard() : null,
         h("div", { class: "card" }, h("p", { text: "The two boomerangs in the Recykal mark stand for circularity: what goes around as waste comes back around, recycled or reused. Use the primary logo (mark beside the wordmark) or the secondary logo (mark above it), each with or without the “Sustainable Circularity” tagline (p.2–5)." })),
         h("div", { class: "grid-2" }, h("div", { class: "card" }, h("h3", { text: "Do" }), h("ul", { class: "rules" }, ["Use the supplied logo file exactly as it is: download it above", "Black logo on white or light backgrounds; white logo on black", "Retearn: use the supplied “retearn · A Recykal Venture” lockup, black or white only", "Keep the safe space around it free of text and graphics (p.6)", "Full logo with tagline on covers, posts and banners; the mark alone top-right on inner slides", "Scale proportionally from a corner"].map((t) => h("li", null, h("span", { class: "do", text: "✓" }), h("span", { text: t }))))),
           h("div", { class: "card" }, h("h3", { text: "Don't (p.8–9)" }), h("ul", { class: "rules" }, ["Put the logo on a brand colour (Bright Blue, Recykal.Market Green, Blue, the greens, Midnight Blue, Duke Blue, Medium Purple) or a gradient", "Place it on a busy photo", "Stretch, squash, rotate or tilt it", "Retype the wordmark in another font, set it in capitals or outline it", "Swap the mark to the right, or re-space or resize the mark against the wordmark"].map((t) => h("li", null, h("span", { class: "dont", text: "✕" }), h("span", { text: t }))))))],
@@ -2803,8 +2806,9 @@ const BRAND_CHECK = (() => {
     };
     return [h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "kit" })),
       h("p", { text: "Logo, colour, type, templates, voice, approved facts and the QC rulebook, taken from the Recykal Marketing Brand Guidelines and the company deck." }))),
-      h("div", { class: "kit-links" }, h("span", { class: "small", text: "Brand files" }), BRAND_FILES.map(([label, url, kind]) =>
-        h("a", { class: "btn btn-ghost btn-sm", href: url, target: "_blank", rel: "noopener" }, h("span", { class: "kl-ic", text: kind }), label, h("span", { "aria-hidden": "true", text: "↗" })))),
+      h("div", { class: "kit-files" }, BRAND_FILES.map(([label, url, kind, desc]) => h("div", { class: "kf" },
+        h("span", { class: "kl-ic", text: kind }), h("div", { style: "min-width:0" }, h("b", { text: label }), h("span", { class: "small", text: desc })),
+        h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener", "aria-label": "Access " + label }, "Access", h("span", { "aria-hidden": "true", text: " ↗" }))))),
       h("div", { class: "seg kit-nav", role: "group", "aria-label": "Brand kit section", style: "flex-wrap:wrap" }, secs.map(([k, l]) => h("button", { "aria-pressed": String(S.kitSec === k), onclick: () => { S.kitSec = k; render(); } }, l))),
       ...body[S.kitSec]()];
   }
@@ -3378,6 +3382,57 @@ const BRAND_CHECK = (() => {
     const sized = svg.replace(/<svg([^>]*)>/, (m, a) => `<svg${a.replace(/\s(width|height)="[^"]*"/g, "")} width="${w}" height="${hgt}">`);
     return new Promise((res, rej) => { const img = new Image(); img.onload = () => { const c = document.createElement("canvas"); c.width = w; c.height = hgt; c.getContext("2d").drawImage(img, 0, 0, w, hgt); c.toBlob((b) => b ? res(b) : rej(new Error("PNG failed")), "image/png"); };
       img.onerror = () => rej(new Error("Couldn't draw the logo")); img.src = svgUri(sized); });
+  }
+  // Download log: on the server (Downloads sheet), or in this browser for the demo.
+  const DEMO_DL_KEY = "brand-astra-demo-downloads";
+  const demoDl = () => { try { return JSON.parse(localStorage.getItem(DEMO_DL_KEY) || "[]"); } catch (e) { return []; } };
+  const dlApi = {
+    log: async (asset, format, purpose) => {
+      if (!DEMO) return gs("logDownload", asset, format, purpose);
+      const at = nowIso(), row = { id: "dl_" + Date.now().toString(36), email: S.uid, name: nameOf(S.uid), team: prof(S.uid).team || "", asset, format, purpose, downloadedAt: at };
+      try { localStorage.setItem(DEMO_DL_KEY, JSON.stringify([row].concat(demoDl()).slice(0, 200))); } catch (e) {}
+      return { id: row.id, downloadedAt: at };
+    },
+    list: async () => DEMO ? demoDl() : gs("getDownloads"),
+  };
+  function openLogoDownload(label, svg, file, kind) {
+    const dlg = $("#dlg"); dlg.className = "";
+    const purpose = h("textarea", { class: "field-in", id: "dl-purpose", required: true, minlength: "10", maxlength: "500", style: "min-height:96px",
+      placeholder: "For example: co-branded cover slide for the Tata Steel proposal, sharing on 3 December" });
+    const err = h("div", { class: "err", role: "alert" });
+    const go = h("button", { type: "submit", class: "btn btn-primary" }, "Download " + kind.toUpperCase());
+    dlg.replaceChildren(h("form", { class: "dlg", onsubmit: async (e) => {
+        e.preventDefault(); err.textContent = "";
+        const why = purpose.value.trim();
+        if (why.length < 10) { err.textContent = "Describe what you need the logo for (at least 10 characters)."; purpose.focus(); return; }
+        go.disabled = true; go.textContent = "Recording…";
+        try { const rec = await dlApi.log(file, kind, why); if (S.dl && S.dl.rows) S.dl.rows.unshift({ id: rec.id, email: S.uid, name: nameOf(S.uid), team: prof(S.uid).team || "", asset: file, format: kind, purpose: why, downloadedAt: rec.downloadedAt }); }
+        catch (x) { err.textContent = "Couldn't record the download, so it didn't start: " + (x.message || x.code); go.disabled = false; go.textContent = "Download " + kind.toUpperCase(); return; }
+        dlg.close(); await downloadLogo(svg, file, kind); if (S.view === "kit") render();
+      } },
+      h("div", { class: "dlg-head" }, h("h2", { text: `Download ${label} (${kind.toUpperCase()})` }), h("button", { type: "button", class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
+      h("div", { class: "dlg-body" }, h("div", { class: "field" }, h("label", { for: "dl-purpose", text: "What will you use it for? (required)" }), purpose,
+        h("div", { class: "hint", text: "Say where it will appear and who will see it. Your name, team, the date and this note are recorded for the marketing team." })), err),
+      h("div", { class: "dlg-foot" }, h("span"), h("div", { class: "actions" }, h("button", { type: "button", class: "btn btn-ghost", onclick: () => dlg.close() }, "Cancel"), go))));
+    dlg.showModal(); setTimeout(() => purpose.focus(), 50);
+  }
+  const ASSET_LABEL = { "recykal-logo-black": "Recykal · black", "recykal-logo-white": "Recykal · white", "retearn-logo-black": "Retearn · black", "retearn-logo-white": "Retearn · white" };
+  function downloadLogCard() {
+    if (!S.dl) { S.dl = { rows: null, err: "" }; dlApi.list().then((r) => { S.dl.rows = r || []; }, (e) => { S.dl.err = e.message || e.code || "Couldn't load"; }).then(() => { if (S.view === "kit") render(); }); }
+    const rows = S.dl.rows;
+    const csv = async () => {
+      if (!S.downloads) { toast("Downloads aren't available in this view"); return; }
+      const q = (v) => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+      const lines = [["Downloaded at", "Name", "Email", "Team", "Logo", "Format", "Purpose"].map(q).join(",")].concat(rows.map((r) => [r.downloadedAt, r.name, r.email, r.team, ASSET_LABEL[r.asset] || r.asset, r.format.toUpperCase(), r.purpose].map(q).join(",")));
+      try { await S.downloads.save({ filename: `brand-astra-logo-downloads-${nowIso().slice(0, 10)}.csv`, data: lines.join("\n") }); } catch (e) { if (e.code !== "declined") toast("Couldn't export: " + (e.message || e.code)); }
+    };
+    return h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Logo downloads" }),
+        h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "sub", text: rows ? `${rows.length} recorded · marketing team only` : "Marketing team only" }), rows && rows.length ? h("button", { class: "btn btn-ghost btn-sm", onclick: csv }, "Export CSV") : null)),
+      S.dl.err ? h("div", { class: "notice", text: "Couldn't load the log: " + S.dl.err }) : !rows ? h("div", { class: "small", text: "Loading…" }) : !rows.length ? h("div", { class: "small", text: "No logo downloads yet." }) :
+      h("div", { class: "table-wrap", style: "box-shadow:none" }, h("table", null, h("thead", null, h("tr", null, ["When", "Who", "Logo", "Purpose"].map((t) => h("th", { text: t })))),
+        h("tbody", null, rows.slice(0, 100).map((r) => h("tr", null, h("td", { style: "white-space:nowrap", text: fmtDateTime(r.downloadedAt) }),
+          h("td", null, h("b", { text: r.name || r.email }), h("div", { class: "small", text: [r.team, r.email].filter(Boolean).join(" · ") })),
+          h("td", { style: "white-space:nowrap", text: `${ASSET_LABEL[r.asset] || r.asset} · ${String(r.format).toUpperCase()}` }), h("td", { text: r.purpose })))))));
   }
   async function downloadLogo(svg, filename, kind) {
     if (!S.downloads) { toast("Downloads aren't available in this view"); return; }

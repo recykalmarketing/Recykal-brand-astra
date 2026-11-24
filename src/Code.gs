@@ -54,6 +54,7 @@ const SHEETS = {
   Showcase: ["submissionId", "title", "type", "team", "link", "qcScore", "note", "approvedAt", "data"],
   Settings: ["key", "value", "updatedAt", "data"],
   People: ["email", "name", "team", "firstSeen", "lastSeen", "data"],
+  Downloads: ["id", "email", "name", "team", "asset", "format", "purpose", "downloadedAt", "data"],
 };
 
 function book_() {
@@ -250,6 +251,31 @@ function getState() {
     sheetUrl: admin ? book_().getUrl() : null,
     appUrl: ScriptApp.getService().getUrl(),
   };
+}
+
+// ---------- Logo downloads: every download is recorded with who, when, what and why ----------
+const DOWNLOAD_ASSETS_ = ["recykal-logo-black", "recykal-logo-white", "retearn-logo-black", "retearn-logo-white"];
+function logDownload(asset, format, purpose) {
+  const email = email_();
+  asset = str_(asset, 60); format = str_(format, 8).toLowerCase(); purpose = str_(purpose, 500).trim();
+  if (DOWNLOAD_ASSETS_.indexOf(asset) < 0) throw new Error("Unknown logo.");
+  if (["svg", "png"].indexOf(format) < 0) throw new Error("Choose SVG or PNG.");
+  if (purpose.length < 10) throw new Error("Describe what you need the logo for (at least 10 characters).");
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const p = rows_("People").filter((x) => x.key === email)[0];
+    const name = p ? p.obj.name : nameFromEmail_(email), team = p ? p.obj.team || "" : "";
+    const at = new Date().toISOString(), id = "dl_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const obj = { id: id, email: email, name: name, team: team, asset: asset, format: format, purpose: purpose, downloadedAt: at };
+    writeRow_("Downloads", null, [id, email, name, team, asset, format, purpose, at, obj]);
+    return { id: id, downloadedAt: at };
+  } finally { lock.releaseLock(); }
+}
+/** The marketing team's view of the download log, newest first. */
+function getDownloads() {
+  const email = email_();
+  if (!isAdmin_(email)) throw new Error("Only the marketing team can see the download log.");
+  return rows_("Downloads").map((r) => r.obj).sort((a, b) => String(b.downloadedAt).localeCompare(String(a.downloadedAt))).slice(0, 1000);
 }
 
 /** Records when someone last opened the app (at most every 6 hours), for Team & access. */
