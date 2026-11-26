@@ -123,7 +123,10 @@ const BRAND_CHECK = (() => {
   async function readImage(file) {
     const bmp = await createImageBitmap(file);
     const px = pixelsOf(bmp, bmp.width, bmp.height, 1200);
-    const page = { n: 1, texts: [], images: [], fills: [], gradients: [], px, colours: flatColours(px, "page 1"), raster: 1 };
+    // A sharp copy (up to 2000 px) for reading the text and comparing letter shapes with Poppins.
+    const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height)); const cv = document.createElement("canvas"); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    const cx = cv.getContext("2d", { willReadFrequently: true }); cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(bmp, 0, 0, cv.width, cv.height);
+    const page = { n: 1, texts: [], images: [], fills: [], gradients: [], px, colours: flatColours(px, "page 1"), raster: 1, canvas: cv };
     const out = { kind: "image", w: bmp.width, h: bmp.height, pages: [page], textKnown: false, styleKnown: false, notes: [] };
     bmp.close && bmp.close(); return out;
   }
@@ -203,6 +206,7 @@ const BRAND_CHECK = (() => {
         const ctx = cv.getContext("2d", { willReadFrequently: true }); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, cv.width, cv.height);
         await page.render({ canvasContext: ctx, viewport: v2 }).promise;
         const full = { data: ctx.getImageData(0, 0, cv.width, cv.height).data, W: cv.width, H: cv.height };
+        if (pg.texts.reduce((n2, t) => n2 + t.str.replace(/\s/g, "").length, 0) < 25) pg.canvas = cv;   // little or no live text (a flattened export): read it from the picture
         pg.texts.forEach((t) => {
           if (t.footer || t.h < 0.012 || t.str.replace(/\W/g, "").length < 3) return;
           const rg = region(full, t.x, t.y, t.x + t.w, t.y + t.h); if (!rg || rg.bgShare < 0.35 || rg.content < 0.03) return;
@@ -541,6 +545,98 @@ const BRAND_CHECK = (() => {
       notes: [`Brand Astra can't look inside ${ext ? ext + " files" : "this kind of file"}, so the brand team will check it by eye. To check the wording now, paste the key text in the box below. For a full automatic check, upload a PDF, PowerPoint, Word, HTML or image version.`] };
   }
 
+  // ---------- text in pictures (OCR) and the font check ----------
+  // Pictures have no font names, and look-alikes (Montserrat, Plus Jakarta Sans, …) pass a name check anyway. So the check reads the words
+  // with OCR, then draws each word in Poppins (the brand's own font files, served at /fonts/) and in look-alike fonts, and compares the letter
+  // shapes with the picture. The font whose shapes match best wins the word; the picture's font is the one that wins most words.
+  const tesseract = () => loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js", "Tesseract");
+  let ocrWorker = null;
+  async function readWords(canvas) {
+    const T = await tesseract();
+    if (!ocrWorker) ocrWorker = T.createWorker("eng", 1, { logger: () => {} });
+    const { data } = await (await ocrWorker).recognize(canvas);
+    const words = (data.words || []).filter((x) => x.confidence >= 55 && /[A-Za-z0-9]/.test(x.text)).map((x) => ({ str: x.text, conf: x.confidence, x0: x.bbox.x0, y0: x.bbox.y0, x1: x.bbox.x1, y1: x.bbox.y1 }));
+    const text = (data.lines || []).filter((l) => l.confidence >= 50).map((l) => l.text.trim()).filter(Boolean).join("\n");
+    return { words, text };
+  }
+  const POPPINS_W = [300, 400, 500, 600, 700, 800];
+  const LOOKALIKES = ["Montserrat", "Plus Jakarta Sans", "DM Sans", "Inter", "Nunito Sans", "Lexend", "Outfit", "Urbanist", "Manrope", "Figtree", "Work Sans", "Raleway", "Roboto", "Open Sans", "Lato", "Arial", "Helvetica"];
+  let fontsReady = null;
+  function loadFonts() {
+    if (fontsReady) return fontsReady;
+    fontsReady = (async () => {
+      const files = { 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold" };
+      let own = true;
+      try { await Promise.all(Object.entries(files).map(async ([w, n]) => { const f = new FontFace("BA Poppins", `url(/fonts/Poppins-${n}.ttf)`, { weight: w }); await f.load(); document.fonts.add(f); })); }
+      catch (e) { own = false; }
+      const google = LOOKALIKES.filter((f) => !/^(Arial|Helvetica)$/.test(f)).map((f) => f.replace(/ /g, "+") + ":wght@400;700").concat(own ? [] : ["Poppins:wght@300;400;500;600;700;800"]);
+      await new Promise((res) => { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?" + google.map((f) => "family=" + f).join("&") + "&display=block"; l.onload = res; l.onerror = res; document.head.append(l); setTimeout(res, 8000); });
+      const poppins = own ? "BA Poppins" : "Poppins";
+      await Promise.all([...POPPINS_W.map((w) => `${w} 40px "${poppins}"`), ...LOOKALIKES.flatMap((f) => [`400 40px "${f}"`, `700 40px "${f}"`])].map((q) => document.fonts.load(q, "Abgy").catch(() => null)));
+      // Keep only fonts that really loaded: a missing font would quietly draw in the fallback.
+      const c = document.createElement("canvas").getContext("2d"); const probe = "Rag Wqxy 1234 gtaG";
+      const width = (f) => { c.font = f; return c.measureText(probe).width; };
+      const avail = LOOKALIKES.filter((f) => Math.abs(width(`40px "${f}", monospace`) - width("40px monospace")) > 1);
+      const poppinsOk = Math.abs(width(`40px "${poppins}", monospace`) - width("40px monospace")) > 1;
+      return { poppins: poppinsOk ? poppins : null, own, avail };
+    })();
+    return fontsReady;
+  }
+  const NH = 40;   // masks are compared at 40 px high
+  function maskOf(cv, w, h) { const d = cv.getContext("2d", { willReadFrequently: true }).getImageData(0, 0, w, h).data; const m = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) m[i] = d[i * 4 + 3] > 110 ? 1 : 0; return m; }
+  function scaled(src, sw, sh, bx) {   // the ink box of a mask, scaled to NH high
+    const w = Math.max(4, Math.round(bx.w * NH / bx.h)); const a = document.createElement("canvas"); a.width = sw; a.height = sh;
+    const ax = a.getContext("2d"); const img = ax.createImageData(sw, sh); for (let i = 0; i < sw * sh; i++) if (src[i]) img.data[i * 4 + 3] = 255; ax.putImageData(img, 0, 0);
+    const b = document.createElement("canvas"); b.width = w; b.height = NH; b.getContext("2d").drawImage(a, bx.x, bx.y, bx.w, bx.h, 0, 0, w, NH);
+    return { w, m: maskOf(b, w, NH) };
+  }
+  function inkBox(m, w, h) { let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (m[y * w + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 }; }
+  /** The ink of one word in the picture (text darker or lighter than its background), scaled to NH high. */
+  function wordInk(canvas, wd) {
+    const pad = 3, x = Math.max(0, wd.x0 - pad), y = Math.max(0, wd.y0 - pad), w = Math.min(canvas.width, wd.x1 + pad) - x, h = Math.min(canvas.height, wd.y1 + pad) - y;
+    if (w < 12 || h < 12) return null;
+    const d = canvas.getContext("2d", { willReadFrequently: true }).getImageData(x, y, w, h).data; const g = new Float32Array(w * h);
+    for (let i = 0; i < w * h; i++) g[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+    const hist = new Array(256).fill(0); g.forEach((v) => hist[Math.round(v)]++);   // Otsu's threshold
+    let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i]; let sB = 0, wB = 0, best = 0, th = 128;
+    for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = w * h - wB; if (!wF) break; sB += i * hist[i]; const mB = sB / wB, mF = (sum - sB) / wF; const v = wB * wF * (mB - mF) * (mB - mF); if (v > best) { best = v; th = i; } }
+    let dark = 0, edge = 0; for (let i = 0; i < w; i++) [i, (h - 1) * w + i].forEach((k) => { edge++; if (g[k] <= th) dark++; }); for (let j = 0; j < h; j++) [j * w, j * w + w - 1].forEach((k) => { edge++; if (g[k] <= th) dark++; });
+    const inkDark = dark < edge / 2;   // the background is whatever fills the edges
+    const m = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) m[i] = (g[i] <= th) === inkDark ? 1 : 0;
+    const bx = inkBox(m, w, h); if (!bx || bx.h < 10 || bx.w < 14) return null;
+    return scaled(m, w, h, bx);
+  }
+  const drawn = new Map();
+  function wordDrawn(str, font) {
+    const key = font + "|" + str; if (drawn.has(key)) return drawn.get(key);
+    const c = document.createElement("canvas"); const x = c.getContext("2d"); x.font = font; const tw = Math.ceil(x.measureText(str).width) + 40;
+    c.width = tw; c.height = 170; const y = c.getContext("2d", { willReadFrequently: true }); y.font = font; y.textBaseline = "alphabetic"; y.fillStyle = "#000"; y.fillText(str, 20, 120);
+    const m = maskOf(c, tw, 170); const bx = inkBox(m, tw, 170); const r = bx ? scaled(m, tw, 170, bx) : null; drawn.set(key, r); return r;
+  }
+  function likeness(a, b) {   // letter shapes matching within a pixel, minus a penalty for a different width
+    const w = a.w, A = a.m; const B = new Uint8Array(w * NH);
+    for (let y = 0; y < NH; y++) for (let x = 0; x < w; x++) B[y * w + x] = b.m[y * b.w + Math.min(b.w - 1, Math.floor(x * b.w / w))];
+    const near = (M, i) => { const x = i % w, y = (i / w) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < NH && M[yy * w + xx]) return true; } return false; };
+    let na = 0, nb = 0, hit = 0; for (let i = 0; i < w * NH; i++) { if (A[i]) { na++; if (near(B, i)) hit++; } if (B[i]) { nb++; if (near(A, i)) hit++; } }
+    return (na + nb ? hit / (na + nb) : 0) - 1.2 * Math.abs(Math.log(b.w / a.w));
+  }
+  /** Compare the words in a picture with Poppins and its look-alikes. → { compared, poppins, others: {font: n}, sample } */
+  async function fontLook(canvas, words) {
+    const F = await loadFonts(); if (!F.poppins) return null;
+    const pick = words.filter((wd) => /^[A-Za-z][A-Za-z'’-]{2,}[.,:!?]?$/.test(wd.str) && wd.y1 - wd.y0 >= 14).sort((a, b) => (b.y1 - b.y0) - (a.y1 - a.y0)).slice(0, 24);
+    const out = { compared: 0, poppins: 0, others: {}, sample: [] };
+    for (const wd of pick) {
+      const ink = wordInk(canvas, wd); if (!ink) continue;
+      let bp = -9, bo = -9, bf = "";
+      for (const w of POPPINS_W) { const r = wordDrawn(wd.str, `${w} 110px "${F.poppins}"`); if (r) bp = Math.max(bp, likeness(ink, r)); }
+      for (const f of F.avail) for (const w of [400, 700]) { const r = wordDrawn(wd.str, `${w} 110px "${f}"`); if (r) { const s2 = likeness(ink, r); if (s2 > bo) { bo = s2; bf = f; } } }
+      out.compared++;
+      if (bp >= bo + 0.01) out.poppins++; else if (bo >= bp + 0.01) out.others[bf] = (out.others[bf] || 0) + 1;
+      if (out.sample.length < 6) out.sample.push({ word: wd.str, poppins: +bp.toFixed(3), best: bf, other: +bo.toFixed(3) });
+    }
+    return out;
+  }
+
   async function read(file, onStage) {
     const name = file.name || "";
     const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
@@ -561,11 +657,24 @@ const BRAND_CHECK = (() => {
     const onStage = opts.onStage;
     onStage && onStage("Opening your file");
     const doc = await read(file, onStage);
+    // Text in pictures: read it with OCR (pictures, and PDF pages exported as pictures) and compare the letters with Poppins.
+    const ocrPages = doc.pages.filter((pg) => pg.canvas).slice(0, 6); let look = null, ocrFailed = false;
+    for (const pg of ocrPages) {
+      onStage && onStage(ocrPages.length > 1 ? `Reading the text in page ${pg.n}` : "Reading the text in the picture");
+      try { const r = await readWords(pg.canvas); pg.ocrText = r.text; pg.ocrWords = r.words;
+        onStage && onStage("Comparing the letters with Poppins");
+        const l = await fontLook(pg.canvas, r.words).catch(() => null);
+        if (l) { look = look || { compared: 0, poppins: 0, others: {}, sample: [] }; look.compared += l.compared; look.poppins += l.poppins; Object.entries(l.others).forEach(([f, n2]) => { look.others[f] = (look.others[f] || 0) + n2; }); look.sample.push(...l.sample); }
+      } catch (e) { ocrFailed = true; }
+      delete pg.canvas;
+    }
     onStage && onStage("Checking every rule");
     const m = {}; const set = (id, status, evidence, where, fix) => { if (m[id] && m[id].status === "fail" && status !== "fail") return; if (m[id] && m[id].status === "fail") { m[id].evidence += " " + evidence; return; } m[id] = { status, evidence: evidence || "", where: where || "", fix: fix || "" }; };
     const pages = doc.pages; const n = pages.length;
     const isSlides = format === "slide";
-    const pageText = (pg) => pg.texts.map((t, i) => { const nx = pg.texts[i + 1]; return t.str + (!nx ? "" : t.para ? (nx.para === t.para ? "" : "\n") : t.eol ? "\n" : " "); }).join("");
+    // Items on different lines (a heading above a paragraph) are joined with a line break, so they don't read as one sentence.
+    const newLine = (t, nx) => t.eol || (nx.y != null && t.y != null && Math.abs(nx.y - t.y) > Math.max(t.h || 0, nx.h || 0) * 0.6);
+    const pageText = (pg) => !pg.texts.length && pg.ocrText ? pg.ocrText : pg.texts.map((t, i) => { const nx = pg.texts[i + 1]; return t.str + (!nx ? "" : t.para ? (nx.para === t.para ? "" : "\n") : newLine(t, nx) ? "\n" : " "); }).join("");
     const allText = pages.map(pageText).join("\n\n");
     const extra = [opts.title || "", file.name || "", opts.copy || ""].join(" ");
     const ctxFor = (w) => { const k = Number(String(w).replace(/\D/g, "")); const pg = pages.find((p) => p.n === k); return (pg ? pageText(pg) : allText) + " " + extra; };
@@ -646,6 +755,19 @@ const BRAND_CHECK = (() => {
       facts.contrast = lowC.slice(0, 6).map((x) => ({ where: x.w, ratio: Number(x.got.toFixed(1)), need: x.need, text: x.str })); }
     else if (contrastKnown && pages.some((p) => p.texts.length)) set("C4", "pass", "All text measured has at least 3:1 contrast with its background.");
 
+    // T1 from letter shapes, for text in pictures
+    const lookResult = () => {
+      if (!look || look.compared < 3) return null;
+      const other = Object.values(look.others).reduce((a, b) => a + b, 0), decided = other + look.poppins;
+      const top = Object.entries(look.others).sort((a, b) => b[1] - a[1])[0];
+      facts.fontLook = { compared: look.compared, poppins: look.poppins, others: look.others };
+      if (decided >= 3 && other >= decided * 0.6) return { status: "fail", evidence: `The letters in the picture don't match Poppins: ${other} of ${decided} words compared look like another font${top ? `, closest ${top[0]}` : ""}.`, fix: "Set the text in Poppins (download it from the brand kit or Google Fonts) and export the picture again." };
+      if (decided >= 3 && look.poppins >= decided * 0.7) return { status: "pass", evidence: `The letters in the picture match Poppins (${look.poppins} of ${decided} words compared).` };
+      return { status: "unsure", evidence: `The letters in the picture are close to Poppins but not certain (${look.poppins} of ${decided} words match Poppins). Check the font by eye.` };
+    };
+    const lr = lookResult();
+    if (lr && !doc.styleKnown) { if (lr.status === "unsure") m.T1 = { status: "unsure", evidence: lr.evidence, where: "", fix: "" }; else set("T1", lr.status, lr.evidence, "", lr.fix || ""); }
+
     // T1 · Poppins only;  T2 · hierarchy;  T3 · faux styling
     if (doc.styleKnown) {
       const fonts = {};
@@ -656,7 +778,7 @@ const BRAND_CHECK = (() => {
       const names = Object.keys(fonts); const total = names.reduce((s, f) => s + fonts[f].count, 0);
       facts.fonts = names.map((f) => ({ name: f, count: fonts[f].count, ok: isPoppins(f) })).sort((a, b) => b.count - a.count).slice(0, 8);
       const bad = names.filter((f) => !isPoppins(f));
-      if (!names.length) { if (pages.some((p) => p.raster > 0.6)) m.T1 = { status: "unsure", evidence: "No live text: the pages are pictures, so the fonts can't be read.", where: "", fix: "" }; }
+      if (!names.length) { if (lr && lr.status !== "unsure") set("T1", lr.status, lr.evidence, "", lr.fix || ""); else if (pages.some((p) => p.raster > 0.6)) m.T1 = { status: "unsure", evidence: lr ? lr.evidence : "No live text: the pages are pictures, so the fonts can't be read.", where: "", fix: "" }; }
       else if (bad.length && bad.reduce((s2, f) => s2 + fonts[f].count, 0) <= Math.min(40, total * 0.01))
         m.T1 = { status: "unsure", evidence: `Only ${bad.map((f) => `${f} (${plural(fonts[f].count, "character")}: “${pages.flatMap((pg) => pg.texts.filter((t) => t.font === f).map((t) => t.str.trim())).slice(0, 4).join(" ")}”)`).join(", ")} isn't Poppins, out of ${total} characters. That's usually text inside an award badge or partner logo; check it by eye.`, where: pagesLabel([...new Set(bad.flatMap((f) => [...fonts[f].where]))].map((w) => w.replace(/\D/g, "")).sort((a, b) => a - b), doc.kind === "pptx" ? "slide" : "page"), fix: "" };
       else if (bad.length) set("T1", "fail", `Not Poppins: ${bad.map((f) => `${f} (${plural(fonts[f].count, "character")})`).join(", ")}, out of ${total} characters.`, pagesLabel([...new Set(bad.flatMap((f) => [...fonts[f].where]))].map((w) => w.replace(/\D/g, "")).sort((a, b) => a - b), doc.kind === "pptx" ? "slide" : "page"), "Select all text and set the font to Poppins (Light to ExtraBold).");
@@ -742,14 +864,33 @@ const BRAND_CHECK = (() => {
       else if (!accentUnsure && inner.length) set("Y4", "pass", "The master deck accents are in place.");
     }
 
+    // Brand documents (the Brand Document Template): footer on every page, corner shapes, body text size
+    if (format === "document" && (doc.kind === "pdf" || doc.kind === "docx")) {
+      const footOk = (t) => /Private\s*(&|and)\s*Confidential/i.test(t) && /©\s*\d{4}/.test(t) && /recykal\.com/i.test(t);
+      if (doc.kind === "docx") { const t = pageText(pages[0]); if (footOk(t)) set("Y3", "pass", "The footer has “Private & Confidential”, the © line and www.recykal.com.");
+        else set("Y3", "fail", "The footer is missing “Private & Confidential I © " + BRAND.year + ", All rights reserved” or www.recykal.com.", "", "Use the Brand Document Template's footer: “Private & Confidential I © " + BRAND.year + ", All rights reserved” on the left and www.recykal.com on the right."); }
+      else if (doc.textKnown) { const miss = pages.filter((pg) => !footOk(pageText(pg))).map((pg) => pg.n);
+        if (miss.length) set("Y3", "fail", `The footer (“Private & Confidential I © ${BRAND.year}, All rights reserved” and www.recykal.com) is missing on ${pagesLabel(miss, "page")}.`, pagesLabel(miss, "page"), "Start from the Brand Document Template, which has the footer on every page.");
+        else set("Y3", "pass", "Every page has the footer with www.recykal.com."); }
+      const docInner = (n >= 2 ? pages.slice(1) : pages).filter((pg) => pg.px); const noCorner = [];
+      docInner.forEach((pg) => { const a2 = region(pg.px, 0, 0, 0.14, 0.12), b2 = region(pg.px, 0.86, 0.88, 1, 1); if (!(a2 && a2.share(ACCENT_GREEN, 18) >= 0.006) || !(b2 && b2.share(ACCENT_PURPLE, 18) >= 0.006)) noCorner.push(pg.n); });
+      if (noCorner.length) set("Y4", "fail", `The green corner top-left or the purple corner bottom-right is missing on ${pagesLabel(noCorner, "page")}.`, pagesLabel(noCorner, "page"), "Use the Brand Document Template pages, which already have both corners.");
+      else if (docInner.length) set("Y4", "pass", "Every page has the template's green and purple corners.");
+      // Body text: the most common size should be 10–15 pt (PDF sizes are a share of the page height; A4 is 842 pt high).
+      const sizes = {}; pages.forEach((pg) => pg.texts.forEach((t) => { if (t.footer || !hasWords(t.str)) return; const pt = Math.round(doc.kind === "docx" ? t.pt : t.size * (doc.h || 842)); sizes[pt] = (sizes[pt] || 0) + t.str.length; }));
+      const body = Object.entries(sizes).sort((a3, b3) => b3[1] - a3[1])[0];
+      if (body) facts.bodyPt = Number(body[0]);
+      if (body && (body[0] < 9.5 || body[0] > 15.5)) set("T2", "fail", `Most body text is ${body[0]} pt; the Brand Document Template uses 10–15 pt.`, "", "Set body text in Poppins Regular 10–15 pt, page titles 22 pt, and the document title 45 pt Bold.");
+    }
+
     // Y5 · digital template placement (posts, stories, banners)
     if (["square", "portrait", "story", "landscape"].includes(format) && pages[0] && pages[0].px) {
       const pg = pages[0]; const mg = MARGIN[format]; const logo = region(pg.px, mg * 0.6, mg * 0.6 * (W / H), 0.45, 0.2);
-      const txt = doc.textKnown ? pageText(pg) + " " + (opts.copy || "") : opts.copy || "";
+      const txt = doc.textKnown || pg.ocrText ? pageText(pg) + " " + (opts.copy || "") : opts.copy || "";
       const url = /www\.recykal\.com/i.test(txt); const bar = findBar(pg.px, mg);
       const probs = [];
       if (!logo || logo.content < 0.02) probs.push("nothing sits in the top-left logo position");
-      if ((doc.textKnown || opts.copy) && !url) probs.push("www.recykal.com isn't on it");
+      if ((doc.textKnown || pg.ocrText || opts.copy) && !url) probs.push("www.recykal.com isn't on it");
       if (probs.length) set("Y5", "fail", probs.join("; ").replace(/^./, (c) => c.toUpperCase()) + ".", "", "Start from the digital template: logo with tagline top-left inside the margin, www.recykal.com bottom-left with the short black bar beneath it.");
       else if (url && bar) set("Y5", "pass", "Something sits in the logo position top-left, and www.recykal.com with its bar sits bottom-left.");
       else m.Y5 = { status: "unsure", evidence: `${bar ? "The bar is bottom-left" : "No short bar found bottom-left"}${url ? " and www.recykal.com is in the text" : "; www.recykal.com couldn't be read from the image"}. Check the logo and website placement by eye.`, where: "", fix: "" };
@@ -808,7 +949,8 @@ const BRAND_CHECK = (() => {
       else set("W8", "pass", "No unsupported superlatives.");
     }
     facts.copy = copyHits.slice(0, 15);
-    if (!blind && !doc.textKnown && !opts.copy) facts.notes.push("Images have no readable text: paste the key copy to check names, figures and spelling, or upload a PDF export.");
+    if (!blind && !doc.textKnown && !opts.copy && !pages.some((p) => p.ocrText)) facts.notes.push(ocrFailed ? "The text in the picture couldn't be read (check your internet connection). Paste the key text to check the wording." : "No text was found in the picture. If it has text, paste it to check the wording.");
+    if (pages.some((p) => p.ocrText)) facts.notes.push("Text in the picture was read automatically; small or stylised text can be misread, so check any wording flag against the design.");
 
     // Everything else: the brand team checks it by eye.
     const results = {}, checks = [];
@@ -860,5 +1002,5 @@ const BRAND_CHECK = (() => {
     W9: "Proofread: typos, grammar and numbers that don't agree. (Placeholder text is checked automatically.)",
   };
 
-  return { run, read, flatColours, pixelsOf, contrast, HOW };
+  return { run, read, flatColours, pixelsOf, contrast, HOW, fontLook, readWords, loadFonts };
 })();

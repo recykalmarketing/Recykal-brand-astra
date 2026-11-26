@@ -105,8 +105,8 @@ a { color: var(--accent); }
 .notif { display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 10px; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--line); text-align: left; background: none; font: inherit; color: var(--fg); cursor: pointer; width: 100%; }
 .notif:hover, .notif:focus-visible { background: var(--card-2); outline: none; }
 .notif.unread { background: var(--accent-soft); }
-.notif b { display: block; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
-.notif .small { display: block; overflow-wrap: anywhere; }
+.notif b { display: block; font-size: 13px; font-weight: 600; overflow-wrap: break-word; }
+.notif .small { display: block; overflow-wrap: break-word; }
 .notif .when { display: block; font-size: 11px; color: var(--faint); margin-top: 2px; }
 .notif i { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; background: var(--faint); }
 .notif i.k-ok { background: var(--ok); } .notif i.k-warn { background: var(--bar-warn); } .notif i.k-bad, .notif i.k-due { background: var(--bad); }
@@ -234,7 +234,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .tcard[draggable="true"] { cursor: grab; }
 .tcard.dragging { opacity: .5; }
 .tcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.tcard h5 { font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
+.tcard h5 { font-size: 13.5px; font-weight: 600; overflow-wrap: break-word; }
 .tcard .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-width: 0; }
 .prio { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: .05em; }
 .prio.high { background: var(--bad-soft); color: var(--bad); }
@@ -259,7 +259,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 10px; }
 .req { gap: 10px; grid-template-rows: auto auto 1fr auto; }
 .req h4 { font-size: 15px; font-weight: 600; }
-.req p { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+.req p { color: var(--muted); font-size: 12.5px; overflow-wrap: break-word; }
 .req-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-top: 1px dashed var(--line); padding-top: 12px; }
 .meta { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
 
@@ -267,7 +267,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .sub-list { display: grid; gap: 10px; }
 .sub { display: grid; gap: 10px; }
 .sub-top { display: flex; gap: 12px; align-items: start; justify-content: space-between; flex-wrap: wrap; }
-.sub-title { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.sub-title { font-weight: 600; font-size: 15px; overflow-wrap: break-word; }
 .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .step { display: grid; gap: 6px; font-size: 11.5px; color: var(--faint); font-weight: 500; min-width: 0; }
 .step i { height: 4px; border-radius: 999px; background: var(--card-2); display: block; }
@@ -334,7 +334,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .thread { display: grid; gap: 10px; }
 .msg { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
 .msg img { width: 28px; height: 28px; border-radius: 50%; }
-.msg .txt { background: var(--card-2); border-radius: 4px 12px 12px 12px; padding: 8px 12px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 3px; }
+.msg .txt { background: var(--card-2); border-radius: 4px 12px 12px 12px; padding: 8px 12px; font-size: 13px; white-space: pre-wrap; overflow-wrap: break-word; margin-top: 3px; }
 .msg.me .txt { background: var(--accent-soft); }
 .composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
 .feature-box { display: grid; gap: 8px; padding: 12px; border-radius: 10px; border: 1px solid var(--line); }
@@ -342,7 +342,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .sc-card .art { position: relative; background: #fff; border: 1px solid #E3E8F0; border-radius: 8px; height: 170px; display: grid; place-items: center; padding: 10px; overflow: hidden; }
 .sc-card .art svg { max-height: 150px; max-width: 100%; width: auto; height: auto; box-shadow: 0 0 0 1px #E3E8F0; }
 .sc-card .sc-score { position: absolute; top: 8px; right: 8px; }
-.sc-card h4 { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.sc-card h4 { font-size: 15px; font-weight: 600; overflow-wrap: break-word; }
 .feedback { background: var(--card-2); border-radius: 9px; padding: 11px 13px; font-size: 13px; display: grid; gap: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -487,7 +487,7 @@ dialog.drawer .dlg { max-height: 100dvh; }
 .err { color: var(--bad); font-size: 12.5px; font-weight: 500; }
 .kv { display: grid; grid-template-columns: 120px 1fr; gap: 7px 12px; font-size: 13px; margin: 0; }
 .kv dt { color: var(--muted); }
-.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
 .history { display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 9px; font-weight: 500; font-size: 13px; z-index: 70; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
 .notice { border-radius: var(--radius); padding: 12px 14px; background: var(--warn-soft); color: var(--warn); font-size: 13px; font-weight: 500; }
@@ -664,11 +664,11 @@ const BRAND = (() => {
 
     { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
     { id: "Cover on black with the full logo and tagline; content slides with the title at the top left (and the Recykal mark top-right where the layout has it); a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
-    { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide"], t: "Footer on every slide", d: `“Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right, with the current year.`, ref: "Deck 1–16" },
-    { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide"], t: "Master deck accents", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
+    { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide", "document"], t: "Footer on every page", d: `Slides: “Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right. Documents: “Private & Confidential I © ${year}, All rights reserved” bottom-left and www.recykal.com bottom-right. Always the current year.`, ref: "Deck 1–16" },
+    { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide", "document"], t: "Template corner shapes", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
     { id: "Y5", g: "layout", sev: "major", m: true, f: DIGITAL, t: "Digital template placement", d: "Logo with tagline top-left inside the margin (50 px posts, 60 px banners, 100 px stories); www.recykal.com bottom-left with the short black bar beneath it.", ref: "p.24–26" },
     { id: "Y6", g: "layout", sev: "minor", m: true, t: "Margins and safe zones", d: "Text inside the margins; nothing important in the top or bottom 250 px of a story.", ref: "p.24–26" },
-    { id: "Y8", g: "layout", sev: "major", f: ["document"], t: "Brand Document Template", d: "Built on the Brand Document Template: Recykal logo in the header, Poppins headings and body text, the template's colours, margins, header and footer kept as they are, and no extra decorative shapes.", ref: "Brand Document Template" },
+    { id: "Built on the Brand Document Template: a cover with the full Recykal logo top-left and a large Bold title (Poppins Bold 45 pt), then pages with section titles in Bold + Normal (22 pt), subject titles in Medium (18 pt), subheadings in Medium (12 pt) and body text in Poppins 10–15 pt, all in black #000000; the template's corner shapes and footer kept; no extra decorative shapes.", g: "layout", sev: "major", f: ["document"], t: "Brand Document Template", d: "Built on the Brand Document Template: a cover with the full Recykal logo top-left and a large Bold title (Poppins Bold 45 pt), then pages with section titles in Bold + Normal (22 pt), subject titles in Medium (18 pt), subheadings in Medium (12 pt) and body text in Poppins 10–15 pt, all in black #000000; the template's corner shapes and footer kept; no extra decorative shapes.", ref: "Brand Document Template" },
     { id: "Y7", g: "layout", sev: "minor", t: "Clean alignment", d: "Elements aligned to a grid with consistent spacing and one clear focal point; no clutter or overlapping elements.", ref: "Deck 2–16" },
 
     { id: "I1", g: "imagery", sev: "major", m: true, t: "Sharp images", d: "No pixelated, stretched or badly cropped photos, screenshots or icons. Mark n/a if there are no images.", ref: "Deck 7–16" },
@@ -719,6 +719,8 @@ const BRAND = (() => {
     { re: claim("service providers|aggregators"), ok: 5000, say: "5000+ service providers & aggregators", ref: "Deck 5" },
     { re: claim("enterprises"), ok: 600, say: "600+ enterprises", ref: "Deck 2" },
     { re: /(\d[\d.]*)\s*(?:million|mn|m)\s*\+?\s*(?:MT|metric tonnes|tonnes|tons)\b/gi, ok: 3, say: "over 3 million MT channelised", ref: "Deck 5" },
+    // Indian digit grouping, e.g. "7,00,000 MT" or "30,00,000+ MT": counts below the approved 3 million are out of date.
+    { re: /\b(\d{1,2},\d{2},\d{2},\d{3}|\d{1,2},\d{2},\d{3})\s*\+?\s*(?:MT|metric tonnes|tonnes|tons)\b(?!\s*(?:of\s+)?CO)/gi, ok: 3000000, atLeast: true, say: "over 3 million MT (30,00,000+ MT) channelised", ref: "Deck 5" },
     { re: /(\d[\d.]*)\s*(?:cr|crore)\s*\+?\s*bottles\b/gi, ok: 1, say: "1 Cr+ bottles collected", ref: "Deck 9" },
     { re: /~?\s?(\d+)\s*%\s*collection rate/gi, ok: 90, say: "~90% collection rate", ref: "Deck 9" },
   ];
@@ -790,7 +792,7 @@ const BRAND = (() => {
     factChecks.forEach((fc) => {
       fc.re.lastIndex = 0; let m; const seen = {};
       while ((m = fc.re.exec(text))) {
-        const n = num(m[1] || m[2]); if (!n || n === fc.ok || seen[m[0]]) continue; seen[m[0]] = 1;
+        const n = num(m[1] || m[2]); if (!n || n === fc.ok || (fc.atLeast && n >= fc.ok) || seen[m[0]]) continue; seen[m[0]] = 1;
         out.push({ r: "W3", sev: "error", quote: m[0].trim(), msg: `Use the approved figure from the Recykal Brand Deck: “${fc.say}”.` });
       }
     });
@@ -1027,7 +1029,10 @@ const BRAND_CHECK = (() => {
   async function readImage(file) {
     const bmp = await createImageBitmap(file);
     const px = pixelsOf(bmp, bmp.width, bmp.height, 1200);
-    const page = { n: 1, texts: [], images: [], fills: [], gradients: [], px, colours: flatColours(px, "page 1"), raster: 1 };
+    // A sharp copy (up to 2000 px) for reading the text and comparing letter shapes with Poppins.
+    const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height)); const cv = document.createElement("canvas"); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    const cx = cv.getContext("2d", { willReadFrequently: true }); cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(bmp, 0, 0, cv.width, cv.height);
+    const page = { n: 1, texts: [], images: [], fills: [], gradients: [], px, colours: flatColours(px, "page 1"), raster: 1, canvas: cv };
     const out = { kind: "image", w: bmp.width, h: bmp.height, pages: [page], textKnown: false, styleKnown: false, notes: [] };
     bmp.close && bmp.close(); return out;
   }
@@ -1107,6 +1112,7 @@ const BRAND_CHECK = (() => {
         const ctx = cv.getContext("2d", { willReadFrequently: true }); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, cv.width, cv.height);
         await page.render({ canvasContext: ctx, viewport: v2 }).promise;
         const full = { data: ctx.getImageData(0, 0, cv.width, cv.height).data, W: cv.width, H: cv.height };
+        if (pg.texts.reduce((n2, t) => n2 + t.str.replace(/\s/g, "").length, 0) < 25) pg.canvas = cv;   // little or no live text (a flattened export): read it from the picture
         pg.texts.forEach((t) => {
           if (t.footer || t.h < 0.012 || t.str.replace(/\W/g, "").length < 3) return;
           const rg = region(full, t.x, t.y, t.x + t.w, t.y + t.h); if (!rg || rg.bgShare < 0.35 || rg.content < 0.03) return;
@@ -1445,6 +1451,98 @@ const BRAND_CHECK = (() => {
       notes: [`Brand Astra can't look inside ${ext ? ext + " files" : "this kind of file"}, so the brand team will check it by eye. To check the wording now, paste the key text in the box below. For a full automatic check, upload a PDF, PowerPoint, Word, HTML or image version.`] };
   }
 
+  // ---------- text in pictures (OCR) and the font check ----------
+  // Pictures have no font names, and look-alikes (Montserrat, Plus Jakarta Sans, …) pass a name check anyway. So the check reads the words
+  // with OCR, then draws each word in Poppins (the brand's own font files, served at /fonts/) and in look-alike fonts, and compares the letter
+  // shapes with the picture. The font whose shapes match best wins the word; the picture's font is the one that wins most words.
+  const tesseract = () => loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js", "Tesseract");
+  let ocrWorker = null;
+  async function readWords(canvas) {
+    const T = await tesseract();
+    if (!ocrWorker) ocrWorker = T.createWorker("eng", 1, { logger: () => {} });
+    const { data } = await (await ocrWorker).recognize(canvas);
+    const words = (data.words || []).filter((x) => x.confidence >= 55 && /[A-Za-z0-9]/.test(x.text)).map((x) => ({ str: x.text, conf: x.confidence, x0: x.bbox.x0, y0: x.bbox.y0, x1: x.bbox.x1, y1: x.bbox.y1 }));
+    const text = (data.lines || []).filter((l) => l.confidence >= 50).map((l) => l.text.trim()).filter(Boolean).join("\n");
+    return { words, text };
+  }
+  const POPPINS_W = [300, 400, 500, 600, 700, 800];
+  const LOOKALIKES = ["Montserrat", "Plus Jakarta Sans", "DM Sans", "Inter", "Nunito Sans", "Lexend", "Outfit", "Urbanist", "Manrope", "Figtree", "Work Sans", "Raleway", "Roboto", "Open Sans", "Lato", "Arial", "Helvetica"];
+  let fontsReady = null;
+  function loadFonts() {
+    if (fontsReady) return fontsReady;
+    fontsReady = (async () => {
+      const files = { 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold" };
+      let own = true;
+      try { await Promise.all(Object.entries(files).map(async ([w, n]) => { const f = new FontFace("BA Poppins", `url(/fonts/Poppins-${n}.ttf)`, { weight: w }); await f.load(); document.fonts.add(f); })); }
+      catch (e) { own = false; }
+      const google = LOOKALIKES.filter((f) => !/^(Arial|Helvetica)$/.test(f)).map((f) => f.replace(/ /g, "+") + ":wght@400;700").concat(own ? [] : ["Poppins:wght@300;400;500;600;700;800"]);
+      await new Promise((res) => { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?" + google.map((f) => "family=" + f).join("&") + "&display=block"; l.onload = res; l.onerror = res; document.head.append(l); setTimeout(res, 8000); });
+      const poppins = own ? "BA Poppins" : "Poppins";
+      await Promise.all([...POPPINS_W.map((w) => `${w} 40px "${poppins}"`), ...LOOKALIKES.flatMap((f) => [`400 40px "${f}"`, `700 40px "${f}"`])].map((q) => document.fonts.load(q, "Abgy").catch(() => null)));
+      // Keep only fonts that really loaded: a missing font would quietly draw in the fallback.
+      const c = document.createElement("canvas").getContext("2d"); const probe = "Rag Wqxy 1234 gtaG";
+      const width = (f) => { c.font = f; return c.measureText(probe).width; };
+      const avail = LOOKALIKES.filter((f) => Math.abs(width(`40px "${f}", monospace`) - width("40px monospace")) > 1);
+      const poppinsOk = Math.abs(width(`40px "${poppins}", monospace`) - width("40px monospace")) > 1;
+      return { poppins: poppinsOk ? poppins : null, own, avail };
+    })();
+    return fontsReady;
+  }
+  const NH = 40;   // masks are compared at 40 px high
+  function maskOf(cv, w, h) { const d = cv.getContext("2d", { willReadFrequently: true }).getImageData(0, 0, w, h).data; const m = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) m[i] = d[i * 4 + 3] > 110 ? 1 : 0; return m; }
+  function scaled(src, sw, sh, bx) {   // the ink box of a mask, scaled to NH high
+    const w = Math.max(4, Math.round(bx.w * NH / bx.h)); const a = document.createElement("canvas"); a.width = sw; a.height = sh;
+    const ax = a.getContext("2d"); const img = ax.createImageData(sw, sh); for (let i = 0; i < sw * sh; i++) if (src[i]) img.data[i * 4 + 3] = 255; ax.putImageData(img, 0, 0);
+    const b = document.createElement("canvas"); b.width = w; b.height = NH; b.getContext("2d").drawImage(a, bx.x, bx.y, bx.w, bx.h, 0, 0, w, NH);
+    return { w, m: maskOf(b, w, NH) };
+  }
+  function inkBox(m, w, h) { let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (m[y * w + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 }; }
+  /** The ink of one word in the picture (text darker or lighter than its background), scaled to NH high. */
+  function wordInk(canvas, wd) {
+    const pad = 3, x = Math.max(0, wd.x0 - pad), y = Math.max(0, wd.y0 - pad), w = Math.min(canvas.width, wd.x1 + pad) - x, h = Math.min(canvas.height, wd.y1 + pad) - y;
+    if (w < 12 || h < 12) return null;
+    const d = canvas.getContext("2d", { willReadFrequently: true }).getImageData(x, y, w, h).data; const g = new Float32Array(w * h);
+    for (let i = 0; i < w * h; i++) g[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+    const hist = new Array(256).fill(0); g.forEach((v) => hist[Math.round(v)]++);   // Otsu's threshold
+    let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i]; let sB = 0, wB = 0, best = 0, th = 128;
+    for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = w * h - wB; if (!wF) break; sB += i * hist[i]; const mB = sB / wB, mF = (sum - sB) / wF; const v = wB * wF * (mB - mF) * (mB - mF); if (v > best) { best = v; th = i; } }
+    let dark = 0, edge = 0; for (let i = 0; i < w; i++) [i, (h - 1) * w + i].forEach((k) => { edge++; if (g[k] <= th) dark++; }); for (let j = 0; j < h; j++) [j * w, j * w + w - 1].forEach((k) => { edge++; if (g[k] <= th) dark++; });
+    const inkDark = dark < edge / 2;   // the background is whatever fills the edges
+    const m = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) m[i] = (g[i] <= th) === inkDark ? 1 : 0;
+    const bx = inkBox(m, w, h); if (!bx || bx.h < 10 || bx.w < 14) return null;
+    return scaled(m, w, h, bx);
+  }
+  const drawn = new Map();
+  function wordDrawn(str, font) {
+    const key = font + "|" + str; if (drawn.has(key)) return drawn.get(key);
+    const c = document.createElement("canvas"); const x = c.getContext("2d"); x.font = font; const tw = Math.ceil(x.measureText(str).width) + 40;
+    c.width = tw; c.height = 170; const y = c.getContext("2d", { willReadFrequently: true }); y.font = font; y.textBaseline = "alphabetic"; y.fillStyle = "#000"; y.fillText(str, 20, 120);
+    const m = maskOf(c, tw, 170); const bx = inkBox(m, tw, 170); const r = bx ? scaled(m, tw, 170, bx) : null; drawn.set(key, r); return r;
+  }
+  function likeness(a, b) {   // letter shapes matching within a pixel, minus a penalty for a different width
+    const w = a.w, A = a.m; const B = new Uint8Array(w * NH);
+    for (let y = 0; y < NH; y++) for (let x = 0; x < w; x++) B[y * w + x] = b.m[y * b.w + Math.min(b.w - 1, Math.floor(x * b.w / w))];
+    const near = (M, i) => { const x = i % w, y = (i / w) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < NH && M[yy * w + xx]) return true; } return false; };
+    let na = 0, nb = 0, hit = 0; for (let i = 0; i < w * NH; i++) { if (A[i]) { na++; if (near(B, i)) hit++; } if (B[i]) { nb++; if (near(A, i)) hit++; } }
+    return (na + nb ? hit / (na + nb) : 0) - 1.2 * Math.abs(Math.log(b.w / a.w));
+  }
+  /** Compare the words in a picture with Poppins and its look-alikes. → { compared, poppins, others: {font: n}, sample } */
+  async function fontLook(canvas, words) {
+    const F = await loadFonts(); if (!F.poppins) return null;
+    const pick = words.filter((wd) => /^[A-Za-z][A-Za-z'’-]{2,}[.,:!?]?$/.test(wd.str) && wd.y1 - wd.y0 >= 14).sort((a, b) => (b.y1 - b.y0) - (a.y1 - a.y0)).slice(0, 24);
+    const out = { compared: 0, poppins: 0, others: {}, sample: [] };
+    for (const wd of pick) {
+      const ink = wordInk(canvas, wd); if (!ink) continue;
+      let bp = -9, bo = -9, bf = "";
+      for (const w of POPPINS_W) { const r = wordDrawn(wd.str, `${w} 110px "${F.poppins}"`); if (r) bp = Math.max(bp, likeness(ink, r)); }
+      for (const f of F.avail) for (const w of [400, 700]) { const r = wordDrawn(wd.str, `${w} 110px "${f}"`); if (r) { const s2 = likeness(ink, r); if (s2 > bo) { bo = s2; bf = f; } } }
+      out.compared++;
+      if (bp >= bo + 0.01) out.poppins++; else if (bo >= bp + 0.01) out.others[bf] = (out.others[bf] || 0) + 1;
+      if (out.sample.length < 6) out.sample.push({ word: wd.str, poppins: +bp.toFixed(3), best: bf, other: +bo.toFixed(3) });
+    }
+    return out;
+  }
+
   async function read(file, onStage) {
     const name = file.name || "";
     const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
@@ -1465,11 +1563,24 @@ const BRAND_CHECK = (() => {
     const onStage = opts.onStage;
     onStage && onStage("Opening your file");
     const doc = await read(file, onStage);
+    // Text in pictures: read it with OCR (pictures, and PDF pages exported as pictures) and compare the letters with Poppins.
+    const ocrPages = doc.pages.filter((pg) => pg.canvas).slice(0, 6); let look = null, ocrFailed = false;
+    for (const pg of ocrPages) {
+      onStage && onStage(ocrPages.length > 1 ? `Reading the text in page ${pg.n}` : "Reading the text in the picture");
+      try { const r = await readWords(pg.canvas); pg.ocrText = r.text; pg.ocrWords = r.words;
+        onStage && onStage("Comparing the letters with Poppins");
+        const l = await fontLook(pg.canvas, r.words).catch(() => null);
+        if (l) { look = look || { compared: 0, poppins: 0, others: {}, sample: [] }; look.compared += l.compared; look.poppins += l.poppins; Object.entries(l.others).forEach(([f, n2]) => { look.others[f] = (look.others[f] || 0) + n2; }); look.sample.push(...l.sample); }
+      } catch (e) { ocrFailed = true; }
+      delete pg.canvas;
+    }
     onStage && onStage("Checking every rule");
     const m = {}; const set = (id, status, evidence, where, fix) => { if (m[id] && m[id].status === "fail" && status !== "fail") return; if (m[id] && m[id].status === "fail") { m[id].evidence += " " + evidence; return; } m[id] = { status, evidence: evidence || "", where: where || "", fix: fix || "" }; };
     const pages = doc.pages; const n = pages.length;
     const isSlides = format === "slide";
-    const pageText = (pg) => pg.texts.map((t, i) => { const nx = pg.texts[i + 1]; return t.str + (!nx ? "" : t.para ? (nx.para === t.para ? "" : "\n") : t.eol ? "\n" : " "); }).join("");
+    // Items on different lines (a heading above a paragraph) are joined with a line break, so they don't read as one sentence.
+    const newLine = (t, nx) => t.eol || (nx.y != null && t.y != null && Math.abs(nx.y - t.y) > Math.max(t.h || 0, nx.h || 0) * 0.6);
+    const pageText = (pg) => !pg.texts.length && pg.ocrText ? pg.ocrText : pg.texts.map((t, i) => { const nx = pg.texts[i + 1]; return t.str + (!nx ? "" : t.para ? (nx.para === t.para ? "" : "\n") : newLine(t, nx) ? "\n" : " "); }).join("");
     const allText = pages.map(pageText).join("\n\n");
     const extra = [opts.title || "", file.name || "", opts.copy || ""].join(" ");
     const ctxFor = (w) => { const k = Number(String(w).replace(/\D/g, "")); const pg = pages.find((p) => p.n === k); return (pg ? pageText(pg) : allText) + " " + extra; };
@@ -1550,6 +1661,19 @@ const BRAND_CHECK = (() => {
       facts.contrast = lowC.slice(0, 6).map((x) => ({ where: x.w, ratio: Number(x.got.toFixed(1)), need: x.need, text: x.str })); }
     else if (contrastKnown && pages.some((p) => p.texts.length)) set("C4", "pass", "All text measured has at least 3:1 contrast with its background.");
 
+    // T1 from letter shapes, for text in pictures
+    const lookResult = () => {
+      if (!look || look.compared < 3) return null;
+      const other = Object.values(look.others).reduce((a, b) => a + b, 0), decided = other + look.poppins;
+      const top = Object.entries(look.others).sort((a, b) => b[1] - a[1])[0];
+      facts.fontLook = { compared: look.compared, poppins: look.poppins, others: look.others };
+      if (decided >= 3 && other >= decided * 0.6) return { status: "fail", evidence: `The letters in the picture don't match Poppins: ${other} of ${decided} words compared look like another font${top ? `, closest ${top[0]}` : ""}.`, fix: "Set the text in Poppins (download it from the brand kit or Google Fonts) and export the picture again." };
+      if (decided >= 3 && look.poppins >= decided * 0.7) return { status: "pass", evidence: `The letters in the picture match Poppins (${look.poppins} of ${decided} words compared).` };
+      return { status: "unsure", evidence: `The letters in the picture are close to Poppins but not certain (${look.poppins} of ${decided} words match Poppins). Check the font by eye.` };
+    };
+    const lr = lookResult();
+    if (lr && !doc.styleKnown) { if (lr.status === "unsure") m.T1 = { status: "unsure", evidence: lr.evidence, where: "", fix: "" }; else set("T1", lr.status, lr.evidence, "", lr.fix || ""); }
+
     // T1 · Poppins only;  T2 · hierarchy;  T3 · faux styling
     if (doc.styleKnown) {
       const fonts = {};
@@ -1560,7 +1684,7 @@ const BRAND_CHECK = (() => {
       const names = Object.keys(fonts); const total = names.reduce((s, f) => s + fonts[f].count, 0);
       facts.fonts = names.map((f) => ({ name: f, count: fonts[f].count, ok: isPoppins(f) })).sort((a, b) => b.count - a.count).slice(0, 8);
       const bad = names.filter((f) => !isPoppins(f));
-      if (!names.length) { if (pages.some((p) => p.raster > 0.6)) m.T1 = { status: "unsure", evidence: "No live text: the pages are pictures, so the fonts can't be read.", where: "", fix: "" }; }
+      if (!names.length) { if (lr && lr.status !== "unsure") set("T1", lr.status, lr.evidence, "", lr.fix || ""); else if (pages.some((p) => p.raster > 0.6)) m.T1 = { status: "unsure", evidence: lr ? lr.evidence : "No live text: the pages are pictures, so the fonts can't be read.", where: "", fix: "" }; }
       else if (bad.length && bad.reduce((s2, f) => s2 + fonts[f].count, 0) <= Math.min(40, total * 0.01))
         m.T1 = { status: "unsure", evidence: `Only ${bad.map((f) => `${f} (${plural(fonts[f].count, "character")}: “${pages.flatMap((pg) => pg.texts.filter((t) => t.font === f).map((t) => t.str.trim())).slice(0, 4).join(" ")}”)`).join(", ")} isn't Poppins, out of ${total} characters. That's usually text inside an award badge or partner logo; check it by eye.`, where: pagesLabel([...new Set(bad.flatMap((f) => [...fonts[f].where]))].map((w) => w.replace(/\D/g, "")).sort((a, b) => a - b), doc.kind === "pptx" ? "slide" : "page"), fix: "" };
       else if (bad.length) set("T1", "fail", `Not Poppins: ${bad.map((f) => `${f} (${plural(fonts[f].count, "character")})`).join(", ")}, out of ${total} characters.`, pagesLabel([...new Set(bad.flatMap((f) => [...fonts[f].where]))].map((w) => w.replace(/\D/g, "")).sort((a, b) => a - b), doc.kind === "pptx" ? "slide" : "page"), "Select all text and set the font to Poppins (Light to ExtraBold).");
@@ -1646,14 +1770,33 @@ const BRAND_CHECK = (() => {
       else if (!accentUnsure && inner.length) set("Y4", "pass", "The master deck accents are in place.");
     }
 
+    // Brand documents (the Brand Document Template): footer on every page, corner shapes, body text size
+    if (format === "document" && (doc.kind === "pdf" || doc.kind === "docx")) {
+      const footOk = (t) => /Private\s*(&|and)\s*Confidential/i.test(t) && /©\s*\d{4}/.test(t) && /recykal\.com/i.test(t);
+      if (doc.kind === "docx") { const t = pageText(pages[0]); if (footOk(t)) set("Y3", "pass", "The footer has “Private & Confidential”, the © line and www.recykal.com.");
+        else set("Y3", "fail", "The footer is missing “Private & Confidential I © " + BRAND.year + ", All rights reserved” or www.recykal.com.", "", "Use the Brand Document Template's footer: “Private & Confidential I © " + BRAND.year + ", All rights reserved” on the left and www.recykal.com on the right."); }
+      else if (doc.textKnown) { const miss = pages.filter((pg) => !footOk(pageText(pg))).map((pg) => pg.n);
+        if (miss.length) set("Y3", "fail", `The footer (“Private & Confidential I © ${BRAND.year}, All rights reserved” and www.recykal.com) is missing on ${pagesLabel(miss, "page")}.`, pagesLabel(miss, "page"), "Start from the Brand Document Template, which has the footer on every page.");
+        else set("Y3", "pass", "Every page has the footer with www.recykal.com."); }
+      const docInner = (n >= 2 ? pages.slice(1) : pages).filter((pg) => pg.px); const noCorner = [];
+      docInner.forEach((pg) => { const a2 = region(pg.px, 0, 0, 0.14, 0.12), b2 = region(pg.px, 0.86, 0.88, 1, 1); if (!(a2 && a2.share(ACCENT_GREEN, 18) >= 0.006) || !(b2 && b2.share(ACCENT_PURPLE, 18) >= 0.006)) noCorner.push(pg.n); });
+      if (noCorner.length) set("Y4", "fail", `The green corner top-left or the purple corner bottom-right is missing on ${pagesLabel(noCorner, "page")}.`, pagesLabel(noCorner, "page"), "Use the Brand Document Template pages, which already have both corners.");
+      else if (docInner.length) set("Y4", "pass", "Every page has the template's green and purple corners.");
+      // Body text: the most common size should be 10–15 pt (PDF sizes are a share of the page height; A4 is 842 pt high).
+      const sizes = {}; pages.forEach((pg) => pg.texts.forEach((t) => { if (t.footer || !hasWords(t.str)) return; const pt = Math.round(doc.kind === "docx" ? t.pt : t.size * (doc.h || 842)); sizes[pt] = (sizes[pt] || 0) + t.str.length; }));
+      const body = Object.entries(sizes).sort((a3, b3) => b3[1] - a3[1])[0];
+      if (body) facts.bodyPt = Number(body[0]);
+      if (body && (body[0] < 9.5 || body[0] > 15.5)) set("T2", "fail", `Most body text is ${body[0]} pt; the Brand Document Template uses 10–15 pt.`, "", "Set body text in Poppins Regular 10–15 pt, page titles 22 pt, and the document title 45 pt Bold.");
+    }
+
     // Y5 · digital template placement (posts, stories, banners)
     if (["square", "portrait", "story", "landscape"].includes(format) && pages[0] && pages[0].px) {
       const pg = pages[0]; const mg = MARGIN[format]; const logo = region(pg.px, mg * 0.6, mg * 0.6 * (W / H), 0.45, 0.2);
-      const txt = doc.textKnown ? pageText(pg) + " " + (opts.copy || "") : opts.copy || "";
+      const txt = doc.textKnown || pg.ocrText ? pageText(pg) + " " + (opts.copy || "") : opts.copy || "";
       const url = /www\.recykal\.com/i.test(txt); const bar = findBar(pg.px, mg);
       const probs = [];
       if (!logo || logo.content < 0.02) probs.push("nothing sits in the top-left logo position");
-      if ((doc.textKnown || opts.copy) && !url) probs.push("www.recykal.com isn't on it");
+      if ((doc.textKnown || pg.ocrText || opts.copy) && !url) probs.push("www.recykal.com isn't on it");
       if (probs.length) set("Y5", "fail", probs.join("; ").replace(/^./, (c) => c.toUpperCase()) + ".", "", "Start from the digital template: logo with tagline top-left inside the margin, www.recykal.com bottom-left with the short black bar beneath it.");
       else if (url && bar) set("Y5", "pass", "Something sits in the logo position top-left, and www.recykal.com with its bar sits bottom-left.");
       else m.Y5 = { status: "unsure", evidence: `${bar ? "The bar is bottom-left" : "No short bar found bottom-left"}${url ? " and www.recykal.com is in the text" : "; www.recykal.com couldn't be read from the image"}. Check the logo and website placement by eye.`, where: "", fix: "" };
@@ -1712,7 +1855,8 @@ const BRAND_CHECK = (() => {
       else set("W8", "pass", "No unsupported superlatives.");
     }
     facts.copy = copyHits.slice(0, 15);
-    if (!blind && !doc.textKnown && !opts.copy) facts.notes.push("Images have no readable text: paste the key copy to check names, figures and spelling, or upload a PDF export.");
+    if (!blind && !doc.textKnown && !opts.copy && !pages.some((p) => p.ocrText)) facts.notes.push(ocrFailed ? "The text in the picture couldn't be read (check your internet connection). Paste the key text to check the wording." : "No text was found in the picture. If it has text, paste it to check the wording.");
+    if (pages.some((p) => p.ocrText)) facts.notes.push("Text in the picture was read automatically; small or stylised text can be misread, so check any wording flag against the design.");
 
     // Everything else: the brand team checks it by eye.
     const results = {}, checks = [];
@@ -1764,7 +1908,7 @@ const BRAND_CHECK = (() => {
     W9: "Proofread: typos, grammar and numbers that don't agree. (Placeholder text is checked automatically.)",
   };
 
-  return { run, read, flatColours, pixelsOf, contrast, HOW };
+  return { run, read, flatColours, pixelsOf, contrast, HOW, fontLook, readWords, loadFonts };
 })();
 
   const PALETTE = BRAND.primary.map(([n, hex]) => [n, hex, "Primary"]);
@@ -1806,11 +1950,11 @@ const BRAND_CHECK = (() => {
       "Text readable from a distance on event screens and LinkedIn covers",
       "Partner logos, if any, smaller than the Recykal logo and evenly spaced"] },
     document: { name: "Brand document", size: "A4 · 210 × 297 mm", tpl: null, checks: [
-      "Built on the Brand Document Template, not a blank or old document",
-      "Recykal logo in the header, unaltered, with clear space around it",
-      "Headings in Poppins Bold or SemiBold; body text in Poppins Regular",
-      "A4 portrait pages, with text inside the template's margins",
-      "Colours from the Recykal palette; product sections use that product's colours",
+      "Built on the Brand Document Template: cover with the full Recykal logo top-left and a large Bold title",
+      "Green corner top-left and purple corner bottom-right on every page, as in the template",
+      `Footer on every page: “Private & Confidential I © ${BRAND.year}, All rights reserved” and www.recykal.com`,
+      "Poppins in black: title Bold 45 pt, page titles Bold + Normal 22 pt, body 10–15 pt",
+      "A4 portrait pages, colours from the Recykal palette",
       "Spelling, product names and figures checked against the fact sheet"] },
     other: { name: "Email / other", size: "Email, letter, other", tpl: null, checks: [
       "Uses the approved email or letter template",
@@ -1905,6 +2049,8 @@ const BRAND_CHECK = (() => {
   const icon = (name) => { const el = s("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" }); el.append(s("path", { d: ICONS[name] })); return el; };
   const newId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9-]/g, "");
   const nowIso = () => new Date().toISOString();
+  /** Shorten text at a word boundary, with an ellipsis. */
+  const clip = (t, n) => { t = String(t || "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const cut = t.slice(0, n); const sp = cut.lastIndexOf(" "); return (sp > n * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,.;:–-]+$/, "") + "…"; };
   const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "—";
   const fmtDateTime = (iso) => iso ? new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "—";
   const deadlineEnd = (d) => d ? new Date(d + "T23:59:59") : null;
@@ -1951,7 +2097,7 @@ const BRAND_CHECK = (() => {
   const fileBadge = (name) => { const ext = (String(name || "").match(/\.([a-z0-9]{1,5})$/i) || [, "FILE"])[1].toUpperCase(); return ext; };
   const fmtSize = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
   const AUTO_APPROVE_NOTE = "Anything the check measures as off-brand comes back to you straight away with the fix; files that pass go to the brand team, who check the logo and imagery by eye.";
-  const CHANNELS = ["LinkedIn", "Instagram", "Facebook", "X (Twitter)", "YouTube", "Website / blog", "Client or partner presentation", "Event, print or OOH", "Email / newsletter", "Internal only"];
+  const CHANNELS = ["LinkedIn", "Instagram", "Facebook", "X (Twitter)", "YouTube", "WhatsApp", "Website / blog", "Client or partner presentation", "Event, print or OOH", "Email / newsletter", "Internal only"];
   /** Working days (Mon–Fri) elapsed between two moments, as a fraction. */
   function workDays(fromIso, toMs = Date.now()) {
     let t = new Date(fromIso).getTime(), ms = 0; if (!t) return 0;
@@ -2136,7 +2282,7 @@ const BRAND_CHECK = (() => {
     // Everyone: decisions on my work, replies to me, tasks for me, deadlines.
     myRows().forEach((r) => { const rv = r.rev; if (!rv || !rv.at || isOpen(r.status)) return;
       add(rv.at, r.status === "approved" ? "ok" : r.status === "changes" ? "warn" : "bad", `${rv.by === "ai" ? "The automatic check" : nameOf(rv.by)} ${r.status === "approved" ? "approved" : r.status === "changes" ? "requested changes on" : "didn't approve"} “${r.sub.title}”`, r.score != null ? `QC score ${r.score}/100` : "", () => go("work")); });
-    for (const [sid, msgs] of Object.entries(S.myThreads || {})) (msgs || []).filter((m) => m.by !== S.uid).forEach((m) => add(m.at, "msg", `${nameOf(m.by)} replied on “${workTitle(S.uid, sid)}”`, m.text.slice(0, 100), () => go("work")));
+    for (const [sid, msgs] of Object.entries(S.myThreads || {})) (msgs || []).filter((m) => m.by !== S.uid).forEach((m) => add(m.at, "msg", `${nameOf(m.by)} replied on “${workTitle(S.uid, sid)}”`, clip(m.text, 100), () => go("work")));
     myBriefs().filter((b) => !b.closed).forEach((b) => {
       const named = (b.people || []).includes(S.uid) || (b.teams || []).length;
       if (!S.isAdmin) add(b.createdAt, "task", `New request${named ? " for you" : ""}: “${b.title}”`, `Due ${fmtDeadline(b.deadline)}${b.priority === "high" ? " · high priority" : ""}`, () => go("requests"));
@@ -2153,7 +2299,7 @@ const BRAND_CHECK = (() => {
       });
       for (const [uid, items] of Object.entries(S.allThreads || {})) for (const [sid, msgs] of Object.entries(items || {})) (msgs || []).filter((m) => m.by === uid && uid !== S.uid).forEach((m) => {
         const r = allRows().find((x) => x.uid === uid && x.sid === sid);
-        add(m.at, "msg", `${nameOf(uid)} wrote on “${workTitle(uid, sid)}”`, m.text.slice(0, 100), () => r ? openReview(r) : go("queue")); });
+        add(m.at, "msg", `${nameOf(uid)} wrote on “${workTitle(uid, sid)}”`, clip(m.text, 110), () => r ? openReview(r) : go("queue")); });
     }
     return out.filter((n) => n.at >= since && n.at <= new Date(Date.now() + 60000).toISOString()).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 40);
   }
@@ -2332,7 +2478,7 @@ const BRAND_CHECK = (() => {
           open.length ? h("div", { class: "req-grid" }, open.slice(0, 4).map(reqCard)) : h("p", { class: "muted", text: "Nothing waiting on you right now. You can still submit any design for a brand check." })),
         h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Latest on your work" }), h("button", { class: "linkbtn", onclick: () => go("work") }, "All submissions")),
           rows.length ? h("div", { class: "feed" }, rows.slice(0, 5).map((r) => h("div", { class: "it", style: "grid-template-columns:1fr auto;align-items:center" },
-            h("div", { style: "min-width:0" }, h("div", { style: "font-weight:600;overflow-wrap:anywhere", text: r.sub.title }), h("div", { class: "when", text: `${r.sub.kind} · ${ago(r.sub.submittedAt)}` })), pill(r.status)))) :
+            h("div", { style: "min-width:0" }, h("div", { style: "font-weight:600;overflow-wrap:break-word", text: r.sub.title }), h("div", { class: "when", text: `${r.sub.kind} · ${ago(r.sub.submittedAt)}` })), pill(r.status)))) :
             h("p", { class: "muted", text: "Your submissions and their review status will show here." }))),
     ];
   }
@@ -2477,7 +2623,10 @@ const BRAND_CHECK = (() => {
     const head = h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: S.isAdmin ? "Requests & " : "My " }), h("b", { text: "tasks" })),
       h("p", { text: S.isAdmin ? "Post a request with a deadline and a priority, and assign it to everyone, a team or named people. Drag cards across the board as work moves; assignees get an email and a reminder before the deadline." : "Work the brand team has asked you for, with deadlines and templates. Submit against a task so it's reviewed in context; the board moves as your work is reviewed." })),
       S.isAdmin ? h("button", { class: "btn btn-primary", onclick: () => openBrief() }, "New request") : null);
-    if (!list.length) return [head, h("div", { class: "empty" }, h("strong", { text: S.isAdmin ? "No requests yet" : "No tasks for you yet" }), h("span", { text: S.isAdmin ? "Create the first one, for example “Q4 sales deck on the new template”, with a deadline." : "Requests the brand team assigns to you or your team will appear here." }))];
+    if (!list.length) return [head, h("div", { class: "empty" }, h("strong", { text: S.isAdmin ? "No requests yet" : "No tasks for you yet" }),
+      h("span", { text: S.isAdmin ? "Create the first one, for example “Q4 sales deck on the new template”, with a deadline." : "Requests the brand team assigns to everyone, to your team or to you appear here, with their deadlines. Requests for other teams don't. You can still check and submit any design without a request." }),
+      S.isAdmin ? h("button", { class: "btn btn-primary btn-sm", style: "margin-top:6px", onclick: () => openBrief() }, "New request")
+        : h("div", { class: "actions", style: "justify-content:center;margin-top:6px" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => go("qc") }, "Run Brand QC"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => go("kit") }, "Open the brand kit")))];
     const seg = h("div", { class: "seg", role: "group", "aria-label": "Layout" }, [["board", "Board"], ["table", S.isAdmin ? "Table" : "List"], ["calendar", "Calendar"]].map(([k, l]) =>
       h("button", { "aria-pressed": String(mode === k), onclick: () => { S.reqMode = k; render(); } }, l)));
     const highOpen = list.filter((b) => !b.closed && b.priority === "high").length, overdue = list.filter((b) => reqState(b).k === "overdue").length;
@@ -2544,7 +2693,7 @@ const BRAND_CHECK = (() => {
         h("button", { class: "btn btn-primary", disabled: !S.uid || null, onclick: () => openSubmit() }, "Submit work")),
       !S.uid ? h("div", { class: "notice", text: "Your account has no identity on this page, so you can read but not submit. Open it signed in to your Recykal claude.ai account." }) : null,
       rows.length ? h("div", { class: "sub-list" }, rows.map(subCard)) : h("div", { class: "empty" }, h("strong", { text: "You haven't submitted anything yet" }),
-        h("span", { text: "Run a Brand QC, then share the Google Slides, Docs or Drive link with a short description." }),
+        h("span", { text: "1. Check your file in Brand QC and fix anything it finds. 2. Submit it: upload the file or paste the Google link, with a line on where it will be used. 3. Follow the review here and reply to the brand team." }),
         h("button", { class: "btn btn-dark btn-sm", style: "margin-top:6px", onclick: () => go("qc") }, "Run Brand QC")),
     ];
   }
@@ -2602,7 +2751,7 @@ const BRAND_CHECK = (() => {
     L5: "Clear space around the logo", L6: "Right logo version for this page", L7: "Product logos used as supplied",
     C1: "Only Recykal colours", C2: "Product colours only on that product", C3: "No colour gradients", C4: "Text easy to read on its background",
     T1: "Poppins font only", T2: "Headings in bold", T3: "No all-caps sentences or text effects",
-    Y1: "Right page size", Y2: "Slides follow the Recykal deck", Y3: "Footer on every slide", Y4: "Corner shapes from the template",
+    Y1: "Right page size", Y2: "Slides follow the Recykal deck", Y3: "Footer on every page", Y4: "Corner shapes from the template",
     Y5: "Logo and website in the right places", Y6: "Text inside the margins", Y7: "Neat alignment", Y8: "Built on the Brand Document Template",
     I1: "Sharp, undistorted pictures", I2: "Real Recykal pictures", I3: "Matching icons", I4: "Partner logos smaller than Recykal's", I5: "No watermarked or copied images",
     W1: "Company name written “Recykal”", W2: "Funding written “$68M+ raised to date”", W3: "Numbers match the fact sheet", W4: "Product names spelled right",
@@ -2613,6 +2762,28 @@ const BRAND_CHECK = (() => {
     Y7: "alignment", W9: "spelling", C3: "colours", T1: "fonts", C1: "colours", C4: "readability", Y2: "slide layout", Y4: "slide layout", Y5: "layout", Y6: "margins", Y1: "page size", Y8: "the template", T2: "fonts", T3: "fonts", C2: "colours" };
   const FIX_LABEL = { critical: "Must fix", major: "Should fix", minor: "Small fix" };
   const plainName = (id) => PLAIN[id] || (BRAND.ruleById[id] || {}).t || id;
+  /** The check result as a one-page HTML report: opens in any browser and prints to PDF. */
+  function downloadReport(res, fileName) {
+    const ai = res.report, R = BRAND.ruleById, esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const checks = (ai.checks || []).filter((c) => R[c.id]);
+    const fails = checks.filter((c) => c.status === "fail").sort((a, b) => SEV_RANK[R[a.id].sev] - SEV_RANK[R[b.id].sev]);
+    const passed = checks.filter((c) => c.status === "pass"), eye = checks.filter((c) => c.status === "unsure");
+    const verdict = res.decision === "pending" ? "Ready to submit" : res.decision === "changes" ? "Almost there" : "Not ready yet";
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Brand QC report · ${esc(fileName)}</title><style>
+body{font-family:Poppins,Arial,sans-serif;color:#111;max-width:760px;margin:32px auto;padding:0 20px;line-height:1.5}h1{font-size:22px;margin:0}h2{font-size:15px;margin:26px 0 8px}
+.meta{color:#666;font-size:13px}.score{font-size:40px;font-weight:700}.item{border-left:4px solid #C42838;padding:8px 12px;margin:8px 0;background:#FAFAFB}.item.major{border-color:#9A5B00}.item.minor{border-color:#C9D1DE}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;color:#666}.how{margin-top:4px}ul{padding-left:18px}li{margin:2px 0}@media print{body{margin:0}}</style></head><body>
+<p class="meta">Recykal Brand Astra · Brand QC report</p><h1>${esc(fileName)}</h1>
+<p class="meta">${esc(FORMATS[ai.format] ? FORMATS[ai.format].name + " · " + FORMATS[ai.format].size : "")} · checked ${esc(fmtDateTime(ai.checkedAt))}</p>
+<p><span class="score">${esc(res.score)}</span> / 100 · <b>${esc(verdict)}</b><br>${esc(ai.summary || "")}</p>
+${fails.length ? `<h2>What to fix (${fails.length})</h2>` + fails.map((c) => `<div class="item ${R[c.id].sev}"><div class="tag">${esc(FIX_LABEL[R[c.id].sev])}${c.where ? " · " + esc(c.where) : ""}</div><b>${esc(plainName(c.id))}</b><div>${esc(c.evidence)}</div>${c.fix ? `<div class="how"><b>How to fix:</b> ${esc(c.fix)}</div>` : ""}</div>`).join("") : "<h2>Nothing to fix in what Brand Astra can check</h2>"}
+${eye.length ? `<h2>The brand team checks by eye (${eye.length})</h2><ul>${eye.map((c) => `<li>${esc(plainName(c.id))}</li>`).join("")}</ul>` : ""}
+${passed.length ? `<h2>Already right (${passed.length})</h2><ul>${passed.map((c) => `<li>${esc(plainName(c.id))}</li>`).join("")}</ul>` : ""}
+<p class="meta">Score: every file starts at 100; Must fix −25, Should fix −10, Small fix −3. 85+ is ready for the brand team.</p></body></html>`;
+    const name = "brand-qc-" + String(fileName).replace(/\.[a-z0-9]+$/i, "").replace(/[^\w-]+/g, "-").slice(0, 60) + ".html";
+    if (S.downloads && S.downloads !== blobDownloads) { S.downloads.save({ filename: name, data: html }).catch(() => {}); return; }
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" })); const a = h("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
   function aiReport(ai, score, opts = {}) {
     if (!ai) return null;
     if (!ai.checks) return aiReportLegacy(ai, score, opts);
@@ -2691,9 +2862,10 @@ const BRAND_CHECK = (() => {
       h("div", null, h("div", { class: "small" }, h("b", { text: m.by === S.uid ? "You" : nameOf(m.by) }), " · " + fmtDateTime(m.at)), h("div", { class: "txt", text: m.text })))));
     const send = h("button", { class: "btn btn-dark btn-sm", type: "button", onclick: async () => {
       const t = ta.value.trim(); if (!t) return; send.disabled = true;
-      try { await postComment(uid, sid, t); S.drafts[key] = ""; ta.value = "";
+      S.drafts[key] = ""; ta.value = "";   // clear first: the page can refresh while it sends and would re-fill the box from the draft
+      try { await postComment(uid, sid, t); const fresh = document.getElementById("th-" + sid); if (fresh && fresh.value.trim() === t) fresh.value = "";
         if (inDrawer) list.append(h("div", { class: "msg me" }, h("img", { src: S.me.avatarUrl, alt: "" }), h("div", null, h("div", { class: "small" }, h("b", { text: "You" }), " · just now"), h("div", { class: "txt", text: t }))));
-        toast("Message sent"); } catch (e) { toast("Couldn't send: " + (e.message || e.code)); } send.disabled = false; } }, "Send");
+        toast("Message sent"); } catch (e) { S.drafts[key] = t; const box = document.getElementById("th-" + sid) || ta; box.value = t; toast("Couldn't send: " + (e.message || e.code)); } send.disabled = false; } }, "Send");
     return h("div", { class: "thread-box" }, h("div", { class: "lbl" }, icon("chat"), ` Conversation${msgs.length ? ` (${msgs.length})` : ""}`), msgs.length ? list : inDrawer ? h("div", { class: "small", text: "No messages yet." }) : null, list.parentNode ? null : (msgs.length ? null : list),
       h("div", { class: "composer" }, ta, send));
   }
@@ -2763,6 +2935,7 @@ const BRAND_CHECK = (() => {
         try {
           if (mode === "upload") { q.fileStage = "Uploading your file"; render(); if (!q.upload.link) q.upload.link = await S.autoQc.upload(q.upload.file); link = q.upload.link; q.link = link; FILES[link] = q.upload.file; }
           q.fileReport = await S.autoQc.preview(link, q.format, q.copy, mode === "upload" ? q.upload.name : "", mode === "upload" ? q.upload.file : null, (t) => { q.fileStage = t; render(); }, q.audience || "External");
+          q.fileReportCopy = q.copy;
         } catch (e) { q.fileErr = e.message || String(e); }
         q.fileBusy = false; render();
       };
@@ -2771,7 +2944,11 @@ const BRAND_CHECK = (() => {
         if (q.upload && q.upload.preview) URL.revokeObjectURL(q.upload.preview);
         q.upload = { file: f, name: f.name, size: f.size, type: f.type, preview: /^image\//.test(f.type) ? URL.createObjectURL(f) : null };
         q.fileErr = ""; q.fileReport = null; render();
-        guessFormat(f).then((k) => { if (k && q.upload && q.upload.file === f) { q.format = k; q.checks = {}; render(); } });
+        q.formatNote = "";
+        guessFormat(f).then((k) => { if (!k || !q.upload || q.upload.file !== f || k === q.format) return;
+          if (q.formatChosen) q.formatNote = `This file's shape looks like ${FORMATS[k].name} (${FORMATS[k].size}), but you chose ${FORMATS[q.format].name}. Change it below if that's wrong.`;
+          else { q.formatNote = `Set to ${FORMATS[k].name} from the file's shape. Change it below if that's wrong.`; q.format = k; q.checks = {}; }
+          render(); });
       };
       const removeFile = () => {
         if (q.upload && q.upload.preview) URL.revokeObjectURL(q.upload.preview);
@@ -2785,12 +2962,12 @@ const BRAND_CHECK = (() => {
         ondragover: (e) => { e.preventDefault(); e.currentTarget.classList.add("over"); }, ondragleave: (e) => e.currentTarget.classList.remove("over"),
         ondrop: (e) => { e.preventDefault(); e.currentTarget.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) pickFile(f); } },
         q.upload ? [q.upload.preview ? h("img", { src: q.upload.preview, alt: "" }) : h("span", { class: "pdf-ic", text: fileBadge(q.upload.name) }),
-            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:anywhere", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
+            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:break-word", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
             h("button", { type: "button", class: "drop-x", "aria-label": "Remove " + q.upload.name, title: "Remove this file", disabled: q.fileBusy || null,
               onclick: (e) => { e.stopPropagation(); removeFile(); }, onkeydown: (e) => e.stopPropagation(), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' })]
           : [h("span", { class: "up-ic" }, icon("upload")), h("b", { text: "Drop your file here, or click to choose" }), h("span", { class: "small", text: "Any file up to 25 MB · PowerPoint, PDF, Word, HTML and images get the full check" })]);
       const checkBtn = h("button", { class: "btn btn-primary", disabled: q.fileBusy || null, onclick: run }, q.fileBusy ? "Checking…" : "Check my file");
-      const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.checks = {}; q.fileReport = null; render(); } },
+      const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.formatChosen = true; q.formatNote = ""; q.checks = {}; q.fileReport = null; render(); } },
         Object.entries(FORMATS).map(([k, f]) => h("option", { value: k, selected: q.format === k || null, text: `${f.name} · ${f.size}` })));
       const audSeg = h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "small", text: "What is it?" }), fmtSel);
       return h("div", { class: "card ai-card" }, h("div", { class: "card-head" }, h("div", { style: "display:flex;gap:10px;align-items:center" }, h("img", { src: AI_PROFILE.avatarUrl, alt: "", style: "width:30px;height:30px" }), h("h3", { text: "Check my file" })), h("span", { class: "sub", text: "Nothing is submitted" })),
@@ -2800,9 +2977,11 @@ const BRAND_CHECK = (() => {
         h("p", { class: "muted", style: "font-size:13px", text: mode === "upload" ? "Upload your file and Brand Astra checks it against the Recykal brand: fonts, colours, layout, pictures and wording. You'll get a short list of anything to fix. Nothing is sent to anyone until you submit." : "Paste the Google Slides, Docs or Drive link (shared with “Anyone at Recykal with the link”). Brand Astra fetches the file and measures it on every page." }),
         mode === "upload" ? h("div", { style: "display:grid;gap:10px" }, drop, input, h("div", { class: "actions", style: "justify-content:space-between" }, audSeg, checkBtn)) : h("div", { style: "display:grid;gap:10px" }, h("div", { class: "composer" }, linkIn, checkBtn), audSeg),
         q.fileBusy ? h("div", { class: "ai-wait" }, h("span", { class: "spin" }), h("div", null, h("b", { text: q.fileStage || "Checking your file" }), h("div", { class: "small", text: "Every page is measured in your browser. Large decks take up to a minute." }))) : null,
+        q.formatNote && mode === "upload" ? h("div", { class: "notice", style: "background:var(--info-soft);color:var(--info)", text: q.formatNote }) : null,
         q.fileErr ? h("div", { class: "notice", text: q.fileErr }) : null,
+        fr && (q.copy || "") !== (q.fileReportCopy || "") ? h("div", { class: "notice", style: "display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap" }, h("span", { text: "You changed the text in the copy check, so this score doesn't include it yet." }), h("button", { class: "btn btn-dark btn-sm", disabled: q.fileBusy || null, onclick: run }, "Check again")) : null,
         fr ? aiReport(fr.report, fr.score, { title: fr.report.facts && fr.report.facts.kind === "other" ? "Ready for the brand team" : fr.decision === "pending" ? "Ready to submit" : fr.decision === "changes" ? "Almost there" : "Not ready yet" }) : null,
-        fr ? h("div", { class: "actions" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => openSubmit({ fromQc: true }) }, "Submit this file")) : null);
+        fr ? h("div", { class: "actions" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => openSubmit({ fromQc: true }) }, "Submit this file"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadReport(fr, (q.upload && q.upload.name) || q.link || "file") }, "Download report")) : null);
     })() : null;
     return [
       h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "QC" })),
@@ -2810,7 +2989,7 @@ const BRAND_CHECK = (() => {
       h("div", { class: "qc-layout" },
         h("div", { style: "display:grid;gap:14px;min-width:0" }, fileCard,
           h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "1 · Choose the format" }), h("span", { class: "sub", text: "Templates match the official brand files" })),
-            qcFormatPicker(q.format, (k) => { q.format = k; q.checks = {}; render(); })),
+            qcFormatPicker(q.format, (k) => { q.format = k; q.formatChosen = true; q.formatNote = ""; q.checks = {}; render(); })),
           S.autoQc ? null : h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "2 · Layout checklist" }), h("span", { class: "sub tnum", text: `${done} of ${total} done` })),
             qcChecklist(q.format, q.checks, (i, v) => { q.checks[i] = v; render(); }, "qc")),
           h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: S.autoQc ? "2 · Quick copy check" : "3 · Copy check" })), copyBox,
@@ -2855,11 +3034,13 @@ const BRAND_CHECK = (() => {
           h("div", { class: "actions" }, x.link ? h("a", { class: "btn btn-dark btn-sm", href: x.link, target: "_blank", rel: "noopener" }, linkLabel(x.link) + " ↗") : null,
             S.isAdmin ? h("button", { class: "btn btn-ghost btn-sm", onclick: async () => { try { await S.db.doc("showcase/" + x.id).delete(); toast("Removed from Showcase"); } catch (e) { toast("Couldn't remove: " + (e.message || e.code)); } } }, "Remove") : null));
       })) : h("div", { class: "empty" }, h("strong", { text: "No showcase examples yet" }),
-        h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from." })),
+        h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from. Until then, the brand kit has the templates, colours and fonts to start from." }),
+        S.isAdmin ? null : h("button", { class: "btn btn-ghost btn-sm", style: "margin-top:6px", onclick: () => go("kit") }, "Open the brand kit")),
     ];
   }
   /** A small A4 page: the Brand Document Template's look, for the format picker. */
-  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="62" height="88" role="img" aria-label="A4 brand document"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><image href="${LOGO_URI}" x="16" y="16" width="60" height="22"/><rect x="16" y="56" width="120" height="8" rx="2" fill="#0B0F17"/>${[74, 84, 94, 104, 122, 132, 142, 160, 170, 180, 190].map((y, i) => `<rect x="16" y="${y}" width="${i % 4 === 3 ? 110 : 178}" height="4" rx="2" fill="#C9D1DE"/>`).join("")}<rect x="16" y="276" width="178" height="1.5" fill="#E3E8F0"/><rect x="16" y="282" width="60" height="3" rx="1.5" fill="#C9D1DE"/></svg>` });
+  /** The Brand Document Template's cover, drawn small for the format picker: logo top-left, green and blue strokes, a Bold title, footer, purple corner. */
+  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="64" height="90" role="img" aria-label="Brand Document Template cover"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><path d="M33 0h5l-4 13h-5z" fill="#1DC797"/><path d="M21 42l2.4 1-19 72-2.4-1z" fill="#005DFF"/><image href="${LOGO_URI}" x="12" y="15" width="56" height="21"/><rect x="84" y="118" width="74" height="15" rx="2" fill="#000"/><rect x="84" y="146" width="14" height="5" rx="1.5" fill="#9AA3B2"/><rect x="84" y="157" width="52" height="6" rx="1.5" fill="#000"/><rect x="84" y="169" width="62" height="5" rx="1.5" fill="#9AA3B2"/><rect x="16" y="279" width="78" height="3" rx="1.5" fill="#9AA3B2"/><rect x="160" y="279" width="38" height="3" rx="1.5" fill="#567DE8"/><path d="M210 262v35h-12z" fill="#6E5CFA"/></svg>` });
   function tplLinkBtn(key) {
     const url = key === "document" ? BRAND_FILES[1][1] : S.tplLinks[key];
     if (key === "document") return [h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Access the Brand Document Template ↗")];

@@ -53,6 +53,7 @@ async function main() {
     const server = express();
     server.disable("x-powered-by");
     server.get("/healthz", (req, res) => res.send("ok"));
+    server.use("/fonts", express.static(path.join(__dirname, "fonts"), { maxAge: "30d", fallthrough: false }));   // Poppins, for the font check
     server.get("/setup", (req, res) => res.status(503).type("html").set("Cache-Control", "no-store").send(setupPage(MISSING)));
     server.get("/", (req, res) => res.type("html").set("Cache-Control", "no-cache").send(demo));
     server.use((req, res) => res.redirect("/"));
@@ -86,6 +87,8 @@ async function main() {
     res.set("Cache-Control", "no-store").type("html").send(page.replace("<head>", `<head>\n<script>${boot}</script>`));
   });
   server.get("/healthz", (req, res) => res.send("ok"));
+  // The Poppins font files (SIL Open Font License, fonts/Poppins-OFL.txt): the brand check compares letter shapes against them.
+  server.use("/fonts", express.static(path.join(__dirname, "fonts"), { maxAge: "30d", fallthrough: false }));
 
   // ---------- Google sign-in ----------
   server.get("/auth/google", (req, res) => {

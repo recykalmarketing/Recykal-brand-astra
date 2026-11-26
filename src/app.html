@@ -97,8 +97,8 @@ a { color: var(--accent); }
 .notif { display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 10px; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--line); text-align: left; background: none; font: inherit; color: var(--fg); cursor: pointer; width: 100%; }
 .notif:hover, .notif:focus-visible { background: var(--card-2); outline: none; }
 .notif.unread { background: var(--accent-soft); }
-.notif b { display: block; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
-.notif .small { display: block; overflow-wrap: anywhere; }
+.notif b { display: block; font-size: 13px; font-weight: 600; overflow-wrap: break-word; }
+.notif .small { display: block; overflow-wrap: break-word; }
 .notif .when { display: block; font-size: 11px; color: var(--faint); margin-top: 2px; }
 .notif i { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; background: var(--faint); }
 .notif i.k-ok { background: var(--ok); } .notif i.k-warn { background: var(--bar-warn); } .notif i.k-bad, .notif i.k-due { background: var(--bad); }
@@ -226,7 +226,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .tcard[draggable="true"] { cursor: grab; }
 .tcard.dragging { opacity: .5; }
 .tcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.tcard h5 { font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
+.tcard h5 { font-size: 13.5px; font-weight: 600; overflow-wrap: break-word; }
 .tcard .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-width: 0; }
 .prio { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: .05em; }
 .prio.high { background: var(--bad-soft); color: var(--bad); }
@@ -251,7 +251,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 10px; }
 .req { gap: 10px; grid-template-rows: auto auto 1fr auto; }
 .req h4 { font-size: 15px; font-weight: 600; }
-.req p { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+.req p { color: var(--muted); font-size: 12.5px; overflow-wrap: break-word; }
 .req-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border-top: 1px dashed var(--line); padding-top: 12px; }
 .meta { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
 
@@ -259,7 +259,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .sub-list { display: grid; gap: 10px; }
 .sub { display: grid; gap: 10px; }
 .sub-top { display: flex; gap: 12px; align-items: start; justify-content: space-between; flex-wrap: wrap; }
-.sub-title { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.sub-title { font-weight: 600; font-size: 15px; overflow-wrap: break-word; }
 .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .step { display: grid; gap: 6px; font-size: 11.5px; color: var(--faint); font-weight: 500; min-width: 0; }
 .step i { height: 4px; border-radius: 999px; background: var(--card-2); display: block; }
@@ -326,7 +326,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .thread { display: grid; gap: 10px; }
 .msg { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
 .msg img { width: 28px; height: 28px; border-radius: 50%; }
-.msg .txt { background: var(--card-2); border-radius: 4px 12px 12px 12px; padding: 8px 12px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 3px; }
+.msg .txt { background: var(--card-2); border-radius: 4px 12px 12px 12px; padding: 8px 12px; font-size: 13px; white-space: pre-wrap; overflow-wrap: break-word; margin-top: 3px; }
 .msg.me .txt { background: var(--accent-soft); }
 .composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
 .feature-box { display: grid; gap: 8px; padding: 12px; border-radius: 10px; border: 1px solid var(--line); }
@@ -334,7 +334,7 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .sc-card .art { position: relative; background: #fff; border: 1px solid #E3E8F0; border-radius: 8px; height: 170px; display: grid; place-items: center; padding: 10px; overflow: hidden; }
 .sc-card .art svg { max-height: 150px; max-width: 100%; width: auto; height: auto; box-shadow: 0 0 0 1px #E3E8F0; }
 .sc-card .sc-score { position: absolute; top: 8px; right: 8px; }
-.sc-card h4 { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.sc-card h4 { font-size: 15px; font-weight: 600; overflow-wrap: break-word; }
 .feedback { background: var(--card-2); border-radius: 9px; padding: 11px 13px; font-size: 13px; display: grid; gap: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -479,7 +479,7 @@ dialog.drawer .dlg { max-height: 100dvh; }
 .err { color: var(--bad); font-size: 12.5px; font-weight: 500; }
 .kv { display: grid; grid-template-columns: 120px 1fr; gap: 7px 12px; font-size: 13px; margin: 0; }
 .kv dt { color: var(--muted); }
-.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: break-word; }
 .history { display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 9px; font-weight: 500; font-size: 13px; z-index: 70; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
 .notice { border-radius: var(--radius); padding: 12px 14px; background: var(--warn-soft); color: var(--warn); font-size: 13px; font-weight: 500; }
@@ -630,11 +630,11 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       "Text readable from a distance on event screens and LinkedIn covers",
       "Partner logos, if any, smaller than the Recykal logo and evenly spaced"] },
     document: { name: "Brand document", size: "A4 · 210 × 297 mm", tpl: null, checks: [
-      "Built on the Brand Document Template, not a blank or old document",
-      "Recykal logo in the header, unaltered, with clear space around it",
-      "Headings in Poppins Bold or SemiBold; body text in Poppins Regular",
-      "A4 portrait pages, with text inside the template's margins",
-      "Colours from the Recykal palette; product sections use that product's colours",
+      "Built on the Brand Document Template: cover with the full Recykal logo top-left and a large Bold title",
+      "Green corner top-left and purple corner bottom-right on every page, as in the template",
+      `Footer on every page: “Private & Confidential I © ${BRAND.year}, All rights reserved” and www.recykal.com`,
+      "Poppins in black: title Bold 45 pt, page titles Bold + Normal 22 pt, body 10–15 pt",
+      "A4 portrait pages, colours from the Recykal palette",
       "Spelling, product names and figures checked against the fact sheet"] },
     other: { name: "Email / other", size: "Email, letter, other", tpl: null, checks: [
       "Uses the approved email or letter template",
@@ -729,6 +729,8 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   const icon = (name) => { const el = s("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" }); el.append(s("path", { d: ICONS[name] })); return el; };
   const newId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9-]/g, "");
   const nowIso = () => new Date().toISOString();
+  /** Shorten text at a word boundary, with an ellipsis. */
+  const clip = (t, n) => { t = String(t || "").replace(/\s+/g, " ").trim(); if (t.length <= n) return t; const cut = t.slice(0, n); const sp = cut.lastIndexOf(" "); return (sp > n * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,.;:–-]+$/, "") + "…"; };
   const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "—";
   const fmtDateTime = (iso) => iso ? new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "—";
   const deadlineEnd = (d) => d ? new Date(d + "T23:59:59") : null;
@@ -775,7 +777,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   const fileBadge = (name) => { const ext = (String(name || "").match(/\.([a-z0-9]{1,5})$/i) || [, "FILE"])[1].toUpperCase(); return ext; };
   const fmtSize = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
   const AUTO_APPROVE_NOTE = "Anything the check measures as off-brand comes back to you straight away with the fix; files that pass go to the brand team, who check the logo and imagery by eye.";
-  const CHANNELS = ["LinkedIn", "Instagram", "Facebook", "X (Twitter)", "YouTube", "Website / blog", "Client or partner presentation", "Event, print or OOH", "Email / newsletter", "Internal only"];
+  const CHANNELS = ["LinkedIn", "Instagram", "Facebook", "X (Twitter)", "YouTube", "WhatsApp", "Website / blog", "Client or partner presentation", "Event, print or OOH", "Email / newsletter", "Internal only"];
   /** Working days (Mon–Fri) elapsed between two moments, as a fraction. */
   function workDays(fromIso, toMs = Date.now()) {
     let t = new Date(fromIso).getTime(), ms = 0; if (!t) return 0;
@@ -964,7 +966,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     // Everyone: decisions on my work, replies to me, tasks for me, deadlines.
     myRows().forEach((r) => { const rv = r.rev; if (!rv || !rv.at || isOpen(r.status)) return;
       add(rv.at, r.status === "approved" ? "ok" : r.status === "changes" ? "warn" : "bad", `${rv.by === "ai" ? "The automatic check" : nameOf(rv.by)} ${r.status === "approved" ? "approved" : r.status === "changes" ? "requested changes on" : "didn't approve"} “${r.sub.title}”`, r.score != null ? `QC score ${r.score}/100` : "", () => go("work")); });
-    for (const [sid, msgs] of Object.entries(S.myThreads || {})) (msgs || []).filter((m) => m.by !== S.uid).forEach((m) => add(m.at, "msg", `${nameOf(m.by)} replied on “${workTitle(S.uid, sid)}”`, m.text.slice(0, 100), () => go("work")));
+    for (const [sid, msgs] of Object.entries(S.myThreads || {})) (msgs || []).filter((m) => m.by !== S.uid).forEach((m) => add(m.at, "msg", `${nameOf(m.by)} replied on “${workTitle(S.uid, sid)}”`, clip(m.text, 100), () => go("work")));
     myBriefs().filter((b) => !b.closed).forEach((b) => {
       const named = (b.people || []).includes(S.uid) || (b.teams || []).length;
       if (!S.isAdmin) add(b.createdAt, "task", `New request${named ? " for you" : ""}: “${b.title}”`, `Due ${fmtDeadline(b.deadline)}${b.priority === "high" ? " · high priority" : ""}`, () => go("requests"));
@@ -981,7 +983,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       });
       for (const [uid, items] of Object.entries(S.allThreads || {})) for (const [sid, msgs] of Object.entries(items || {})) (msgs || []).filter((m) => m.by === uid && uid !== S.uid).forEach((m) => {
         const r = allRows().find((x) => x.uid === uid && x.sid === sid);
-        add(m.at, "msg", `${nameOf(uid)} wrote on “${workTitle(uid, sid)}”`, m.text.slice(0, 100), () => r ? openReview(r) : go("queue")); });
+        add(m.at, "msg", `${nameOf(uid)} wrote on “${workTitle(uid, sid)}”`, clip(m.text, 110), () => r ? openReview(r) : go("queue")); });
     }
     return out.filter((n) => n.at >= since && n.at <= new Date(Date.now() + 60000).toISOString()).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 40);
   }
@@ -1160,7 +1162,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
           open.length ? h("div", { class: "req-grid" }, open.slice(0, 4).map(reqCard)) : h("p", { class: "muted", text: "Nothing waiting on you right now. You can still submit any design for a brand check." })),
         h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Latest on your work" }), h("button", { class: "linkbtn", onclick: () => go("work") }, "All submissions")),
           rows.length ? h("div", { class: "feed" }, rows.slice(0, 5).map((r) => h("div", { class: "it", style: "grid-template-columns:1fr auto;align-items:center" },
-            h("div", { style: "min-width:0" }, h("div", { style: "font-weight:600;overflow-wrap:anywhere", text: r.sub.title }), h("div", { class: "when", text: `${r.sub.kind} · ${ago(r.sub.submittedAt)}` })), pill(r.status)))) :
+            h("div", { style: "min-width:0" }, h("div", { style: "font-weight:600;overflow-wrap:break-word", text: r.sub.title }), h("div", { class: "when", text: `${r.sub.kind} · ${ago(r.sub.submittedAt)}` })), pill(r.status)))) :
             h("p", { class: "muted", text: "Your submissions and their review status will show here." }))),
     ];
   }
@@ -1305,7 +1307,10 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const head = h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: S.isAdmin ? "Requests & " : "My " }), h("b", { text: "tasks" })),
       h("p", { text: S.isAdmin ? "Post a request with a deadline and a priority, and assign it to everyone, a team or named people. Drag cards across the board as work moves; assignees get an email and a reminder before the deadline." : "Work the brand team has asked you for, with deadlines and templates. Submit against a task so it's reviewed in context; the board moves as your work is reviewed." })),
       S.isAdmin ? h("button", { class: "btn btn-primary", onclick: () => openBrief() }, "New request") : null);
-    if (!list.length) return [head, h("div", { class: "empty" }, h("strong", { text: S.isAdmin ? "No requests yet" : "No tasks for you yet" }), h("span", { text: S.isAdmin ? "Create the first one, for example “Q4 sales deck on the new template”, with a deadline." : "Requests the brand team assigns to you or your team will appear here." }))];
+    if (!list.length) return [head, h("div", { class: "empty" }, h("strong", { text: S.isAdmin ? "No requests yet" : "No tasks for you yet" }),
+      h("span", { text: S.isAdmin ? "Create the first one, for example “Q4 sales deck on the new template”, with a deadline." : "Requests the brand team assigns to everyone, to your team or to you appear here, with their deadlines. Requests for other teams don't. You can still check and submit any design without a request." }),
+      S.isAdmin ? h("button", { class: "btn btn-primary btn-sm", style: "margin-top:6px", onclick: () => openBrief() }, "New request")
+        : h("div", { class: "actions", style: "justify-content:center;margin-top:6px" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => go("qc") }, "Run Brand QC"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => go("kit") }, "Open the brand kit")))];
     const seg = h("div", { class: "seg", role: "group", "aria-label": "Layout" }, [["board", "Board"], ["table", S.isAdmin ? "Table" : "List"], ["calendar", "Calendar"]].map(([k, l]) =>
       h("button", { "aria-pressed": String(mode === k), onclick: () => { S.reqMode = k; render(); } }, l)));
     const highOpen = list.filter((b) => !b.closed && b.priority === "high").length, overdue = list.filter((b) => reqState(b).k === "overdue").length;
@@ -1372,7 +1377,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         h("button", { class: "btn btn-primary", disabled: !S.uid || null, onclick: () => openSubmit() }, "Submit work")),
       !S.uid ? h("div", { class: "notice", text: "Your account has no identity on this page, so you can read but not submit. Open it signed in to your Recykal claude.ai account." }) : null,
       rows.length ? h("div", { class: "sub-list" }, rows.map(subCard)) : h("div", { class: "empty" }, h("strong", { text: "You haven't submitted anything yet" }),
-        h("span", { text: "Run a Brand QC, then share the Google Slides, Docs or Drive link with a short description." }),
+        h("span", { text: "1. Check your file in Brand QC and fix anything it finds. 2. Submit it: upload the file or paste the Google link, with a line on where it will be used. 3. Follow the review here and reply to the brand team." }),
         h("button", { class: "btn btn-dark btn-sm", style: "margin-top:6px", onclick: () => go("qc") }, "Run Brand QC")),
     ];
   }
@@ -1430,7 +1435,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     L5: "Clear space around the logo", L6: "Right logo version for this page", L7: "Product logos used as supplied",
     C1: "Only Recykal colours", C2: "Product colours only on that product", C3: "No colour gradients", C4: "Text easy to read on its background",
     T1: "Poppins font only", T2: "Headings in bold", T3: "No all-caps sentences or text effects",
-    Y1: "Right page size", Y2: "Slides follow the Recykal deck", Y3: "Footer on every slide", Y4: "Corner shapes from the template",
+    Y1: "Right page size", Y2: "Slides follow the Recykal deck", Y3: "Footer on every page", Y4: "Corner shapes from the template",
     Y5: "Logo and website in the right places", Y6: "Text inside the margins", Y7: "Neat alignment", Y8: "Built on the Brand Document Template",
     I1: "Sharp, undistorted pictures", I2: "Real Recykal pictures", I3: "Matching icons", I4: "Partner logos smaller than Recykal's", I5: "No watermarked or copied images",
     W1: "Company name written “Recykal”", W2: "Funding written “$68M+ raised to date”", W3: "Numbers match the fact sheet", W4: "Product names spelled right",
@@ -1441,6 +1446,28 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     Y7: "alignment", W9: "spelling", C3: "colours", T1: "fonts", C1: "colours", C4: "readability", Y2: "slide layout", Y4: "slide layout", Y5: "layout", Y6: "margins", Y1: "page size", Y8: "the template", T2: "fonts", T3: "fonts", C2: "colours" };
   const FIX_LABEL = { critical: "Must fix", major: "Should fix", minor: "Small fix" };
   const plainName = (id) => PLAIN[id] || (BRAND.ruleById[id] || {}).t || id;
+  /** The check result as a one-page HTML report: opens in any browser and prints to PDF. */
+  function downloadReport(res, fileName) {
+    const ai = res.report, R = BRAND.ruleById, esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const checks = (ai.checks || []).filter((c) => R[c.id]);
+    const fails = checks.filter((c) => c.status === "fail").sort((a, b) => SEV_RANK[R[a.id].sev] - SEV_RANK[R[b.id].sev]);
+    const passed = checks.filter((c) => c.status === "pass"), eye = checks.filter((c) => c.status === "unsure");
+    const verdict = res.decision === "pending" ? "Ready to submit" : res.decision === "changes" ? "Almost there" : "Not ready yet";
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Brand QC report · ${esc(fileName)}</title><style>
+body{font-family:Poppins,Arial,sans-serif;color:#111;max-width:760px;margin:32px auto;padding:0 20px;line-height:1.5}h1{font-size:22px;margin:0}h2{font-size:15px;margin:26px 0 8px}
+.meta{color:#666;font-size:13px}.score{font-size:40px;font-weight:700}.item{border-left:4px solid #C42838;padding:8px 12px;margin:8px 0;background:#FAFAFB}.item.major{border-color:#9A5B00}.item.minor{border-color:#C9D1DE}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;color:#666}.how{margin-top:4px}ul{padding-left:18px}li{margin:2px 0}@media print{body{margin:0}}</style></head><body>
+<p class="meta">Recykal Brand Astra · Brand QC report</p><h1>${esc(fileName)}</h1>
+<p class="meta">${esc(FORMATS[ai.format] ? FORMATS[ai.format].name + " · " + FORMATS[ai.format].size : "")} · checked ${esc(fmtDateTime(ai.checkedAt))}</p>
+<p><span class="score">${esc(res.score)}</span> / 100 · <b>${esc(verdict)}</b><br>${esc(ai.summary || "")}</p>
+${fails.length ? `<h2>What to fix (${fails.length})</h2>` + fails.map((c) => `<div class="item ${R[c.id].sev}"><div class="tag">${esc(FIX_LABEL[R[c.id].sev])}${c.where ? " · " + esc(c.where) : ""}</div><b>${esc(plainName(c.id))}</b><div>${esc(c.evidence)}</div>${c.fix ? `<div class="how"><b>How to fix:</b> ${esc(c.fix)}</div>` : ""}</div>`).join("") : "<h2>Nothing to fix in what Brand Astra can check</h2>"}
+${eye.length ? `<h2>The brand team checks by eye (${eye.length})</h2><ul>${eye.map((c) => `<li>${esc(plainName(c.id))}</li>`).join("")}</ul>` : ""}
+${passed.length ? `<h2>Already right (${passed.length})</h2><ul>${passed.map((c) => `<li>${esc(plainName(c.id))}</li>`).join("")}</ul>` : ""}
+<p class="meta">Score: every file starts at 100; Must fix −25, Should fix −10, Small fix −3. 85+ is ready for the brand team.</p></body></html>`;
+    const name = "brand-qc-" + String(fileName).replace(/\.[a-z0-9]+$/i, "").replace(/[^\w-]+/g, "-").slice(0, 60) + ".html";
+    if (S.downloads && S.downloads !== blobDownloads) { S.downloads.save({ filename: name, data: html }).catch(() => {}); return; }
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" })); const a = h("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
   function aiReport(ai, score, opts = {}) {
     if (!ai) return null;
     if (!ai.checks) return aiReportLegacy(ai, score, opts);
@@ -1519,9 +1546,10 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       h("div", null, h("div", { class: "small" }, h("b", { text: m.by === S.uid ? "You" : nameOf(m.by) }), " · " + fmtDateTime(m.at)), h("div", { class: "txt", text: m.text })))));
     const send = h("button", { class: "btn btn-dark btn-sm", type: "button", onclick: async () => {
       const t = ta.value.trim(); if (!t) return; send.disabled = true;
-      try { await postComment(uid, sid, t); S.drafts[key] = ""; ta.value = "";
+      S.drafts[key] = ""; ta.value = "";   // clear first: the page can refresh while it sends and would re-fill the box from the draft
+      try { await postComment(uid, sid, t); const fresh = document.getElementById("th-" + sid); if (fresh && fresh.value.trim() === t) fresh.value = "";
         if (inDrawer) list.append(h("div", { class: "msg me" }, h("img", { src: S.me.avatarUrl, alt: "" }), h("div", null, h("div", { class: "small" }, h("b", { text: "You" }), " · just now"), h("div", { class: "txt", text: t }))));
-        toast("Message sent"); } catch (e) { toast("Couldn't send: " + (e.message || e.code)); } send.disabled = false; } }, "Send");
+        toast("Message sent"); } catch (e) { S.drafts[key] = t; const box = document.getElementById("th-" + sid) || ta; box.value = t; toast("Couldn't send: " + (e.message || e.code)); } send.disabled = false; } }, "Send");
     return h("div", { class: "thread-box" }, h("div", { class: "lbl" }, icon("chat"), ` Conversation${msgs.length ? ` (${msgs.length})` : ""}`), msgs.length ? list : inDrawer ? h("div", { class: "small", text: "No messages yet." }) : null, list.parentNode ? null : (msgs.length ? null : list),
       h("div", { class: "composer" }, ta, send));
   }
@@ -1591,6 +1619,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         try {
           if (mode === "upload") { q.fileStage = "Uploading your file"; render(); if (!q.upload.link) q.upload.link = await S.autoQc.upload(q.upload.file); link = q.upload.link; q.link = link; FILES[link] = q.upload.file; }
           q.fileReport = await S.autoQc.preview(link, q.format, q.copy, mode === "upload" ? q.upload.name : "", mode === "upload" ? q.upload.file : null, (t) => { q.fileStage = t; render(); }, q.audience || "External");
+          q.fileReportCopy = q.copy;
         } catch (e) { q.fileErr = e.message || String(e); }
         q.fileBusy = false; render();
       };
@@ -1599,7 +1628,11 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         if (q.upload && q.upload.preview) URL.revokeObjectURL(q.upload.preview);
         q.upload = { file: f, name: f.name, size: f.size, type: f.type, preview: /^image\//.test(f.type) ? URL.createObjectURL(f) : null };
         q.fileErr = ""; q.fileReport = null; render();
-        guessFormat(f).then((k) => { if (k && q.upload && q.upload.file === f) { q.format = k; q.checks = {}; render(); } });
+        q.formatNote = "";
+        guessFormat(f).then((k) => { if (!k || !q.upload || q.upload.file !== f || k === q.format) return;
+          if (q.formatChosen) q.formatNote = `This file's shape looks like ${FORMATS[k].name} (${FORMATS[k].size}), but you chose ${FORMATS[q.format].name}. Change it below if that's wrong.`;
+          else { q.formatNote = `Set to ${FORMATS[k].name} from the file's shape. Change it below if that's wrong.`; q.format = k; q.checks = {}; }
+          render(); });
       };
       const removeFile = () => {
         if (q.upload && q.upload.preview) URL.revokeObjectURL(q.upload.preview);
@@ -1613,12 +1646,12 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         ondragover: (e) => { e.preventDefault(); e.currentTarget.classList.add("over"); }, ondragleave: (e) => e.currentTarget.classList.remove("over"),
         ondrop: (e) => { e.preventDefault(); e.currentTarget.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) pickFile(f); } },
         q.upload ? [q.upload.preview ? h("img", { src: q.upload.preview, alt: "" }) : h("span", { class: "pdf-ic", text: fileBadge(q.upload.name) }),
-            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:anywhere", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
+            h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:break-word", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
             h("button", { type: "button", class: "drop-x", "aria-label": "Remove " + q.upload.name, title: "Remove this file", disabled: q.fileBusy || null,
               onclick: (e) => { e.stopPropagation(); removeFile(); }, onkeydown: (e) => e.stopPropagation(), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' })]
           : [h("span", { class: "up-ic" }, icon("upload")), h("b", { text: "Drop your file here, or click to choose" }), h("span", { class: "small", text: "Any file up to 25 MB · PowerPoint, PDF, Word, HTML and images get the full check" })]);
       const checkBtn = h("button", { class: "btn btn-primary", disabled: q.fileBusy || null, onclick: run }, q.fileBusy ? "Checking…" : "Check my file");
-      const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.checks = {}; q.fileReport = null; render(); } },
+      const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.formatChosen = true; q.formatNote = ""; q.checks = {}; q.fileReport = null; render(); } },
         Object.entries(FORMATS).map(([k, f]) => h("option", { value: k, selected: q.format === k || null, text: `${f.name} · ${f.size}` })));
       const audSeg = h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "small", text: "What is it?" }), fmtSel);
       return h("div", { class: "card ai-card" }, h("div", { class: "card-head" }, h("div", { style: "display:flex;gap:10px;align-items:center" }, h("img", { src: AI_PROFILE.avatarUrl, alt: "", style: "width:30px;height:30px" }), h("h3", { text: "Check my file" })), h("span", { class: "sub", text: "Nothing is submitted" })),
@@ -1628,9 +1661,11 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         h("p", { class: "muted", style: "font-size:13px", text: mode === "upload" ? "Upload your file and Brand Astra checks it against the Recykal brand: fonts, colours, layout, pictures and wording. You'll get a short list of anything to fix. Nothing is sent to anyone until you submit." : "Paste the Google Slides, Docs or Drive link (shared with “Anyone at Recykal with the link”). Brand Astra fetches the file and measures it on every page." }),
         mode === "upload" ? h("div", { style: "display:grid;gap:10px" }, drop, input, h("div", { class: "actions", style: "justify-content:space-between" }, audSeg, checkBtn)) : h("div", { style: "display:grid;gap:10px" }, h("div", { class: "composer" }, linkIn, checkBtn), audSeg),
         q.fileBusy ? h("div", { class: "ai-wait" }, h("span", { class: "spin" }), h("div", null, h("b", { text: q.fileStage || "Checking your file" }), h("div", { class: "small", text: "Every page is measured in your browser. Large decks take up to a minute." }))) : null,
+        q.formatNote && mode === "upload" ? h("div", { class: "notice", style: "background:var(--info-soft);color:var(--info)", text: q.formatNote }) : null,
         q.fileErr ? h("div", { class: "notice", text: q.fileErr }) : null,
+        fr && (q.copy || "") !== (q.fileReportCopy || "") ? h("div", { class: "notice", style: "display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap" }, h("span", { text: "You changed the text in the copy check, so this score doesn't include it yet." }), h("button", { class: "btn btn-dark btn-sm", disabled: q.fileBusy || null, onclick: run }, "Check again")) : null,
         fr ? aiReport(fr.report, fr.score, { title: fr.report.facts && fr.report.facts.kind === "other" ? "Ready for the brand team" : fr.decision === "pending" ? "Ready to submit" : fr.decision === "changes" ? "Almost there" : "Not ready yet" }) : null,
-        fr ? h("div", { class: "actions" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => openSubmit({ fromQc: true }) }, "Submit this file")) : null);
+        fr ? h("div", { class: "actions" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => openSubmit({ fromQc: true }) }, "Submit this file"), h("button", { class: "btn btn-ghost btn-sm", onclick: () => downloadReport(fr, (q.upload && q.upload.name) || q.link || "file") }, "Download report")) : null);
     })() : null;
     return [
       h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "QC" })),
@@ -1638,7 +1673,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
       h("div", { class: "qc-layout" },
         h("div", { style: "display:grid;gap:14px;min-width:0" }, fileCard,
           h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "1 · Choose the format" }), h("span", { class: "sub", text: "Templates match the official brand files" })),
-            qcFormatPicker(q.format, (k) => { q.format = k; q.checks = {}; render(); })),
+            qcFormatPicker(q.format, (k) => { q.format = k; q.formatChosen = true; q.formatNote = ""; q.checks = {}; render(); })),
           S.autoQc ? null : h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "2 · Layout checklist" }), h("span", { class: "sub tnum", text: `${done} of ${total} done` })),
             qcChecklist(q.format, q.checks, (i, v) => { q.checks[i] = v; render(); }, "qc")),
           h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: S.autoQc ? "2 · Quick copy check" : "3 · Copy check" })), copyBox,
@@ -1683,11 +1718,13 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
           h("div", { class: "actions" }, x.link ? h("a", { class: "btn btn-dark btn-sm", href: x.link, target: "_blank", rel: "noopener" }, linkLabel(x.link) + " ↗") : null,
             S.isAdmin ? h("button", { class: "btn btn-ghost btn-sm", onclick: async () => { try { await S.db.doc("showcase/" + x.id).delete(); toast("Removed from Showcase"); } catch (e) { toast("Couldn't remove: " + (e.message || e.code)); } } }, "Remove") : null));
       })) : h("div", { class: "empty" }, h("strong", { text: "No showcase examples yet" }),
-        h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from." })),
+        h("span", { text: S.isAdmin ? "When you approve strong work, tick “Feature in the Showcase” in the review panel." : "The brand team adds approved work here as examples to learn from. Until then, the brand kit has the templates, colours and fonts to start from." }),
+        S.isAdmin ? null : h("button", { class: "btn btn-ghost btn-sm", style: "margin-top:6px", onclick: () => go("kit") }, "Open the brand kit")),
     ];
   }
   /** A small A4 page: the Brand Document Template's look, for the format picker. */
-  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="62" height="88" role="img" aria-label="A4 brand document"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><image href="${LOGO_URI}" x="16" y="16" width="60" height="22"/><rect x="16" y="56" width="120" height="8" rx="2" fill="#0B0F17"/>${[74, 84, 94, 104, 122, 132, 142, 160, 170, 180, 190].map((y, i) => `<rect x="16" y="${y}" width="${i % 4 === 3 ? 110 : 178}" height="4" rx="2" fill="#C9D1DE"/>`).join("")}<rect x="16" y="276" width="178" height="1.5" fill="#E3E8F0"/><rect x="16" y="282" width="60" height="3" rx="1.5" fill="#C9D1DE"/></svg>` });
+  /** The Brand Document Template's cover, drawn small for the format picker: logo top-left, green and blue strokes, a Bold title, footer, purple corner. */
+  const docThumb = () => h("span", { style: "display:grid;place-items:center;height:100%", html: `<svg viewBox="0 0 210 297" width="64" height="90" role="img" aria-label="Brand Document Template cover"><rect width="210" height="297" fill="#fff" stroke="#D5DCE7" stroke-width="2"/><path d="M33 0h5l-4 13h-5z" fill="#1DC797"/><path d="M21 42l2.4 1-19 72-2.4-1z" fill="#005DFF"/><image href="${LOGO_URI}" x="12" y="15" width="56" height="21"/><rect x="84" y="118" width="74" height="15" rx="2" fill="#000"/><rect x="84" y="146" width="14" height="5" rx="1.5" fill="#9AA3B2"/><rect x="84" y="157" width="52" height="6" rx="1.5" fill="#000"/><rect x="84" y="169" width="62" height="5" rx="1.5" fill="#9AA3B2"/><rect x="16" y="279" width="78" height="3" rx="1.5" fill="#9AA3B2"/><rect x="160" y="279" width="38" height="3" rx="1.5" fill="#567DE8"/><path d="M210 262v35h-12z" fill="#6E5CFA"/></svg>` });
   function tplLinkBtn(key) {
     const url = key === "document" ? BRAND_FILES[1][1] : S.tplLinks[key];
     if (key === "document") return [h("a", { class: "btn btn-primary btn-sm", href: url, target: "_blank", rel: "noopener" }, "Access the Brand Document Template ↗")];
