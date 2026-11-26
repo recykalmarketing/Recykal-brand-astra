@@ -2726,7 +2726,19 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         go.disabled = true; go.textContent = "Recording…";
         try { const rec = await dlApi.log(file, kind, why); if (S.dl && S.dl.rows) S.dl.rows.unshift({ id: rec.id, email: S.uid, name: nameOf(S.uid), team: prof(S.uid).team || "", asset: file, format: kind, purpose: why, downloadedAt: rec.downloadedAt }); }
         catch (x) { err.textContent = "Couldn't record the download, so it didn't start: " + (x.message || x.code); go.disabled = false; go.textContent = "Download " + kind.toUpperCase(); return; }
-        dlg.close(); await downloadLogo(svg, file, kind); if (S.view === "kit") render();
+        if (S.downloads && S.downloads !== blobDownloads) { dlg.close(); await downloadLogo(svg, file, kind); if (S.view === "kit") render(); return; }   // inside Claude: its own save dialog
+        // In the browser: the download starts from a real click on a link. Safari and others block a download that starts by itself after waiting on the server.
+        let blob; go.textContent = "Preparing the file…";
+        try { blob = kind === "png" ? await svgToPng(svg, 2400) : new Blob([svg], { type: "image/svg+xml" }); }
+        catch (x) { err.textContent = "Recorded, but the file couldn't be prepared: " + (x.message || x) + ". Try SVG instead."; go.disabled = false; go.textContent = "Download " + kind.toUpperCase(); return; }
+        const url = URL.createObjectURL(blob), name = `${file}.${kind}`;
+        dlg.addEventListener("close", () => setTimeout(() => URL.revokeObjectURL(url), 60000), { once: true });
+        const link = h("a", { class: "btn btn-primary", href: url, download: name, onclick: () => setTimeout(() => { dlg.close(); if (S.view === "kit") render(); }, 800) }, "Download " + name);
+        dlg.replaceChildren(h("div", { class: "dlg" },
+          h("div", { class: "dlg-head" }, h("h2", { text: "Your logo is ready" }), h("button", { type: "button", class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
+          h("div", { class: "dlg-body" }, h("p", { text: `Recorded for the marketing team: “${why}”.` }), h("p", { class: "small", text: kind === "png" ? "PNG, 2400 px wide, transparent background." : "SVG: scales to any size, for print and design files." })),
+          h("div", { class: "dlg-foot" }, h("span"), h("div", { class: "actions" }, h("button", { type: "button", class: "btn btn-ghost", onclick: () => dlg.close() }, "Close"), link))));
+        setTimeout(() => link.focus(), 50);
       } },
       h("div", { class: "dlg-head" }, h("h2", { text: `Download ${label} (${kind.toUpperCase()})` }), h("button", { type: "button", class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
       h("div", { class: "dlg-body" }, h("div", { class: "field" }, h("label", { for: "dl-purpose", text: "What will you use it for? (required)" }), purpose,
