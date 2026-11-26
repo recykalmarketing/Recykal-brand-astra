@@ -458,7 +458,10 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 dialog { border: 0; padding: 0; border-radius: 16px; width: min(720px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: var(--card); color: var(--fg); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
 dialog::backdrop { background: rgba(5, 10, 20, .5); }
 dialog.drawer { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(620px, 100vw); border-radius: 16px 0 0 16px; }
-.dlg { display: grid; grid-template-rows: auto 1fr auto; max-height: inherit; height: 100%; }
+/* The dialog is a column and the form fills it. (A "height: 100%" form inside an auto-height dialog collapses to 0 in Safari.) */
+dialog[open] { display: flex; flex-direction: column; }
+.dlg { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; flex: 1 1 auto; min-height: 0; max-height: calc(100dvh - 24px); }
+dialog.drawer .dlg { max-height: 100dvh; }
 .dlg-head { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; align-items: start; }
 .dlg-head h2 { font-size: 18px; font-weight: 700; }
 .dlg-body { padding: 18px 20px; overflow-y: auto; display: grid; gap: 18px; align-content: start; }
@@ -2007,7 +2010,7 @@ const BRAND_CHECK = (() => {
         h("div", { class: "lg-card" },
           h("div", { class: "lg-eyebrow", text: "Recykal brand portal" }),
           h("h1", null, "Sign in to ", h("span", { class: "lg-prod" }, "Brand ", h("b", { text: "Astra" }))),
-          h("p", { class: "lg-sub", text: "Run a Brand QC on your deck or post, submit it for review, and track every review in one place. Employees and the marketing team sign in the same way." }),
+          h("p", { class: "lg-sub", text: "Run a Brand QC on your deck or post, submit it for review, and track every review in one place. Employees and the brand team sign in the same way." }),
           msg ? h("div", { class: "notice", text: msg }) : null,
           h("a", { class: "btn btn-primary lg-btn", href: o.url, style: "justify-content:center;gap:10px" }, h("span", { class: "g-ic", html: g, style: "display:inline-flex;background:#fff;border-radius:50%;padding:3px" }), "Sign in with Google"),
           h("div", { class: "lg-secure" }, h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' }), `Secured by Google sign-in · @${o.domain} accounts only`))),
@@ -2021,7 +2024,7 @@ const BRAND_CHECK = (() => {
         h("div", { class: "lg-card" },
           h("div", { class: "lg-eyebrow", text: "Recykal brand portal" }),
           h("h1", null, "Open ", h("span", { class: "lg-prod" }, "Brand ", h("b", { text: "Astra" })), " from its company link"),
-          h("p", { class: "lg-sub", text: "Brand Astra runs on Recykal's Google Workspace. Open the link the marketing team shared and sign in with your @recykal.com Google account." }),
+          h("p", { class: "lg-sub", text: "Brand Astra runs on Recykal's Google Workspace. Open the link the brand team shared and sign in with your @recykal.com Google account." }),
           h("div", { class: "lg-secure", text: "Setting it up? Deploy this file with Google Apps Script, as SETUP.md describes." }))),
       h("section", { class: "lg-right", "aria-hidden": "true" }, loginArt()), loginFoot()));
   }
@@ -2107,9 +2110,9 @@ const BRAND_CHECK = (() => {
     const col = { soon: "#F2AE3D", ontrack: "#1DC797", overdue: "#F2667A" };
     $("#due").replaceChildren(...due.map((b) => { const st = reqState(b); return h("button", { onclick: () => { S.view = "requests"; go("requests"); }, title: b.title },
       h("span", { class: "dot", style: "background:" + (col[st.k] || "#8D97AA") }), h("span", { class: "t", text: b.title }), h("span", { class: "d tnum", text: fmtDeadline(b.deadline) })); }));
-    $("#me").replaceChildren(...(S.me ? [h("img", { src: S.me.avatarUrl, alt: "" }), h("div", { style: "min-width:0" }, h("div", { class: "nm", text: S.me.name || "You" }), h("div", { class: "rl", text: S.isAdmin ? "Marketing team" : S.realAdmin ? "Marketing team · employee view" : "Employee" }),
+    $("#me").replaceChildren(...(S.me ? [h("img", { src: S.me.avatarUrl, alt: "" }), h("div", { style: "min-width:0" }, h("div", { class: "nm", text: S.me.name || "You" }), h("div", { class: "rl", text: S.isAdmin ? "Brand team" : S.realAdmin ? "Brand team · employee view" : "Employee" }),
       h("div", { class: "me-acts" },
-        S.realAdmin ? h("button", { class: "linkbtn", onclick: switchRole }, S.isAdmin ? "Employee view" : "Marketing view") : null,
+        S.realAdmin ? h("button", { class: "linkbtn", onclick: switchRole }, S.isAdmin ? "Employee view" : "Brand team view") : null,
         S.appUrl ? h("button", { class: "linkbtn", onclick: signOut }, "Sign out") : null))] : []));
   }
   const TITLES = { overview: "Overview", requests: "Requests & tasks", queue: "Review queue", reports: "Compliance reports", team: "Team & access", work: "My submissions", showcase: "Showcase", qc: "Brand QC", kit: "Brand kit" };
@@ -2244,7 +2247,7 @@ const BRAND_CHECK = (() => {
   // ---------- views ----------
   function viewNoDb() {
     return [h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Brand " }), h("b", { text: "Check" })), h("p", { text: "Submit presentations, social posts and other designs for a brand check, and follow their review status here." }))),
-      h("div", { class: "empty" }, h("strong", { text: "Sign in to claude.ai to use Brand Astra" }), h("span", { text: "Open this page from the link the marketing team shared, signed in with your Recykal account." }))];
+      h("div", { class: "empty" }, h("strong", { text: "Sign in to claude.ai to use Brand Astra" }), h("span", { text: "Open this page from the link the brand team shared, signed in with your Recykal account." }))];
   }
   function kpi(label, value, sub, ic, tone) {
     const tones = { info: ["var(--info-soft)", "var(--info)"], ok: ["var(--ok-soft)", "var(--ok)"], warn: ["var(--warn-soft)", "var(--warn)"], bad: ["var(--bad-soft)", "var(--bad)"] };
@@ -2940,7 +2943,7 @@ const BRAND_CHECK = (() => {
               h("div", { class: "lt-foot" }, h("div", { style: "min-width:0" }, h("b", { text: `${lg.name} · ${tone}` }), h("span", { class: "small", text: label + " backgrounds" })),
                 h("div", { class: "actions" }, ["svg", "png"].map((k) => h("button", { class: "btn btn-ghost btn-sm", onclick: () => openLogoDownload(`${lg.name} · ${tone}`, svg, file, k) }, k.toUpperCase())))));
           }))),
-          h("div", { class: "small", text: "Every download asks what the logo is for. Your name, the date and your note are recorded for the marketing team." })),
+          h("div", { class: "small", text: "Every download asks what the logo is for. Your name, the date and your note are recorded for the brand team." })),
         S.isAdmin ? downloadLogCard() : null,
         h("div", { class: "card" }, h("p", { text: "The two boomerangs in the Recykal mark stand for circularity: what goes around as waste comes back around, recycled or reused. Use the primary logo (mark beside the wordmark) or the secondary logo (mark above it), each with or without the “Sustainable Circularity” tagline (p.2–5)." })),
         h("div", { class: "grid-2" }, h("div", { class: "card" }, h("h3", { text: "Do" }), h("ul", { class: "rules" }, ["Use the supplied logo file exactly as it is: download it above", "Black logo on white or light backgrounds; white logo on black", "Retearn: use the supplied “retearn · A Recykal Venture” lockup, black or white only", "Keep the safe space around it free of text and graphics (p.6)", "Full logo with tagline on covers, posts and banners; the mark alone top-right on inner slides", "Scale proportionally from a corner"].map((t) => h("li", null, h("span", { class: "do", text: "✓" }), h("span", { text: t }))))),
@@ -2993,18 +2996,18 @@ const BRAND_CHECK = (() => {
       ...body[S.kitSec]()];
   }
 
-  // ----- Team & access (marketing team): who is on the marketing team, and who has signed in -----
+  // ----- Team & access (brand team): who is on the brand team, and who has signed in -----
   async function setMarketing(email, on, btn) {
     if (btn) btn.disabled = true;
-    try { S.team = await gs("setMarketing", email, on); await S.db.reload(); toast(on ? `${nameOf(email) || email} is on the marketing team` : `${nameOf(email) || email} is now an employee`); }
-    catch (e) { toast(e.message || "Couldn't change the marketing team."); if (btn) btn.disabled = false; }
+    try { S.team = await gs("setMarketing", email, on); await S.db.reload(); toast(on ? `${nameOf(email) || email} is on the brand team` : `${nameOf(email) || email} is now an employee`); }
+    catch (e) { toast(e.message || "Couldn't change the brand team."); if (btn) btn.disabled = false; }
   }
   function viewTeam() {
     const T = S.team; const team = T.owners.concat(T.added.filter((e) => !T.owners.includes(e)));
     const person = (email, extra) => { const p = S.profiles[email] || {}; return h("div", { class: "team-row" }, h("img", { src: p.avatarUrl || avatarOf(email, p.name), alt: "" }),
       h("div", { class: "who" }, h("b", { text: p.name || email.split("@")[0].split(/[._-]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(" ") }), h("span", { text: [email, p.team, p.lastSeen ? "last signed in " + fmtDate(p.lastSeen) : "hasn't signed in yet"].filter(Boolean).join(" · ") })), extra); };
     const addIn = h("input", { class: "field-in", id: "team-add", type: "email", placeholder: "name.surname@" + T.domain, autocomplete: "off" });
-    const addBtn = h("button", { class: "btn btn-primary", type: "submit" }, "Add to marketing team");
+    const addBtn = h("button", { class: "btn btn-primary", type: "submit" }, "Add to brand team");
     const employees = Object.keys(S.profiles).filter((e) => e.includes("@") && !team.includes(e) && S.profiles[e].name).sort((a, b) => (S.profiles[b].lastSeen || "").localeCompare(S.profiles[a].lastSeen || ""));
     const q = (S.teamQ || "").toLowerCase();
     const search = h("input", { class: "field-in", id: "team-search", type: "search", placeholder: "Search employees by name, email or team", value: S.teamQ || "" });
@@ -3012,8 +3015,8 @@ const BRAND_CHECK = (() => {
     const shown = employees.filter((e) => !q || [e, S.profiles[e].name, S.profiles[e].team].join(" ").toLowerCase().includes(q));
     return [
       h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: "Team & " }), h("b", { text: "access" })),
-        h("p", { text: `Everyone signs in with their @${T.domain} Google account. Employees submit work and see only their own; the marketing team reviews it, posts requests and sees the reports.` }))),
-      h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: `Marketing team (${team.length})` }), h("span", { class: "sub", text: "Can review, approve and manage requests" })),
+        h("p", { text: `Everyone signs in with their @${T.domain} Google account. Employees submit work and see only their own; the brand team reviews it, posts requests and sees the reports.` }))),
+      h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: `Brand team (${team.length})` }), h("span", { class: "sub", text: "Can review, approve and manage requests" })),
         h("form", { class: "composer", onsubmit: (e) => { e.preventDefault(); const v = addIn.value.trim().toLowerCase(); if (!v) return; setMarketing(v, true, addBtn); } }, addIn, addBtn),
         h("div", null, team.map((email) => person(email, T.owners.includes(email) ? h("span", { class: "chip na", title: "Listed in Code.gs (CONFIG.ADMINS); change it there", text: "Owner" })
           : email === S.uid ? h("span", { class: "chip na", text: "You" }) : (() => { const b = h("button", { class: "btn btn-ghost btn-sm" }, "Remove"); b.addEventListener("click", () => setMarketing(email, false, b)); return b; })()))),
@@ -3401,13 +3404,13 @@ const BRAND_CHECK = (() => {
       const showAccess = () => {
         access.hidden = !(role === "marketing" && !o.isAdmin);
         if (access.hidden) return;
-        const ask = h("button", { type: "button", class: "btn btn-ghost btn-sm" }, "Ask for marketing access");
+        const ask = h("button", { type: "button", class: "btn btn-ghost btn-sm" }, "Ask for brand team access");
         ask.addEventListener("click", async () => { ask.disabled = true; ask.textContent = "Sending…";
-          try { await o.onRequest(); access.replaceChildren(h("b", { text: "Request sent" }), h("span", { text: "The marketing admins have your request by email. Until they add you, sign in as an employee." })); }
-          catch (x) { ask.disabled = false; ask.textContent = "Ask for marketing access"; err.textContent = x.message || "Couldn't send the request."; } });
-        access.replaceChildren(h("b", { text: "This account isn't on the marketing team" }), h("span", { text: `${o.email} can sign in as an employee. A marketing admin can add you under Team & access.` }), ask);
+          try { await o.onRequest(); access.replaceChildren(h("b", { text: "Request sent" }), h("span", { text: "The brand team has your request by email. Until they add you, sign in as an employee." })); }
+          catch (x) { ask.disabled = false; ask.textContent = "Ask for brand team access"; err.textContent = x.message || "Couldn't send the request."; } });
+        access.replaceChildren(h("b", { text: "This account isn't on the brand team" }), h("span", { text: `${o.email} can sign in as an employee. A brand team admin can add you under Team & access.` }), ask);
       };
-      const roleSeg = o.roles ? h("div", { class: "seg lg-roles", role: "group", "aria-label": "Sign in as" }, [["employee", "Employee"], ["marketing", "Marketing team"]].map(([v, l]) =>
+      const roleSeg = o.roles ? h("div", { class: "seg lg-roles", role: "group", "aria-label": "Sign in as" }, [["employee", "Employee"], ["marketing", "Brand team"]].map(([v, l]) =>
         h("button", { type: "button", "aria-pressed": String(role === v), onclick: (e) => { role = v; roleSeg.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === e.currentTarget))); err.textContent = ""; showAccess(); btn.disabled = role === "marketing" && !o.isAdmin; } }, l))) : null;
       const form = h("form", { class: "lg-card", onsubmit: async (e) => {
           e.preventDefault(); err.textContent = "";
@@ -3424,7 +3427,7 @@ const BRAND_CHECK = (() => {
         h("div", { class: "lg-account" },
           h("img", { src: o.avatarUrl, alt: "" }),
           h("div", { class: "who" }, h("b", { text: o.name || o.email }), h("span", { text: o.email })),
-          h("span", { class: "lg-role" + (o.isAdmin ? " admin" : ""), text: o.isAdmin ? "Marketing team" : "Employee" })),
+          h("span", { class: "lg-role" + (o.isAdmin ? " admin" : ""), text: o.isAdmin ? "Brand team" : "Employee" })),
         access,
         o.isNew ? h("div", { class: "lg-fields" }, h("div", { class: "lg-note", text: "First time here? Confirm your details." }),
           h("div", { class: "field" }, h("label", { for: "lg-name", text: "Your name" }), name),
@@ -3811,7 +3814,7 @@ const BRAND_CHECK = (() => {
   }
   function switchRole() {
     S.isAdmin = !S.isAdmin; try { sessionStorage.setItem("ba.role", S.isAdmin ? "marketing" : "employee"); } catch (e) {}
-    S.view = "overview"; render(); window.scrollTo(0, 0); toast(S.isAdmin ? "Marketing team view" : "Employee view: what your colleagues see");
+    S.view = "overview"; render(); window.scrollTo(0, 0); toast(S.isAdmin ? "Brand team view" : "Employee view: what your colleagues see");
   }
   async function bootApps() {
     let st;
@@ -3912,13 +3915,13 @@ const BRAND_CHECK = (() => {
         const link = h("a", { class: "btn btn-primary", href: url, download: name, onclick: () => setTimeout(() => { dlg.close(); if (S.view === "kit") render(); }, 800) }, "Download " + name);
         dlg.replaceChildren(h("div", { class: "dlg" },
           h("div", { class: "dlg-head" }, h("h2", { text: "Your logo is ready" }), h("button", { type: "button", class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
-          h("div", { class: "dlg-body" }, h("p", { text: `Recorded for the marketing team: “${why}”.` }), h("p", { class: "small", text: kind === "png" ? "PNG, 2400 px wide, transparent background." : "SVG: scales to any size, for print and design files." })),
+          h("div", { class: "dlg-body" }, h("p", { text: `Recorded for the brand team: “${why}”.` }), h("p", { class: "small", text: kind === "png" ? "PNG, 2400 px wide, transparent background." : "SVG: scales to any size, for print and design files." })),
           h("div", { class: "dlg-foot" }, h("span"), h("div", { class: "actions" }, h("button", { type: "button", class: "btn btn-ghost", onclick: () => dlg.close() }, "Close"), link))));
         setTimeout(() => link.focus(), 50);
       } },
       h("div", { class: "dlg-head" }, h("h2", { text: `Download ${label} (${kind.toUpperCase()})` }), h("button", { type: "button", class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
       h("div", { class: "dlg-body" }, h("div", { class: "field" }, h("label", { for: "dl-purpose", text: "What will you use it for? (required)" }), purpose,
-        h("div", { class: "hint", text: "Say where it will appear and who will see it. Your name, team, the date and this note are recorded for the marketing team." })), err),
+        h("div", { class: "hint", text: "Say where it will appear and who will see it. Your name, team, the date and this note are recorded for the brand team." })), err),
       h("div", { class: "dlg-foot" }, h("span"), h("div", { class: "actions" }, h("button", { type: "button", class: "btn btn-ghost", onclick: () => dlg.close() }, "Cancel"), go))));
     dlg.showModal(); setTimeout(() => purpose.focus(), 50);
   }
@@ -3933,7 +3936,7 @@ const BRAND_CHECK = (() => {
       try { await S.downloads.save({ filename: `brand-astra-logo-downloads-${nowIso().slice(0, 10)}.csv`, data: lines.join("\n") }); } catch (e) { if (e.code !== "declined") toast("Couldn't export: " + (e.message || e.code)); }
     };
     return h("div", { class: "card" }, h("div", { class: "card-head" }, h("h3", { text: "Logo downloads" }),
-        h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "sub", text: rows ? `${rows.length} recorded · marketing team only` : "Marketing team only" }), rows && rows.length ? h("button", { class: "btn btn-ghost btn-sm", onclick: csv }, "Export CSV") : null)),
+        h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "sub", text: rows ? `${rows.length} recorded · brand team only` : "Brand team only" }), rows && rows.length ? h("button", { class: "btn btn-ghost btn-sm", onclick: csv }, "Export CSV") : null)),
       S.dl.err ? h("div", { class: "notice", text: "Couldn't load the log: " + S.dl.err }) : !rows ? h("div", { class: "small", text: "Loading…" }) : !rows.length ? h("div", { class: "small", text: "No logo downloads yet." }) :
       h("div", { class: "table-wrap", style: "box-shadow:none" }, h("table", null, h("thead", null, h("tr", null, ["When", "Who", "Logo", "Purpose"].map((t) => h("th", { text: t })))),
         h("tbody", null, rows.slice(0, 100).map((r) => h("tr", null, h("td", { style: "white-space:nowrap", text: fmtDateTime(r.downloadedAt) }),

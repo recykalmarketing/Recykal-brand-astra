@@ -307,7 +307,7 @@ const BRAND = (() => {
  * Brand Astra — Recykal's brand review portal, as a Google Apps Script web app.
  *
  * Everyone signs in with their @recykal.com Google account (Google handles the login), then picks
- * Employee or Marketing team on the sign-in page. Only people on the marketing team (the owners below,
+ * Employee or Brand team on the sign-in page. Only people on the brand team (the owners below,
  * plus anyone the team adds under Team & access) get the marketing views; the server checks every call.
  * Data lives in a Google Sheet owned by the account that deploys this script.
  * Every request is checked here on the server: employees only ever receive and change
@@ -318,7 +318,7 @@ const BRAND = (() => {
 // ---------- Settings: edit these ----------
 const CONFIG = {
   DOMAIN: "recykal.com",
-  // Marketing team owners: always on the marketing team (review queue, every submission, reports, requests,
+  // Brand team owners: always on the brand team (review queue, every submission, reports, requests,
   // Team & access). More members can be added in the app under Team & access; only owners are listed here.
   ADMINS: [
     "marketing@recykal.com",
@@ -415,7 +415,7 @@ function email_() {
   }
   return email;
 }
-// The marketing team: the owners in CONFIG.ADMINS plus the members added in the app (Settings → "marketingTeam").
+// The brand team: the owners in CONFIG.ADMINS plus the members added in the app (Settings → "marketingTeam").
 let TEAM_CACHE_ = null;                                   // one sheet read per call
 function owners_() { return CONFIG.ADMINS.map((a) => a.toLowerCase().trim()).filter(Boolean); }
 function addedAdmins_() {
@@ -429,14 +429,14 @@ function admins_() {
 function isAdmin_(email) { return admins_().indexOf(email) >= 0; }
 function teamInfo_() { const o = owners_(); return { owners: o, added: admins_().filter((e) => o.indexOf(e) < 0), domain: CONFIG.DOMAIN }; }
 
-/** Add someone to the marketing team, or move them back to employee. Marketing team only. */
+/** Add someone to the brand team, or move them back to employee. Brand team only. */
 function setMarketing(target, on) {
   const email = email_();
-  if (!isAdmin_(email)) throw new Error("Only the marketing team can change who's on it.");
+  if (!isAdmin_(email)) throw new Error("Only the brand team can change who's on it.");
   const t = String(target || "").toLowerCase().trim();
   if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+$/.test(t) || !t.endsWith("@" + CONFIG.DOMAIN)) throw new Error("Use a @" + CONFIG.DOMAIN + " email address.");
   if (!on && owners_().indexOf(t) >= 0) throw new Error("This person is an owner, listed in Code.gs (CONFIG.ADMINS). Remove them there.");
-  if (!on && t === email) throw new Error("You can't remove yourself. Ask another member of the marketing team.");
+  if (!on && t === email) throw new Error("You can't remove yourself. Ask another member of the brand team.");
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
   let added = false;
   try {
@@ -447,19 +447,19 @@ function setMarketing(target, on) {
     writeRow_("Settings", row && row.row, ["marketingTeam", list.join(", "), new Date().toISOString(), { emails: list, updatedBy: email }]);
     TEAM_CACHE_ = null;
   } finally { lock.releaseLock(); }
-  if (added) sendMail_({ to: t, subject: "You're on the marketing team",
-    body: `<p>${esc_(nameOf_(email))} added you to the marketing team in ${CONFIG.APP_NAME}.</p><p>Open the app, choose <b>Marketing team</b> on the sign-in page, and you'll see the review queue, every submission, requests and the compliance reports.</p>` });
+  if (added) sendMail_({ to: t, subject: "You're on the brand team",
+    body: `<p>${esc_(nameOf_(email))} added you to the brand team in ${CONFIG.APP_NAME}.</p><p>Open the app, choose <b>Brand team</b> on the sign-in page, and you'll see the review queue, every submission, requests and the compliance reports.</p>` });
   return teamInfo_();
 }
 
-/** An employee asks the marketing team for marketing access (at most once a day). */
+/** An employee asks the brand team for brand team access (at most once a day). */
 function requestMarketingAccess() {
   const email = email_();
   if (isAdmin_(email)) return { already: true };
   const cache = CacheService.getScriptCache(); const key = "access:" + email;
   if (cache.get(key)) return { sent: true };
-  sendMail_({ to: admins_().join(","), subject: `Marketing access request: ${nameOf_(email)}`,
-    body: `<p><b>${esc_(nameOf_(email))}</b> (${esc_(email)}) asked for marketing team access in ${CONFIG.APP_NAME}.</p><p>If they should review work, open the app as the marketing team and add them under <b>Team &amp; access</b>.</p>` });
+  sendMail_({ to: admins_().join(","), subject: `Brand team access request: ${nameOf_(email)}`,
+    body: `<p><b>${esc_(nameOf_(email))}</b> (${esc_(email)}) asked for brand team access in ${CONFIG.APP_NAME}.</p><p>If they should review work, open the app as the brand team and add them under <b>Team &amp; access</b>.</p>` });
   cache.put(key, "1", 60 * 60 * 24);
   return { sent: true };
 }
@@ -576,10 +576,10 @@ function logDownload(asset, format, purpose) {
     return { id: id, downloadedAt: at };
   } finally { lock.releaseLock(); }
 }
-/** The marketing team's view of the download log, newest first. */
+/** The brand team's view of the download log, newest first. */
 function getDownloads() {
   const email = email_();
-  if (!isAdmin_(email)) throw new Error("Only the marketing team can see the download log.");
+  if (!isAdmin_(email)) throw new Error("Only the brand team can see the download log.");
   return rows_("Downloads").map((r) => r.obj).sort((a, b) => String(b.downloadedAt).localeCompare(String(a.downloadedAt))).slice(0, 1000);
 }
 

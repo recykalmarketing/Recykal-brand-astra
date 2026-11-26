@@ -1,9 +1,9 @@
 # Brand Astra
 
-Recykal's brand QC and task dashboard. Employees check their decks, posts and documents against the Recykal brand guidelines and submit them for review. The marketing team reviews the work, posts requests and follows compliance in the reports.
+Recykal's brand QC and task dashboard. Employees check their decks, posts and documents against the Recykal brand guidelines and submit them for review. The brand team reviews the work, posts requests and follows compliance in the reports.
 
-- **The brand check runs in the browser, on the file itself, with no AI.** It reads PowerPoint, PDF and image files and measures 23 of the 36 brand rules exactly: fonts, palette colours, gradients, contrast, size, footers, master-deck structure, margins, pictures and every copy rule. The marketing team checks the other 13 by eye before anything is approved.
-- **Sign-in** is Google, restricted to @recykal.com accounts, as an **Employee** or **Marketing team** member.
+- **The brand check runs in the browser, on the file itself, with no AI.** It reads PowerPoint, PDF and image files and measures 23 of the 36 brand rules exactly: fonts, palette colours, gradients, contrast, size, footers, master-deck structure, margins, pictures and every copy rule. The brand team checks the other 13 by eye before anything is approved.
+- **Sign-in** is Google, restricted to @recykal.com accounts, as an **Employee** or **Brand team** member.
 - **Hosting:** Render (free) with a Neon Postgres database. See [DEPLOY.md](DEPLOY.md).
 
 | Path | What it is |

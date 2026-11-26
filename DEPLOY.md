@@ -2,7 +2,7 @@
 
 Brand Astra is Recykal's brand QC and task dashboard. This repository runs it as a small Node server:
 
-- **Sign-in:** Google, restricted to @recykal.com accounts. On the sign-in page people choose **Employee** or **Marketing team**. The marketing team is the owners listed in `src/Code.gs` (`CONFIG.ADMINS`) plus anyone added in the app under **Team & access**.
+- **Sign-in:** Google, restricted to @recykal.com accounts. On the sign-in page people choose **Employee** or **Brand team**. The brand team is the owners listed in `src/Code.gs` (`CONFIG.ADMINS`) plus anyone added in the app under **Team & access**.
 - **Data:** a free [Neon](https://neon.tech) Postgres database. Render's own free database is deleted after 30 days, so it isn't used.
 - **Cost:** nothing. Render's free web service sleeps after 15 minutes without visitors, so the first person to open it after a quiet spell waits about a minute.
 
@@ -50,17 +50,17 @@ The morning digest is sent with the first visit after 9 am each day, because the
 
 ## 5. Roll out
 
-1. Open the app and sign in with **Marketing team** using one of the owner accounts in `src/Code.gs`.
-2. Add the rest of the marketing team under **Team & access**. New members get an email if email is on.
+1. Open the app and sign in with **Brand team** using one of the owner accounts in `src/Code.gs`.
+2. Add the rest of the brand team under **Team & access**. New members get an email if email is on.
 3. Post your first request under **Requests**, and paste your template links under **Brand kit → Templates**.
 4. Share the address with your team. Each person signs in with Google, confirms their name and team, and picks **Employee**.
 
-**Backups:** marketing team members can download every record as JSON from the **Download data backup** button on the overview. Neon's free plan also keeps a short restore history.
+**Backups:** brand team members can download every record as JSON from the **Download data backup** button on the overview. Neon's free plan also keeps a short restore history.
 
 ## Making changes
 
 - **Brand rules and the dashboard:** edit the files in `src/` (`rules.js` for the rules, `check.js` for how files are measured, `app.html` for the page, `Code.gs` for the server logic). Then run `python3 src/build.py`, which rebuilds `app/`.
-- **Marketing team owners:** edit `ADMINS` at the top of `src/Code.gs` and rebuild.
+- **Brand team owners:** edit `ADMINS` at the top of `src/Code.gs` and rebuild.
 - **Deploy:** commit and push. Render deploys every push to the main branch automatically.
 - **Run it on your computer:** `npm install`, then `npm run dev`, and open http://localhost:3000. Without Google settings it offers a test sign-in for any @recykal.com address, and keeps data in `data/`.
 

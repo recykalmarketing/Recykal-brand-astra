@@ -1,5 +1,5 @@
 // Brand Astra on Render: Recykal's brand QC and task dashboard.
-//   Sign-in: Google, restricted to @recykal.com accounts (the page then asks Employee or Marketing team).
+//   Sign-in: Google, restricted to @recykal.com accounts (the page then asks Employee or Brand team).
 //   App logic: app/Code.gs, the same server code as the Google Apps Script version, run by lib/gas.js.
 //   Data: Postgres (DATABASE_URL), or data/ on this computer when testing locally.
 // Environment: see .env.example and DEPLOY.md.
@@ -210,7 +210,7 @@ async function main() {
   });
   server.get("/admin/backup", (req, res) => {
     const email = signedIn(req);
-    if (!email || !app.call("isAdmin_", [email], email)) return res.status(403).type("text").send("Only the marketing team can download the backup.");
+    if (!email || !app.call("isAdmin_", [email], email)) return res.status(403).type("text").send("Only the brand team can download the backup.");
     res.set("Content-Disposition", `attachment; filename="brand-astra-backup-${new Date().toISOString().slice(0, 10)}.json"`).json({ exportedAt: new Date().toISOString(), sheets: store.state.sheets });
   });
 
