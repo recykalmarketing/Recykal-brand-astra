@@ -389,6 +389,17 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 
 /* Scorecard */
 .sc { display: grid; gap: 8px; }
+.rv-body { gap: 22px; }
+.rv-step { display: grid; gap: 10px; }
+.rv-h { display: flex; align-items: center; gap: 10px; } .rv-h b, .rv-h label { font-size: 15px; font-weight: 700; }
+.rv-n { width: 24px; height: 24px; border-radius: 50%; background: var(--fg); color: var(--card); font-size: 12px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.rv-meta { font-size: 13px; color: var(--muted); margin: 0; } .rv-note { font-size: 13px; margin: 0; padding: 10px 12px; border-radius: 9px; background: var(--card-2); white-space: pre-wrap; }
+.rv-score { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
+.sc-row.is-fail { box-shadow: inset 3px 0 0 var(--bad); }
+.rv-groups { display: grid; gap: 8px; }
+.rv-group { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.rv-group summary { cursor: pointer; font-size: 13.5px; } .rv-group summary b { font-weight: 600; }
+.dlg-foot .btn.suggested { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
 .sc-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 9px; background: var(--card-2); }
 .sc-row b { font-size: 13px; font-weight: 600; display: block; }
 .sc-row span { font-size: 11.5px; color: var(--muted); }
@@ -431,9 +442,9 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .rm-sec > h3.rm-h { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
 .rm-ratio { display: flex; height: 14px; border-radius: 999px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line-2); }
 .rm-ratio i { display: block; }
-.kv { display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 8px 16px; font-size: 13px; margin: 0; }
-.kv dt { font-weight: 600; } .kv dd { margin: 0; color: var(--muted); }
-@media (max-width: 640px) { .kv { grid-template-columns: 1fr; gap: 2px; } .kv dd { margin-bottom: 8px; } }
+.rm-kv { display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 8px 16px; font-size: 13px; margin: 0; }
+.rm-kv dt { font-weight: 600; } .rm-kv dd { margin: 0; color: var(--muted); }
+@media (max-width: 640px) { .rm-kv { grid-template-columns: 1fr; gap: 2px; } .rm-kv dd { margin-bottom: 8px; } }
 .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
 .tpl .art { background: #fff; border: 1px solid #E3E8F0; border-radius: 8px; display: grid; place-items: center; height: 200px; padding: 10px; overflow: hidden; }
 .tpl .art svg { max-height: 180px; max-width: 100%; width: auto; height: auto; box-shadow: 0 0 0 1px #E3E8F0; }
@@ -1706,7 +1717,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const sec = (title, ...kids) => h("section", { class: "rm-sec" }, h("h3", { class: "rm-h", text: title }), ...kids);
     const card = (title, ...kids) => h("div", { class: "card" }, title ? h("h3", { text: title }) : null, ...kids);
     const list = (items, cls) => h("ul", { class: "rules" }, items.map((t) => h("li", null, h("span", { class: cls, text: cls === "do" ? "✓" : "✕" }), h("span", { text: t }))));
-    const kv = (rows) => h("dl", { class: "kv" }, rows.map(([k, v]) => [h("dt", { text: k }), h("dd", { text: v })]));
+    const kv = (rows) => h("dl", { class: "rm-kv" }, rows.map(([k, v]) => [h("dt", { text: k }), h("dd", { text: v })]));
     const table = (head, rows) => h("div", { class: "table-wrap", style: "box-shadow:none" }, h("table", { class: "words" },
       h("thead", null, h("tr", null, head.map((t) => h("th", { text: t })))), h("tbody", null, rows.map((r) => h("tr", null, r.map((c, i) => h("td", { class: i === r.length - 1 && head[i] === "Avoid" ? "muted" : null, text: c })))))));
     const chip = (hex, name, use) => h("button", { class: "sw", onclick: () => copyText(hex), title: "Copy " + hex }, h("span", { class: "c", style: "background:" + hex }), h("span", { class: "nm", text: name }), h("span", { class: "hx", text: hex }), h("span", { class: "use", text: use }));
@@ -1974,22 +1985,35 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const open = () => BRAND.rules.filter((x) => x.f.includes(rfmt) && !rules[x.id]);
     const evalNow = () => BRAND.evaluate(rfmt, Object.fromEntries(Object.entries(rules).map(([k, v]) => [k, { status: v || "unsure" }])));
     const comment = h("textarea", { class: "field-in", id: "rv-comment", placeholder: "What should they fix? Name the slide or element and the rule." });
-    comment.value = current ? rev.comment || "" : "";
+    comment.value = current && rev.by !== "ai" ? rev.comment || "" : "";   // the automatic check's summary is in step 2, not the reviewer's message
     const err = h("div", { class: "err", role: "alert" });
     const scoreBox = h("div");
     const drawScore = () => { const ev = evalNow(), sc = ev.score; const sug = sc >= 85 ? "Approve" : sc >= 60 ? "Request changes" : "Not approved";
       const left = open().length;
-      scoreBox.replaceChildren(h("div", { style: "display:flex;align-items:center;gap:16px" }, ring(sc, 92), h("div", null, h("div", { class: "lbl", text: "QC score" }), h("div", { class: "small", text: left ? `${left} rule${left === 1 ? "" : "s"} still to check by eye` : `Suggested decision: ${sug}` }), h("div", { class: "small", text: "85+ approve · 60–84 changes · below 60 not approved" })))); };
-    const rowsEl = BRAND.groups.map(([g, label]) => {
-      const list = BRAND.rules.filter((x) => x.g === g && x.f.includes(rfmt));
-      const todo = list.filter((x) => !rules[x.id]).length;
-      return h("details", { class: "qc-pass", open: list.some((x) => rules[x.id] === "fail" || !rules[x.id]) || null }, h("summary", { text: `${label} (${list.length})${todo ? ` · ${todo} to check` : ""}` }),
-        h("div", { style: "display:grid;gap:6px;margin-top:6px" }, list.map((x) => { const seg = h("div", { class: "seg", role: "group", "aria-label": x.t }, ["pass", "fail", "na"].map((v) => h("button", { type: "button", "data-v": v === "fail" ? "fail" : v, "aria-pressed": String(rules[x.id] === v),
-          onclick: () => { rules[x.id] = v; seg.querySelectorAll("button").forEach((y) => y.setAttribute("aria-pressed", String(y.dataset.v === v))); drawScore(); } }, v === "pass" ? "Pass" : v === "fail" ? "Fail" : "N/A")));
-          const mx = measured[x.id];
-          return h("div", { class: "sc-row" }, h("div", null, h("b", null, h("span", { class: "chip sev-" + x.sev, style: "margin-right:6px", text: SEV_LABEL[x.sev] }), x.t, mx ? h("span", { class: "chip " + (mx.status === "fail" ? "fail" : "pass"), style: "margin-left:6px", text: "Measured" }) : !rules[x.id] ? h("span", { class: "chip unsure", style: "margin-left:6px", text: "Check by eye" }) : null),
-            h("span", { text: mx ? mx.evidence : `${x.id}${x.ref ? " · " + x.ref : ""} · ${BRAND_CHECK.HOW[x.id] || x.d}` })), seg); })));
-    });
+      scoreBox.replaceChildren(h("div", { class: "rv-score" }, ring(sc, 64), h("div", null, h("b", { text: left ? `${left} left to check` : `Suggested: ${sug}` }), h("div", { class: "small", text: "85+ approve · 60–84 request changes · under 60 not approved" }))));
+      dlg.querySelectorAll(".dlg-foot [data-dec]").forEach((x) => x.classList.toggle("suggested", !left && x.dataset.dec === sug));
+      (typeof eyeGroups !== "undefined" ? eyeGroups : []).forEach((g) => g.sync()); };
+    // One row per rule: plain name, what was measured or what to look for, and Pass / Fail / N/A.
+    const ruleRow = (x) => { const mx = measured[x.id];
+      const seg = h("div", { class: "seg", role: "group", "aria-label": plainName(x.id) }, ["pass", "fail", "na"].map((v) => h("button", { type: "button", "data-v": v, "aria-pressed": String(rules[x.id] === v),
+        onclick: () => { rules[x.id] = v; seg.querySelectorAll("button").forEach((y) => y.setAttribute("aria-pressed", String(y.dataset.v === v))); drawScore(); } }, v === "pass" ? "Pass" : v === "fail" ? "Fail" : "N/A")));
+      return h("div", { class: "sc-row" + (mx && mx.status === "fail" ? " is-fail" : "") }, h("div", null, h("b", { text: plainName(x.id) }),
+        h("span", { text: mx ? mx.evidence : (BRAND_CHECK.HOW[x.id] || x.d) })), seg); };
+    const applicable = BRAND.rules.filter((x) => x.f.includes(rfmt));
+    const foundFail = applicable.filter((x) => measured[x.id] && measured[x.id].status === "fail");
+    const byEye = applicable.filter((x) => !measured[x.id] && !rules[x.id]);   // nothing decided yet ("unsure" counts as not decided)
+    const rest = applicable.filter((x) => foundFail.indexOf(x) < 0 && byEye.indexOf(x) < 0);
+    // The by-eye rules, one short line per area (Logo, Colour, …): "All pass" in one click, or open it to mark rules one by one.
+    const eyeGroups = BRAND.groups.map(([g, label]) => {
+      const list = byEye.filter((x) => x.g === g); if (!list.length) return null;
+      const rowsBox = h("div", { class: "sc", style: "margin-top:8px" }, list.map(ruleRow));
+      const state = h("span", { class: "small" });
+      const sync = () => { const done = list.filter((x) => rules[x.id]).length, fails = list.filter((x) => rules[x.id] === "fail").length; state.textContent = fails ? ` · ${fails} failed` : done === list.length ? " · done" : ` · ${list.length - done} to check`; state.className = "small" + (fails ? " late" : ""); };
+      const all = h("button", { type: "button", class: "btn btn-ghost btn-sm", onclick: () => { list.forEach((x) => { rules[x.id] = "pass"; }); rowsBox.querySelectorAll(".seg").forEach((sg) => sg.querySelectorAll("button").forEach((y) => y.setAttribute("aria-pressed", String(y.dataset.v === "pass")))); drawScore(); } }, "All pass");
+      rowsBox.addEventListener("click", () => setTimeout(sync, 0));
+      const box = h("div", { class: "rv-group" }, h("details", null, h("summary", null, h("b", { text: QC_LABEL[g] || label }), state), rowsBox), all);
+      box.sync = sync; return box;
+    }).filter(Boolean);
     drawScore();
     const decide = async (status) => {
       const ev = evalNow(), sc = ev.score, qc = ev.qc;
@@ -2024,31 +2048,38 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
           isOpen(r.status) ? waitChip(sub.submittedAt) : null,
           claimedBy ? h("span", { class: "small", text: claimedBy === S.uid ? "You're reviewing" : `${nameOf(claimedBy)} is reviewing` }) : isOpen(r.status) ? claimBtn : null)),
         h("button", { class: "x", "aria-label": "Close", onclick: () => dlg.close() }, "×")),
-      h("div", { class: "dlg-body" }, humanBanner,
-        sub.link ? h("div", { class: "actions" }, h("a", { class: "btn btn-dark", href: sub.link, target: "_blank", rel: "noopener" }, linkLabel(sub.link) + " ↗"), h("span", { class: "small", style: "overflow-wrap:anywhere;min-width:0", text: sub.link })) : null,
-        h("dl", { class: "kv tnum" },
-          h("dt", { text: "Submitted by" }), h("dd", { text: [p.name || "Someone", sub.team].filter(Boolean).join(" · ") }),
-          h("dt", { text: "Request" }), h("dd", { text: b ? `${b.title} (due ${fmtDeadline(b.deadline)})` : "Not part of a request" }),
-          sub.channel ? h("dt", { text: "Where it goes" }) : null, sub.channel ? h("dd", { text: `${sub.channel}${sub.audience ? " · " + sub.audience + " audience" : ""}` }) : null,
-          sub.neededBy ? h("dt", { text: "Needed by" }) : null, sub.neededBy ? h("dd", null, fmtDeadline(sub.neededBy), urgency(sub) === "urgent" ? h("span", { class: "late", text: " · urgent" }) : null) : null,
-          h("dt", { text: "Submitted" }), h("dd", null, fmtDateTime(sub.submittedAt), (sub.version || 1) > 1 ? ` · version ${sub.version}` : "", r.late === true ? h("span", { class: "late", text: " · after deadline" }) : r.late === false ? h("span", { class: "ontime", text: " · on time" }) : null),
-          sub.notes ? h("dt", { text: "Description" }) : null, sub.notes ? h("dd", { text: sub.notes, style: "white-space:pre-wrap" }) : null),
-        pc ? h("div", { class: "feedback" }, h("div", { class: "card-head" }, h("b", { text: "Employee's Brand QC pre-check" }), scoreBadge(pc.score)),
-          fmt ? h("div", { class: "chips" }, fmt.checks.map((t, i) => h("span", { class: "chip " + (sub.checks && sub.checks[i] ? "pass" : "fail"), title: t, text: (sub.checks && sub.checks[i] ? "✓ " : "✕ ") + t.split(/[,;(]/)[0].slice(0, 44) }))) : null,
-          sub.copy ? h("div", { class: "small", style: "white-space:pre-wrap", text: "Copy: " + sub.copy }) : null,
-          pc.issues && pc.issues.length ? issueList(pc.issues) : null) : null,
-        rev.ai ? aiReport(rev.ai, rev.ai.v >= 3 ? null : rev.score, { title: rev.version === (sub.version || 1) ? "Automatic check" : "Automatic check (earlier version)" }) : null,
-        S.autoQc ? h("div", { class: "actions" }, h("button", { class: "btn btn-ghost btn-sm", onclick: () => { dlg.close(); startAiReview(r.uid, r.sid); } }, rev.ai ? "Run the check again" : "Run the automatic check")) : null,
-        h("div", { style: "display:grid;gap:10px" }, h("div", { class: "card-head" }, h("b", { text: rev.ai ? "QC scorecard · measured rules are filled in; check the rest by eye" : "QC scorecard" })), scoreBox, h("div", { class: "sc" }, rowsEl)),
-        h("div", { class: "field" }, h("label", { for: "rv-comment", text: "Feedback for the employee" }), comment),
-        h("div", { class: "feature-box" }, h("label", { class: "check", style: "background:none;padding:0" }, feature, h("span", null, h("b", { text: "Feature in the Showcase" }), h("span", { class: "small", text: " · when approved, everyone can see it as a good example" }))), featNote),
-        threadBox(r.uid, r.sid, true),
-        rev.history && rev.history.length ? h("div", { class: "history" }, h("div", { class: "lbl", text: "Review history" }), rev.history.slice().reverse().map((x) => h("div", { class: "tnum", text: `${fmtDateTime(x.at)} · v${x.version} · ${STATUS[x.status]}${x.score != null ? " · QC " + x.score : ""} · ${nameOf(x.by)}` }))) : null,
+      h("div", { class: "dlg-body rv-body" }, humanBanner,
+        // 1 · the file and who sent it
+        h("section", { class: "rv-step" }, h("div", { class: "rv-h" }, h("span", { class: "rv-n", text: "1" }), h("b", { text: "Open the file" })),
+          sub.link ? h("a", { class: "btn btn-dark", href: sub.link, target: "_blank", rel: "noopener", style: "justify-self:start" }, linkLabel(sub.link) + " ↗") : h("p", { class: "small", text: "No file or link was attached." }),
+          h("p", { class: "rv-meta" }, [p.name || "Someone", sub.team, sub.channel ? sub.channel + (sub.audience ? ` (${sub.audience.toLowerCase()})` : "") : "", "sent " + fmtDateTime(sub.submittedAt) + ((sub.version || 1) > 1 ? ` · version ${sub.version}` : "")].filter(Boolean).join(" · "),
+            sub.neededBy ? h("span", { class: urgency(sub) === "urgent" ? "late" : "" , text: ` · needed by ${fmtDeadline(sub.neededBy)}` }) : null),
+          b ? h("p", { class: "rv-meta", text: `For the request “${b.title}” (due ${fmtDeadline(b.deadline)})` }) : null,
+          sub.notes ? h("p", { class: "rv-note", text: sub.notes }) : null),
+        // 2 · what the automatic check found
+        h("section", { class: "rv-step" }, h("div", { class: "rv-h" }, h("span", { class: "rv-n", text: "2" }), h("b", { text: "What Brand Astra found" })),
+          rev.ai ? aiReport(rev.ai, rev.ai.v >= 3 ? null : rev.score, { title: rev.version === (sub.version || 1) ? "Automatic check" : "Automatic check (earlier version)" })
+            : pc && pc.issues && pc.issues.length ? [h("p", { class: "small", text: "No automatic file check yet. Wording issues in the text they pasted:" }), issueList(pc.issues)]
+            : h("p", { class: "small", text: "No automatic check has run on this file yet." }),
+          S.autoQc ? h("button", { class: "btn btn-ghost btn-sm", style: "justify-self:start", onclick: () => { dlg.close(); startAiReview(r.uid, r.sid); } }, rev.ai ? "Run the check again" : "Run the automatic check") : null),
+        // 3 · the reviewer's own checks
+        h("section", { class: "rv-step" }, h("div", { class: "rv-h" }, h("span", { class: "rv-n", text: "3" }), h("b", { text: byEye.length ? "Check by eye" : "Confirm the result" })),
+          byEye.length ? h("p", { class: "small", text: rev.ai ? "A computer can't judge these. Use All pass, or open an area to mark a rule as Fail." : "No automatic check yet, so everything is by eye. Running the check above fills most of these in." }) : null,
+          eyeGroups.length ? h("div", { class: "rv-groups" }, eyeGroups) : null,
+          foundFail.length ? h("details", { class: "qc-pass", open: true }, h("summary", { text: `Problems Brand Astra found (${foundFail.length}) · change one to Pass if it's wrong` }), h("div", { class: "sc", style: "margin-top:8px" }, foundFail.map(ruleRow))) : null,
+          rest.length ? h("details", { class: "qc-pass" }, h("summary", { text: `Everything else (${rest.length})` }), h("div", { class: "sc", style: "margin-top:8px" }, rest.map(ruleRow))) : null,
+          scoreBox),
+        // 4 · the message
+        h("section", { class: "rv-step" }, h("div", { class: "rv-h" }, h("span", { class: "rv-n", text: "4" }), h("label", { for: "rv-comment", text: "Message to " + (p.name ? p.name.split(" ")[0] : "the employee") })),
+          comment, h("p", { class: "small", text: "Say what to change and where, for example “Slide 4: set the title in Poppins Bold”." })),
+        h("details", { class: "qc-pass" }, h("summary", { text: "Feature in the Showcase" }), h("div", { class: "feature-box", style: "margin-top:8px" }, h("label", { class: "check", style: "background:none;padding:0" }, feature, h("span", null, h("b", { text: "Show it as a good example" }), h("span", { class: "small", text: " · only when approved" }))), featNote)),
+        h("details", { class: "qc-pass" }, h("summary", { text: "Conversation" + (rev.history && rev.history.length ? " and history" : "") }), h("div", { style: "display:grid;gap:12px;margin-top:8px" }, threadBox(r.uid, r.sid, true),
+          rev.history && rev.history.length ? h("div", { class: "history" }, rev.history.slice().reverse().map((x) => h("div", { class: "tnum", text: `${fmtDateTime(x.at)} · v${x.version} · ${STATUS[x.status]}${x.score != null ? " · QC " + x.score : ""} · ${nameOf(x.by)}` }))) : null)),
         err),
       h("div", { class: "dlg-foot" }, h("button", { class: "btn btn-ghost", onclick: () => dlg.close() }, "Close"),
-        h("div", { class: "actions" }, h("button", { class: "btn btn-bad", onclick: () => decide("rejected") }, "Not approved"), h("button", { class: "btn btn-warn", onclick: () => decide("changes") }, "Request changes"), h("button", { class: "btn btn-ok", onclick: () => decide("approved") }, "Approve")))));
+        h("div", { class: "actions" }, h("button", { class: "btn btn-bad", "data-dec": "Not approved", onclick: () => decide("rejected") }, "Not approved"), h("button", { class: "btn btn-warn", "data-dec": "Request changes", onclick: () => decide("changes") }, "Request changes"), h("button", { class: "btn btn-ok", "data-dec": "Approve", onclick: () => decide("approved") }, "Approve")))));
     if (rev.history) needProfiles(rev.history.map((x) => x.by));
-    dlg.showModal();
+    dlg.showModal(); drawScore();
   }
 
   // ----- Request dialog -----
@@ -2435,8 +2466,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const bad = checks.filter((c) => c.status === "fail").sort((a, b) => SEV_RANK[BRAND.ruleById[a.id].sev] - SEV_RANK[BRAND.ruleById[b.id].sev]);
     const eye = checks.filter((c) => c.by === "reviewer");
     const criteria = {}; BRAND.groups.forEach(([g]) => { criteria[g] = { rating: ev.qc[g], feedback: bad.filter((c) => BRAND.ruleById[c.id].g === g).map((c) => c.evidence).join(" ") || "No measured problem." }; });
-    const summary = bad.length ? `${bad.length === 1 ? "1 rule" : bad.length + " rules"} failed on exact measurements, most importantly “${BRAND.ruleById[bad[0].id].t}”. The brand team checks ${eye.length} more rules by eye.`
-      : `All ${checks.filter((c) => c.by === "measured").length} measured rules pass. The brand team checks the other ${eye.length} rules (logo, imagery and layout details) by eye before it's approved.`;
+    const summary = bad.length ? `${bad.length === 1 ? "1 thing" : bad.length + " things"} to fix before you submit.` : "Nothing to fix in what Brand Astra can check.";
     const kind = format === "slide" ? "pptx" : format === "other" ? "pdf" : "image";
     return { report: { v: 3, mode: "auto", format, summary, checks, criteria, fixes: bad.map((c) => (c.where ? c.where + ": " : "") + c.fix), deductions: ev.deductions, needsHuman: ev.needsHuman, eye: eye.map((c) => c.id),
       facts: { kind, pages: format === "slide" ? 14 : 1, ratio: fails.Y1 ? 1.333 : { slide: 1.778, landscape: 1.778, square: 1, portrait: 0.8, story: 0.563 }[format] || null,
