@@ -132,6 +132,7 @@ a { color: var(--accent); }
 .btn-primary { background: var(--accent); color: var(--accent-ink); }
 .btn-primary:hover { filter: brightness(1.08); }
 .btn-dark { background: var(--fg); color: var(--bg); }
+.btn-brand { background: #049769; color: #FFFFFF; border-color: #049769; font-weight: 600; } .btn-brand:hover { background: #00573F; border-color: #00573F; } .btn-brand svg { color: #FFFFFF; }   /* Recykal Dark Green */
 .btn-ghost { background: var(--card); border-color: var(--line); color: var(--fg); }
 .btn-ghost:hover { background: var(--card-2); }
 .btn-ok { background: var(--ok); color: var(--card); }
@@ -693,6 +694,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     autoQc: null, aiRunning: {}, aiErr: {}, aiStage: {},
     profiles: {},
   };
+  const SHOW_SHOWCASE = false;                          // the Showcase is hidden for now; set to true to bring it back
   const VIEWS = ["overview", "requests", "queue", "reports", "team", "work", "showcase", "qc", "kit"];
   const h0 = (location.hash || "").slice(1);
   if (VIEWS.includes(h0)) S.view = h0;
@@ -945,14 +947,14 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const open = allRows().filter((r) => isOpen(r.status) || r.humanReq).length;
     const items = [
       ["overview", "Overview"],
+      ["qc", "Brand QC"],
+      ["kit", "Brand kit"],
       ["requests", S.isAdmin ? "Requests" : "My tasks", (S.isAdmin ? S.briefs.filter((b) => !b.closed) : myBriefs().filter((b) => !b.closed && myTaskStage(b) !== "approved")).length, true],
+      ["work", "My submissions", myRows().length, true],
       S.isAdmin ? ["queue", "Review queue", open] : null,
       S.isAdmin ? ["reports", "Reports"] : null,
       S.isAdmin && S.team ? ["team", "Team & access"] : null,
-      ["work", "My submissions", myRows().length, true],
-      ["showcase", "Showcase"],
-      ["qc", "Brand QC"],
-      ["kit", "Brand kit"],
+      SHOW_SHOWCASE ? ["showcase", "Showcase"] : null,
     ].filter(Boolean);
     $("#nav").replaceChildren(...items.map(([id, label, n, muted]) => h("button", { "aria-current": S.view === id ? "page" : null, onclick: () => go(id) },
       icon(id), label, n ? h("span", { class: "n tnum" + (muted ? " muted" : ""), text: n }) : null)));
@@ -1167,7 +1169,7 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     return [
       h("div", { class: "page-head" }, h("div", null, h("h2", null, h("span", { text: greeting() + ", " }), h("b", { text: first || "there" })),
         h("p", { text: "Anything that carries the Recykal name gets a quick brand check here before it goes out: decks, social posts, posters, emails. Run a Brand QC on your work, then submit it." })),
-        h("div", { class: "actions" }, h("button", { class: "btn btn-ghost", onclick: () => go("qc") }, icon("qc"), "Run Brand QC"))),
+        h("div", { class: "actions" }, h("button", { class: "btn btn-brand", onclick: () => go("qc") }, icon("qc"), "Run Brand QC"))),
       h("div", { class: "grid-4" },
         kpi("Submitted", rows.length, `${rows.filter((r) => isOpen(r.status)).length} in review`, "work", "info"),
         kpi("Approved", appr, rows.length ? `${Math.round(appr / rows.length * 100)}% of your work` : "Nothing reviewed yet", "check", "ok"),
@@ -2133,7 +2135,7 @@ ${passed.length ? `<h2>Already right (${passed.length})</h2><ul>${passed.map((c)
         // 4 · the message
         h("section", { class: "rv-step" }, h("div", { class: "rv-h" }, h("span", { class: "rv-n", text: "4" }), h("label", { for: "rv-comment", text: "Message to " + (p.name ? p.name.split(" ")[0] : "the employee") })),
           comment, h("p", { class: "small", text: "Say what to change and where, for example “Slide 4: set the title in Poppins Bold”." })),
-        h("details", { class: "qc-pass" }, h("summary", { text: "Feature in the Showcase" }), h("div", { class: "feature-box", style: "margin-top:8px" }, h("label", { class: "check", style: "background:none;padding:0" }, feature, h("span", null, h("b", { text: "Show it as a good example" }), h("span", { class: "small", text: " · only when approved" }))), featNote)),
+        SHOW_SHOWCASE ? h("details", { class: "qc-pass" }, h("summary", { text: "Feature in the Showcase" }), h("div", { class: "feature-box", style: "margin-top:8px" }, h("label", { class: "check", style: "background:none;padding:0" }, feature, h("span", null, h("b", { text: "Show it as a good example" }), h("span", { class: "small", text: " · only when approved" }))), featNote)) : null,
         h("details", { class: "qc-pass" }, h("summary", { text: "Conversation" + (rev.history && rev.history.length ? " and history" : "") }), h("div", { style: "display:grid;gap:12px;margin-top:8px" }, threadBox(r.uid, r.sid, true),
           rev.history && rev.history.length ? h("div", { class: "history" }, rev.history.slice().reverse().map((x) => h("div", { class: "tnum", text: `${fmtDateTime(x.at)} · v${x.version} · ${STATUS[x.status]}${x.score != null ? " · QC " + x.score : ""} · ${nameOf(x.by)}` }))) : null)),
         err),
