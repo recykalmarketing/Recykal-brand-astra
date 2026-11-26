@@ -526,7 +526,7 @@ function setup() {
 //   computer can't judge (logo artwork, imagery, alignment, proofreading) by eye.
 // =====================================================================
 
-const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
+const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "html", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const QC_FILE_LIMIT_ = 25 * 1024 * 1024;   // any file up to 25 MB; the page checks PowerPoint, PDF, Word, HTML and images in full

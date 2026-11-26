@@ -522,7 +522,7 @@ const BRAND_CHECK = (() => {
         if (/gradient\(/.test(cs.backgroundImage)) pg.gradients.push({ stops: (cs.backgroundImage.match(/rgba?\([^)]+\)/g) || []).map(hex).filter(Boolean), where: box });
         if (el.tagName === "IMG" && el.naturalWidth > 0) {
           const fill = !cs.objectFit || cs.objectFit === "fill";
-          pg.images.push({ x: box.x, y: box.y, w: box.w, h: box.h, pxW: el.naturalWidth, pxH: el.naturalHeight, vis: box.w * box.h, shownW: r.width, distort: fill ? Math.abs((el.naturalWidth / el.naturalHeight) / (r.width / r.height) - 1) : 0 });
+          pg.images.push({ alt: el.getAttribute("alt") || "", src: String(el.getAttribute("src") || "").slice(0, 120), x: box.x, y: box.y, w: box.w, h: box.h, pxW: el.naturalWidth, pxH: el.naturalHeight, vis: box.w * box.h, shownW: r.width, distort: fill ? Math.abs((el.naturalWidth / el.naturalHeight) / (r.width / r.height) - 1) : 0 });
         }
         const own = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").replace(/\s+/g, " ").trim();
         if (!hasWords(own)) return;
@@ -652,7 +652,7 @@ const BRAND_CHECK = (() => {
   /** Check a file. → { qc, score, decision, needsHuman, report } — decision "pending" means no measured rule stops it and the brand team confirms the rest. */
   async function run(file, opts) {
     opts = opts || {};
-    const format = RATIO[opts.format] || opts.format === "other" ? opts.format : "other";
+    const format = RATIO[opts.format] || opts.format === "other" || opts.format === "html" ? opts.format : "other";
     const audience = opts.audience === "Internal" ? "Internal" : "External";
     const onStage = opts.onStage;
     onStage && onStage("Opening your file");
@@ -864,6 +864,19 @@ const BRAND_CHECK = (() => {
       else if (!accentUnsure && inner.length) set("Y4", "pass", "The master deck accents are in place.");
     }
 
+    // HTML pages and emails (the HTML version of the Brand Document Template): logo top-left, footer, Poppins sizes
+    if (format === "html" && doc.kind === "html") {
+      const pg = pages[0], t = pageText(pg);
+      if (/Private\s*(&|and)\s*Confidential/i.test(t) && /©\s*\d{4}/.test(t) && /recykal\.com/i.test(t)) set("Y3", "pass", "The footer has “Private & Confidential”, the © line and www.recykal.com.");
+      else set("Y3", "fail", `The footer is missing “Private & Confidential | © ${BRAND.year}, All rights reserved” or the www.recykal.com link.`, "", "Keep the footer from the Recykal HTML template: the © line on the left, www.recykal.com on the right.");
+      const logo = pg.images.find((im) => /recykal/i.test(im.alt + " " + im.src)) || pg.images.find((im) => im.x < 0.3 && im.y < 0.15 && im.w < 0.5);
+      if (!logo) set("Y8", "fail", "No Recykal logo at the top of the page.", "", "Start from the Recykal HTML template, which has the logo top-left.");
+      else if (!(logo.x < 0.3 && logo.y < 0.2)) set("Y8", "fail", "The Recykal logo isn't at the top left.", "", "Keep the logo top-left, as in the Recykal HTML template.");
+      const sizes = {}; pg.texts.forEach((x) => { if (x.footer || !hasWords(x.str)) return; const pt = Math.round(x.pt * 0.75); sizes[pt] = (sizes[pt] || 0) + x.str.length; });
+      const body = Object.entries(sizes).sort((a3, b3) => b3[1] - a3[1])[0]; if (body) facts.bodyPt = Number(body[0]);
+      if (body && (body[0] < 9.5 || body[0] > 15.5)) set("T2", "fail", `Most body text is ${body[0]} pt; the template uses 10–15 pt (12 pt by default).`, "", "Body text in Poppins Normal 10–15 pt; headlines Bold + Normal 22 pt.");
+    }
+
     // Brand documents (the Brand Document Template): footer on every page, corner shapes, body text size
     if (format === "document" && (doc.kind === "pdf" || doc.kind === "docx")) {
       const footOk = (t) => /Private\s*(&|and)\s*Confidential/i.test(t) && /©\s*\d{4}/.test(t) && /recykal\.com/i.test(t);
@@ -904,7 +917,7 @@ const BRAND_CHECK = (() => {
         if (t.x < mg * 0.8 || t.x + t.w > 1 - mg * 0.8 || t.y < mgY * 0.8 || (t.y + t.h > 1 - mgY * 0.8 && !isSlides)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`);
         else if (format === "story" && (t.y < 250 / 1920 || t.y + t.h > 1 - 250 / 1920)) out.push(`“${t.str.trim().slice(0, 24)}” in the story's top or bottom 250 px (${label(pg)})`);
       }));
-      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", format === "document" ? "Keep text inside the template's side margins (at least 12 mm from the page edge)." : `Keep text at least ${Math.round(mg * PX[format === "other" ? "slide" : format][0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
+      if (out.length) set("Y6", "fail", `Text outside the margins: ${[...new Set(out)].slice(0, 4).join(", ")}.`, "", format === "document" ? "Keep text inside the template's side margins (at least 12 mm from the page edge)." : `Keep text at least ${Math.round(mg * (PX[format] || PX.slide)[0])} px from the edges${format === "story" ? ", and out of the top and bottom 250 px" : ""}.`);
       else if (pages.some((p) => p.texts.length)) set("Y6", "pass", "All text sits inside the margins.");
     } else if (doc.kind === "pptx") {
       const out = []; pages.forEach((pg) => pg.texts.forEach((t) => { if (!t.inherited && hasWords(t.str) && (t.x < -0.002 || t.y < -0.002 || t.x + t.w > 1.002 || t.y + t.h > 1.002)) out.push(`“${t.str.trim().slice(0, 24)}” (${label(pg)})`); }));
@@ -913,7 +926,7 @@ const BRAND_CHECK = (() => {
 
     // I1 · sharp, undistorted pictures;  L3 · the logo mark not distorted
     if (doc.kind !== "image") {
-      const target = PX[format === "other" ? "slide" : format][0]; const low = [], stretched = [], logoBad = [];
+      const target = (PX[format] || PX.slide)[0]; const low = [], stretched = [], logoBad = [];
       const allImgs = pages.flatMap((pg) => pg.images.filter((im) => im.pxW >= 16 && im.pxH >= 16 && (im.vis == null || im.vis > 0.0004)).map((im) => [pg, im]));
       allImgs.forEach(([pg, im]) => {
         const shown = im.w * target; const corner = im.w <= 0.2 && im.y <= 0.2 && (im.x >= 0.75 || im.x <= 0.1);

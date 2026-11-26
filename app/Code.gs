@@ -42,7 +42,7 @@ const BRAND = (() => {
   const groups = [
     ["logo", "Logo"], ["colour", "Colour"], ["type", "Typography"], ["layout", "Template & layout"], ["imagery", "Imagery"], ["copy", "Copy & facts"],
   ];
-  const ALL = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
+  const ALL = ["slide", "square", "portrait", "story", "landscape", "document", "html", "other"];
   const DIGITAL = ["square", "portrait", "story", "landscape"];
   // sev: critical (−25, caps the score at 59) · major (−10, caps at 84) · minor (−3). m: measured exactly by code where the file allows it.
   const rules = [
@@ -63,13 +63,13 @@ const BRAND = (() => {
     { id: "T2", g: "type", sev: "minor", m: true, t: "Clear type hierarchy", d: "Headlines in Bold or SemiBold, body in Regular or Medium; slide titles pair a light word with a bold word, as in “Our Solutions”.", ref: "p.22, Deck 3–16" },
     { id: "T3", g: "type", sev: "minor", m: true, t: "No faux styling", d: "No all-caps paragraphs, underlines for emphasis, outlined, shadowed or stretched type.", ref: "p.22" },
 
-    { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
-    { id: "Cover on black with the full logo and tagline; content slides with the title at the top left (and the Recykal mark top-right where the layout has it); a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
-    { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide", "document"], t: "Footer on every page", d: `Slides: “Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right. Documents: “Private & Confidential I © ${year}, All rights reserved” bottom-left and www.recykal.com bottom-right. Always the current year.`, ref: "Deck 1–16" },
+    { id: "Y1", g: "layout", sev: "critical", m: true, f: ["slide", "square", "portrait", "story", "landscape", "document", "other"], t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
+    { id: "Y2", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; content slides with the title at the top left (and the Recykal mark top-right where the layout has it); a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
+    { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide", "document", "html"], t: "Footer on every page", d: `Slides: “Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right. Documents: “Private & Confidential I © ${year}, All rights reserved” bottom-left and www.recykal.com bottom-right. Always the current year.`, ref: "Deck 1–16" },
     { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide", "document"], t: "Template corner shapes", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
     { id: "Y5", g: "layout", sev: "major", m: true, f: DIGITAL, t: "Digital template placement", d: "Logo with tagline top-left inside the margin (50 px posts, 60 px banners, 100 px stories); www.recykal.com bottom-left with the short black bar beneath it.", ref: "p.24–26" },
     { id: "Y6", g: "layout", sev: "minor", m: true, t: "Margins and safe zones", d: "Text inside the margins; nothing important in the top or bottom 250 px of a story.", ref: "p.24–26" },
-    { id: "Built on the Brand Document Template: a cover with the full Recykal logo top-left and a large Bold title (Poppins Bold 45 pt), then pages with section titles in Bold + Normal (22 pt), subject titles in Medium (18 pt), subheadings in Medium (12 pt) and body text in Poppins 10–15 pt, all in black #000000; the template's corner shapes and footer kept; no extra decorative shapes.", g: "layout", sev: "major", f: ["document"], t: "Brand Document Template", d: "Built on the Brand Document Template: a cover with the full Recykal logo top-left and a large Bold title (Poppins Bold 45 pt), then pages with section titles in Bold + Normal (22 pt), subject titles in Medium (18 pt), subheadings in Medium (12 pt) and body text in Poppins 10–15 pt, all in black #000000; the template's corner shapes and footer kept; no extra decorative shapes.", ref: "Brand Document Template" },
+    { id: "Y8", g: "layout", sev: "major", f: ["document", "html"], t: "Brand Document Template", d: "Built on the Brand Document Template (or its HTML version for web pages and emails): a cover with the full Recykal logo top-left and a large Bold title (Poppins Bold 45 pt), then pages with section titles in Bold + Normal (22 pt), subject titles in Medium (18 pt), subheadings in Medium (12 pt) and body text in Poppins 10–15 pt, all in black #000000; the template's corner shapes and footer kept; no extra decorative shapes.", ref: "Brand Document Template" },
     { id: "Y7", g: "layout", sev: "minor", t: "Clean alignment", d: "Elements aligned to a grid with consistent spacing and one clear focal point; no clutter or overlapping elements.", ref: "Deck 2–16" },
 
     { id: "I1", g: "imagery", sev: "major", m: true, t: "Sharp images", d: "No pixelated, stretched or badly cropped photos, screenshots or icons. Mark n/a if there are no images.", ref: "Deck 7–16" },
@@ -833,7 +833,7 @@ function setup() {
 //   computer can't judge (logo artwork, imagery, alignment, proofreading) by eye.
 // =====================================================================
 
-const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
+const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "html", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 const QC_FILE_LIMIT_ = 25 * 1024 * 1024;   // any file up to 25 MB; the page checks PowerPoint, PDF, Word, HTML and images in full
