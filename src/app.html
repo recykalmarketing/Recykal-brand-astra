@@ -303,6 +303,13 @@ textarea.field-in { resize: vertical; min-height: 90px; }
 .drop-x:disabled { opacity: .4; cursor: default; }
 .drop img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); flex: none; }
 .up-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--card); display: grid; place-items: center; color: var(--accent); } .up-ic svg { width: 20px; height: 20px; }
+.fix-list { display: grid; gap: 10px; }
+.fix-item { border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; background: var(--card); }
+.fix-item.sev-critical { border-left-color: var(--bad); } .fix-item.sev-minor { border-left-color: var(--line-2); }
+.fix-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; } .fix-top b { font-size: 14px; }
+.fix-where { font-size: 12px; color: var(--muted); background: var(--card-2); border-radius: 999px; padding: 2px 8px; }
+.fix-what { font-size: 13px; color: var(--muted); margin: 0; } .fix-how { font-size: 13px; margin: 0; } .fix-how b { font-weight: 600; }
+.ok-note { background: var(--ok-soft); color: var(--ok); } .eye-line { margin: 0; }
 .pdf-ic { width: 56px; height: 68px; border-radius: 6px; background: #E0475A; color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; flex: none; }
 .btn svg { width: 15px; height: 15px; }
 .ai-wait { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); }
@@ -744,16 +751,14 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   }
   const isOpen = (st) => st === "awaiting" || st === "resubmitted" || st === "inreview";
   const SLA_DAYS = 2;
-  const UPLOAD_ACCEPT = ".pptx,.pdf,.png,.jpg,.jpeg,.webp,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/pdf,image/png,image/jpeg,image/webp";
+  const UPLOAD_ACCEPT = null;                           // any file: PowerPoint, PDF, Word, HTML and images are checked in full; anything else goes to the brand team
+  const UPLOAD_MAX_MB = 25;
   function uploadProblem(f) {
-    const pdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name), img = /^image\/(png|jpeg|webp)$/.test(f.type), pptx = /\.pptx$/i.test(f.name) || /presentationml/.test(f.type);
-    if (/\.(ppt|key)$/i.test(f.name)) return "Save the deck as .pptx (PowerPoint 2007 or later) or export it as PDF, then upload that.";
-    if (/\.(docx?|odt|pages|rtf)$/i.test(f.name) || /wordprocessingml|msword/.test(f.type)) return "For a document, download it as PDF (File → Download → PDF in Google Docs, or Save as PDF in Word) and upload that, or paste its Google Docs link.";
-    if (!pdf && !img && !pptx) return "Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.";
-    if (img && f.size > 5 * 1048576) return "This image is over 5 MB. Export a smaller version (1080–2000 px wide is enough).";
-    if ((pdf || pptx) && f.size > 15 * 1048576) return `This ${pptx ? "deck" : "PDF"} is over 15 MB. Compress the pictures, or share it as a Google Drive link instead.`;
+    if (!f.size) return "That file is empty.";
+    if (f.size > UPLOAD_MAX_MB * 1048576) return `This file is ${(f.size / 1048576).toFixed(1)} MB; the limit is ${UPLOAD_MAX_MB} MB. Compress the pictures, or share it as a Google Drive link instead.`;
     return "";
   }
+  const fileBadge = (name) => { const ext = (String(name || "").match(/\.([a-z0-9]{1,5})$/i) || [, "FILE"])[1].toUpperCase(); return ext; };
   const fmtSize = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
   const AUTO_APPROVE_NOTE = "Anything the check measures as off-brand comes back to you straight away with the fix; files that pass go to the brand team, who check the logo and imagery by eye.";
   const CHANNELS = ["LinkedIn", "Instagram", "Facebook", "X (Twitter)", "YouTube", "Website / blog", "Client or partner presentation", "Event, print or OOH", "Email / newsletter", "Internal only"];
@@ -1405,6 +1410,23 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
   const RATING_LABEL = { pass: "Pass", minor: "Minor", fail: "Fail" };
   const SEV_LABEL = { critical: "Critical", major: "Major", minor: "Minor" };
   const SEV_RANK = { critical: 0, major: 1, minor: 2 };
+  // Plain-language names for the rules, for everyone who isn't on the brand team.
+  const PLAIN = {
+    L1: "Use the official logo file", L2: "Logo only in black or white", L3: "Logo not stretched or tilted", L4: "Logo parts not moved or resized",
+    L5: "Clear space around the logo", L6: "Right logo version for this page", L7: "Product logos used as supplied",
+    C1: "Only Recykal colours", C2: "Product colours only on that product", C3: "No colour gradients", C4: "Text easy to read on its background",
+    T1: "Poppins font only", T2: "Headings in bold", T3: "No all-caps sentences or text effects",
+    Y1: "Right page size", Y2: "Slides follow the Recykal deck", Y3: "Footer on every slide", Y4: "Corner shapes from the template",
+    Y5: "Logo and website in the right places", Y6: "Text inside the margins", Y7: "Neat alignment", Y8: "Built on the Brand Document Template",
+    I1: "Sharp, undistorted pictures", I2: "Real Recykal pictures", I3: "Matching icons", I4: "Partner logos smaller than Recykal's", I5: "No watermarked or copied images",
+    W1: "Company name written “Recykal”", W2: "Funding written “$68M+ raised to date”", W3: "Numbers match the fact sheet", W4: "Product names spelled right",
+    W5: "Respectful words", W6: "Indian/British spelling", W7: "Short forms spelled out first", W8: "Claims backed by proof", W9: "No typos or placeholder text",
+    W10: "Correct contact details", W11: "Recykal.Market wording",
+  };
+  const EYE_WORD = { L1: "the logo", L2: "the logo", L3: "the logo", L4: "the logo", L5: "the logo", L6: "the logo", L7: "product logos", I1: "pictures", I2: "pictures", I3: "icons", I4: "partner logos", I5: "pictures",
+    Y7: "alignment", W9: "spelling", C3: "colours", T1: "fonts", C1: "colours", C4: "readability", Y2: "slide layout", Y4: "slide layout", Y5: "layout", Y6: "margins", Y1: "page size", Y8: "the template", T2: "fonts", T3: "fonts", C2: "colours" };
+  const FIX_LABEL = { critical: "Must fix", major: "Should fix", minor: "Small fix" };
+  const plainName = (id) => PLAIN[id] || (BRAND.ruleById[id] || {}).t || id;
   function aiReport(ai, score, opts = {}) {
     if (!ai) return null;
     if (!ai.checks) return aiReportLegacy(ai, score, opts);
@@ -1413,43 +1435,34 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
     const fails = checks.filter((c) => c.status === "fail").sort((a, b) => SEV_RANK[R[a.id].sev] - SEV_RANK[R[b.id].sev]);
     const eye = checks.filter((c) => c.status === "unsure");
     const passed = checks.filter((c) => c.status === "pass");
-    const decided = checks.filter((c) => c.status === "pass" || c.status === "fail");
     const f = ai.facts || {};
-    const ded = ai.deductions || [];
-    const raw = Math.max(0, 100 - ded.reduce((a, d) => a + d.pts, 0));
-    const capAt = ded.some((d) => d.sev === "critical") ? 59 : ded.some((d) => d.sev === "major") ? 84 : null;
-    const capped = capAt != null && capAt < raw ? capAt : null;
-    const ruleRow = (c, chip) => { const r = R[c.id]; return h("div", { class: "qc-rule" }, chip,
-      h("div", { style: "min-width:0" }, h("b", { text: r.t }), h("span", { class: "meta", text: ` · ${c.id}${r.ref ? " · " + r.ref : ""}${c.where ? " · " + c.where : ""}` }),
-        c.evidence ? h("div", { class: "small", text: c.evidence }) : null,
-        c.fix ? h("div", { class: "fix", text: "Fix: " + c.fix }) : null)); };
+    const blind = f.kind === "other";
     const chip = (cls, text, title) => h("span", { class: "chip " + cls, title: title || null, text });
+    const eyeWords = [...new Set(eye.map((c) => EYE_WORD[c.id]).filter(Boolean))];
+    const listWords = (ws) => ws.length <= 1 ? ws.join("") : ws.slice(0, -1).join(", ") + " and " + ws[ws.length - 1];
+    const fixItem = (c) => { const r = R[c.id]; return h("div", { class: "fix-item sev-" + r.sev, title: `Brand rule ${c.id}: ${r.t}${r.ref ? " (" + r.ref + ")" : ""}` },
+      h("div", { class: "fix-top" }, h("span", { class: "chip sev-" + r.sev, text: FIX_LABEL[r.sev] }), h("b", { text: plainName(c.id) }), c.where ? h("span", { class: "fix-where", text: c.where }) : null),
+      c.evidence ? h("p", { class: "fix-what", text: c.evidence }) : null,
+      c.fix ? h("p", { class: "fix-how" }, h("b", { text: "How to fix: " }), c.fix) : null); };
     return h("div", { class: "ai-report" },
       h("div", { class: "ai-head" }, h("img", { src: AI_PROFILE.avatarUrl, alt: "" }),
         h("div", { style: "min-width:0" }, h("b", { text: opts.title || "Brand Astra check" }), ai.simulated ? h("span", { class: "chip na", style: "margin-left:6px", text: "Sample data" }) : null, h("div", { class: "small", text: ai.summary || "" })),
-        score != null ? scoreBadge(score) : null),
-      h("div", { class: "qc-break" }, h("b", { text: `${passed.length} of ${decided.length} measured rules pass.` }),
-        ded.length ? [h("span", { text: "Score: 100" }), ...ded.map((d) => h("span", { title: R[d.id] ? R[d.id].t : d.id, text: `− ${d.pts} ${d.id}` })), h("span", { text: `= ${raw}` }),
-          capped != null ? h("span", { text: `· a ${capped === 59 ? "critical" : "major"} failure caps the score at ${capped}` }) : null] : h("span", { text: "No measured problem." })),
-      eye.length && !fails.some((c) => R[c.id].sev !== "minor") ? h("div", { class: "notice", style: "background:var(--info-soft);color:var(--info)", text: `${eye.length} rules can't be measured by a computer (logo artwork, imagery, alignment, proofreading). The brand team checks them by eye before it's approved.` }) : null,
-      fails.length ? h("div", { class: "qc-rules" }, h("div", { class: "lbl", text: "Fix these, most important first" }),
-        fails.map((c) => ruleRow(c, chip("sev-" + R[c.id].sev, SEV_LABEL[R[c.id].sev])))) : null,
-      eye.length ? h("details", { class: "qc-pass" }, h("summary", { text: `${auto ? "Checked by the brand team" : "Couldn't verify"} (${eye.length})` }), h("div", { class: "qc-rules", style: "margin-top:8px" }, eye.map((c) => ruleRow(c, chip("unsure", auto ? "By eye" : "Check"))))) : null,
-      passed.length ? h("details", { class: "qc-pass" }, h("summary", { text: `What passed (${passed.length})` }),
-        BRAND.groups.map(([g, label]) => { const list = passed.filter((c) => R[c.id].g === g); return list.length ? h("div", { class: "qc-group" }, h("b", { text: label }),
-          list.map((c) => h("div", { class: "qc-ok" }, h("i", { text: "✓" }), h("span", null, h("span", { text: R[c.id].t }), c.evidence ? h("span", { class: "small", text: " · " + c.evidence }) : null)))) : null; })) : null,
-      h("div", { class: "ai-facts" },
-        h("span", { class: "small", text: "Measured in your file:" }),
-        f.size ? chip(checks.some((c) => c.id === "Y1" && c.status === "fail") ? "fail" : "pass", f.size) : f.ratio ? chip(checks.some((c) => c.id === "Y1" && c.status === "fail") ? "fail" : "pass", `Ratio ${f.ratio}`) : null,
-        (f.fonts || []).map((x) => chip(x.ok ? "pass" : "fail", `${x.name} ×${x.count}`)),
-        (f.offPalette || []).map((o) => h("span", { class: "chip fail", title: o.kind === "product" ? `${o.hex} is a ${o.product} colour, on ${o.where}` : `${o.hex} on ${o.where}; use ${o.nearest || "a primary palette colour"}` }, h("i", { class: "sw-dot", style: "background:" + o.hex }), o.kind === "product" ? `${o.hex} · ${o.product} only` : o.nearest ? [`${o.hex} → `, h("i", { class: "sw-dot", style: "background:" + o.nearest }), o.nearest] : `${o.hex} · off-palette`)),
-        (f.smallPalette || []).map((o) => h("span", { class: "chip minor", title: `${o.hex} covers ${o.count}% of the page: off-palette` }, h("i", { class: "sw-dot", style: "background:" + o.hex }), `${o.hex} · ${o.count}%`)),
-        (f.contrast || []).slice(0, 3).map((x) => chip("fail", `Contrast ${x.ratio}:1 · ${x.where}`, `“${x.text}” needs ${x.need}:1`)),
-        f.images && f.images.count ? chip(f.images.low || f.images.stretched ? "fail" : "pass", `${f.images.count} picture${f.images.count === 1 ? "" : "s"}${f.images.low ? ` · ${f.images.low} low-res` : ""}${f.images.stretched ? ` · ${f.images.stretched} stretched` : ""}`) : null,
-        f.footerMissing && f.footerMissing.length ? chip("fail", `No footer: slide ${f.footerMissing.slice(0, 6).join(", ")}`) : null,
-        f.markMissing && f.markMissing.length ? chip("fail", `No mark top-right: slide ${f.markMissing.slice(0, 6).join(", ")}`) : null),
-      (f.notes || []).length ? h("div", { class: "small", text: f.notes.join(" ") }) : null,
-      h("div", { class: "small", text: `Checked ${ai.checkedAt ? fmtDateTime(ai.checkedAt) : ""} against ${BRAND.rules.length} Recykal rules${auto ? " · measured from the file itself, no AI" : " · earlier AI review"}${ai.simulated ? " · sample data" : ""}` }));
+        score != null && !blind ? scoreBadge(score) : null),
+      fails.length ? h("div", { class: "fix-list" }, h("div", { class: "lbl", text: fails.length === 1 ? "What to fix" : `What to fix (${fails.length}), most important first` }), fails.map(fixItem))
+        : null,
+      eyeWords.length ? h("p", { class: "small eye-line", text: `The brand team will also look at ${listWords(eyeWords)} by eye before approving.` }) : null,
+      passed.length ? h("details", { class: "qc-pass" }, h("summary", { text: `What's already right (${passed.length})` }),
+        h("div", { class: "qc-group" }, passed.map((c) => h("div", { class: "qc-ok" }, h("i", { text: "✓" }), h("span", { text: plainName(c.id) }))))) : null,
+      h("details", { class: "qc-pass" }, h("summary", { text: "Details from your file" }),
+        h("div", { class: "ai-facts", style: "margin-top:8px" },
+          f.size ? chip(checks.some((c) => c.id === "Y1" && c.status === "fail") ? "fail" : "pass", f.size) : f.ratio ? chip(checks.some((c) => c.id === "Y1" && c.status === "fail") ? "fail" : "pass", `Page shape ${f.ratio}`) : null,
+          (f.fonts || []).map((x) => chip(x.ok ? "pass" : "fail", `${x.name} · ${x.count} letters`)),
+          (f.offPalette || []).map((o) => h("span", { class: "chip fail", title: o.kind === "product" ? `${o.hex} is a ${o.product} colour, on ${o.where}` : `${o.hex} on ${o.where}; use ${o.nearest || "a primary palette colour"}` }, h("i", { class: "sw-dot", style: "background:" + o.hex }), o.kind === "product" ? `${o.hex} · ${o.product} only` : o.nearest ? [`${o.hex} → `, h("i", { class: "sw-dot", style: "background:" + o.nearest }), o.nearest] : `${o.hex} · not a Recykal colour`)),
+          (f.contrast || []).slice(0, 3).map((x) => chip("fail", `Hard to read · ${x.where}`, `“${x.text}” has ${x.ratio}:1 contrast; it needs ${x.need}:1`)),
+          f.images && f.images.count ? chip(f.images.low || f.images.stretched ? "fail" : "pass", `${f.images.count} picture${f.images.count === 1 ? "" : "s"}${f.images.low ? ` · ${f.images.low} blurry` : ""}${f.images.stretched ? ` · ${f.images.stretched} stretched` : ""}`) : null),
+        (f.notes || []).length ? h("div", { class: "small", style: "margin-top:6px", text: f.notes.join(" ") }) : null,
+        h("div", { class: "small", style: "margin-top:6px", text: `Checked ${ai.checkedAt ? fmtDateTime(ai.checkedAt) : ""}${auto ? " · measured from the file itself" : " · earlier AI review"}${ai.simulated ? " · sample data" : ""}` })),
+      blind && (f.notes || []).length ? h("div", { class: "notice", text: f.notes[0] }) : null);
   }
   function aiReportLegacy(ai, score, opts) {
     const order = { fail: 0, minor: 1, pass: 2 };
@@ -1585,26 +1598,24 @@ a.lg-switch { text-decoration: underline; text-underline-offset: 3px; }
         onclick: () => input.click(), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } },
         ondragover: (e) => { e.preventDefault(); e.currentTarget.classList.add("over"); }, ondragleave: (e) => e.currentTarget.classList.remove("over"),
         ondrop: (e) => { e.preventDefault(); e.currentTarget.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) pickFile(f); } },
-        q.upload ? [q.upload.preview ? h("img", { src: q.upload.preview, alt: "" }) : h("span", { class: "pdf-ic", text: /\.pptx$/i.test(q.upload.name) ? "PPTX" : "PDF" }),
+        q.upload ? [q.upload.preview ? h("img", { src: q.upload.preview, alt: "" }) : h("span", { class: "pdf-ic", text: fileBadge(q.upload.name) }),
             h("div", { style: "min-width:0;text-align:left;flex:1" }, h("b", { style: "overflow-wrap:anywhere", text: q.upload.name }), h("div", { class: "small", text: `${fmtSize(q.upload.size)} · click or drop to change` })),
             h("button", { type: "button", class: "drop-x", "aria-label": "Remove " + q.upload.name, title: "Remove this file", disabled: q.fileBusy || null,
               onclick: (e) => { e.stopPropagation(); removeFile(); }, onkeydown: (e) => e.stopPropagation(), html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' })]
-          : [h("span", { class: "up-ic" }, icon("upload")), h("b", { text: "Drop your PowerPoint, PDF or image here, or click to choose" }), h("span", { class: "small", text: "PPTX or PDF up to 15 MB · PNG, JPG or WEBP up to 5 MB" })]);
+          : [h("span", { class: "up-ic" }, icon("upload")), h("b", { text: "Drop your file here, or click to choose" }), h("span", { class: "small", text: "Any file up to 25 MB · PowerPoint, PDF, Word, HTML and images get the full check" })]);
       const checkBtn = h("button", { class: "btn btn-primary", disabled: q.fileBusy || null, onclick: run }, q.fileBusy ? "Checking…" : "Check my file");
       const fmtSel = h("select", { class: "field-in", id: "qc-format", "aria-label": "Format", style: "width:auto", onchange: (e) => { q.format = e.target.value; q.checks = {}; q.fileReport = null; render(); } },
         Object.entries(FORMATS).map(([k, f]) => h("option", { value: k, selected: q.format === k || null, text: `${f.name} · ${f.size}` })));
-      const audSeg = h("div", { class: "actions", style: "align-items:center" }, fmtSel, h("span", { class: "small", text: "Who will see it?" }),
-        h("div", { class: "seg", role: "group", "aria-label": "Audience" }, [["External", "Outside Recykal"], ["Internal", "Recykal only"]].map(([v, l]) =>
-          h("button", { type: "button", "aria-pressed": String((q.audience || "External") === v), onclick: () => { q.audience = v; q.fileReport = null; render(); } }, l))));
+      const audSeg = h("div", { class: "actions", style: "align-items:center" }, h("span", { class: "small", text: "What is it?" }), fmtSel);
       return h("div", { class: "card ai-card" }, h("div", { class: "card-head" }, h("div", { style: "display:flex;gap:10px;align-items:center" }, h("img", { src: AI_PROFILE.avatarUrl, alt: "", style: "width:30px;height:30px" }), h("h3", { text: "Check my file" })), h("span", { class: "sub", text: "Nothing is submitted" })),
         h("div", { class: "seg", role: "group", "aria-label": "How to add your file", style: "justify-self:start" },
           h("button", { "aria-pressed": String(mode === "upload"), onclick: () => { q.mode = "upload"; q.fileErr = ""; q.fileReport = null; render(); } }, "Upload a file"),
           h("button", { "aria-pressed": String(mode === "link"), onclick: () => { q.mode = "link"; q.fileErr = ""; q.fileReport = null; render(); } }, "Paste a Google link")),
-        h("p", { class: "muted", style: "font-size:13px", text: mode === "upload" ? "Upload the PowerPoint, PDF or exported image. Brand Astra reads the file itself and measures fonts, colours, gradients, contrast, sizes, footers, picture quality and copy on every page. PowerPoint and PDF give the fullest check; an image can't show its fonts or text." : "Paste the Google Slides, Docs or Drive link (shared with “Anyone at Recykal with the link”). Brand Astra fetches the file and measures it on every page." }),
+        h("p", { class: "muted", style: "font-size:13px", text: mode === "upload" ? "Upload your file and Brand Astra checks it against the Recykal brand: fonts, colours, layout, pictures and wording. You'll get a short list of anything to fix. Nothing is sent to anyone until you submit." : "Paste the Google Slides, Docs or Drive link (shared with “Anyone at Recykal with the link”). Brand Astra fetches the file and measures it on every page." }),
         mode === "upload" ? h("div", { style: "display:grid;gap:10px" }, drop, input, h("div", { class: "actions", style: "justify-content:space-between" }, audSeg, checkBtn)) : h("div", { style: "display:grid;gap:10px" }, h("div", { class: "composer" }, linkIn, checkBtn), audSeg),
         q.fileBusy ? h("div", { class: "ai-wait" }, h("span", { class: "spin" }), h("div", null, h("b", { text: q.fileStage || "Checking your file" }), h("div", { class: "small", text: "Every page is measured in your browser. Large decks take up to a minute." }))) : null,
         q.fileErr ? h("div", { class: "notice", text: q.fileErr }) : null,
-        fr ? aiReport(fr.report, fr.score, { title: fr.decision === "pending" ? "Passes every measured rule: ready to submit" : fr.decision === "changes" ? "Close: fix these and it should pass" : "Not approved: fix these before you submit" }) : null,
+        fr ? aiReport(fr.report, fr.score, { title: fr.report.facts && fr.report.facts.kind === "other" ? "Ready for the brand team" : fr.decision === "pending" ? "Ready to submit" : fr.decision === "changes" ? "Almost there" : "Not ready yet" }) : null,
         fr ? h("div", { class: "actions" }, h("button", { class: "btn btn-dark btn-sm", onclick: () => openSubmit({ fromQc: true }) }, "Submit this file")) : null);
     })() : null;
     return [

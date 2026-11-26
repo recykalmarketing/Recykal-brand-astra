@@ -64,7 +64,7 @@ const BRAND = (() => {
     { id: "T3", g: "type", sev: "minor", m: true, t: "No faux styling", d: "No all-caps paragraphs, underlines for emphasis, outlined, shadowed or stretched type.", ref: "p.22" },
 
     { id: "Y1", g: "layout", sev: "critical", m: true, t: "Right size and ratio", d: "Presentation 16:9 (1920×1080) · post 1080×1080 · portrait 1080×1350 · story 1080×1920 · banner 1920×1080 · brand document A4 portrait (US Letter accepted).", ref: "p.23–26" },
-    { id: "Y2", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
+    { id: "Cover on black with the full logo and tagline; content slides with the title at the top left (and the Recykal mark top-right where the layout has it); a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", g: "layout", sev: "major", m: true, f: ["slide"], t: "Master deck structure", d: "Cover on black with the full logo and tagline; inner slides with the title top-left and the Recykal mark top-right; a closing “Thank You!” slide with www.recykal.com, marketing@recykal.com and +91 7799996255.", ref: "Deck 1, 2–16, 17" },
     { id: "Y3", g: "layout", sev: "major", m: true, f: ["slide"], t: "Footer on every slide", d: `“Private & Confidential” bottom-left and “© ${year}, All rights reserved” bottom-right, with the current year.`, ref: "Deck 1–16" },
     { id: "Y4", g: "layout", sev: "minor", m: true, f: ["slide"], t: "Master deck accents", d: "The green diagonal top-left and purple diagonal bottom-right from the master deck; no extra decorative shapes.", ref: "Deck 2–16" },
     { id: "Y5", g: "layout", sev: "major", m: true, f: DIGITAL, t: "Digital template placement", d: "Logo with tagline top-left inside the margin (50 px posts, 60 px banners, 100 px stories); www.recykal.com bottom-left with the short black bar beneath it.", ref: "p.24–26" },
@@ -129,7 +129,9 @@ const BRAND = (() => {
   const copyRules = [
     { r: "W1", re: /\b(recycal|recykle|recykel|recykall|rekykal|re-kykal|recykl|recykel)\b/gi, sev: "error", msg: (m) => `Spell the company name “Recykal”, not “${m}”.` },
     { r: "W1", re: /(?<![\w.@/-])recykal(?![\w.@])/g, sev: "warn", msg: () => "Write “Recykal” with a capital R. The lowercase form belongs only to the logo." },
-    { r: "W1", re: /\bRECYKAL\b/g, sev: "warn", msg: () => "Don't set the company name in capitals. Write “Recykal”." },
+    // Capitals inside a sentence only: a label set all in capitals as a design style ("HOW RECYKAL HELPS") is fine.
+    { r: "W1", re: /\bRECYKAL\b/g, sev: "warn", ctx: (t, i) => { const before = (t.slice(Math.max(0, i - 40), i).match(/([A-Za-z]{2,})[^A-Za-z]*$/) || [])[1], after = (t.slice(i + 7, i + 47).match(/^[^A-Za-z]*([A-Za-z]{2,})/) || [])[1];
+      const caps = (w) => !!w && w === w.toUpperCase(); return !(caps(before) || caps(after)); }, msg: () => "Write the company name as “Recykal”, not in capitals." },
     // Funding claims only: an amount next to raised / funding / investment.
     { r: "W2", re: /(?:raised|funding|funded|investment|invested|series [a-f])[^.\n]{0,40}?(?:USD\s?|US\$|\$|₹|INR\s?)\s?\d[\d.,]*\s?(?:M|Mn|million|Cr|crore|B|bn|billion)\b\+?|(?:USD\s?|US\$|\$|₹|INR\s?)\s?\d[\d.,]*\s?(?:M|Mn|million|Cr|crore|B|bn|billion)\b\+?[^.\n]{0,25}?(?:raised|funding|investment)/gi, sev: "error", test: (m) => !/\$\s?68\s?(M|Mn|million)/i.test(m), msg: (m) => `“${m}” isn't the approved funding figure. Use “$68M+ raised to date”.` },
     { r: "W2", re: /\$\s?68\s?(M|Mn|million)(?!\+)/gi, sev: "warn", msg: () => "Write the funding figure exactly as “$68M+ raised to date”." },
@@ -181,6 +183,7 @@ const BRAND = (() => {
         const w = m[0].trim();
         if (m.index === cr.re.lastIndex) cr.re.lastIndex++;
         if (cr.test && !cr.test(w)) continue;
+        if (cr.ctx && !cr.ctx(text, m.index)) continue;
         if (seen[w.toLowerCase()]) continue; seen[w.toLowerCase()] = 1;
         out.push({ r: cr.r, sev: applies(cr.r) ? cr.sev : "tip", quote: w, msg: cr.msg(w) });
       }
@@ -189,7 +192,7 @@ const BRAND = (() => {
       fc.re.lastIndex = 0; let m; const seen = {};
       while ((m = fc.re.exec(text))) {
         const n = num(m[1] || m[2]); if (!n || n === fc.ok || seen[m[0]]) continue; seen[m[0]] = 1;
-        out.push({ r: "W3", sev: "error", quote: m[0].trim(), msg: `Doesn't match the approved figure “${fc.say}” (${fc.ref}).` });
+        out.push({ r: "W3", sev: "error", quote: m[0].trim(), msg: `Use the approved figure from the Recykal Brand Deck: “${fc.say}”.` });
       }
     });
     if (opts.audience !== "Internal") {
@@ -831,7 +834,7 @@ function setup() {
 const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-const QC_FILE_LIMIT_ = 15 * 1024 * 1024;
+const QC_FILE_LIMIT_ = 25 * 1024 * 1024;   // any file up to 25 MB; the page checks PowerPoint, PDF, Word, HTML and images in full
 
 function fileIdFromLink_(link) {
   const m = String(link).match(/\/d\/([A-Za-z0-9_-]{20,})/) || String(link).match(/[?&]id=([A-Za-z0-9_-]{20,})/);
@@ -850,11 +853,11 @@ function fileForQc(link) {
   if (!isGoogleLink_(link)) throw new Error("Use a Google Slides, Docs or Drive link.");
   const file = openLinkedFile_(link); const mime = file.getMimeType();
   let blob;
-  if (mime === MimeType.GOOGLE_SLIDES || mime === MimeType.GOOGLE_DOCS) blob = file.getAs(MimeType.PDF);
-  else if (mime === MimeType.PDF || mime === PPTX_MIME_ || /^image\/(png|jpeg|webp)$/.test(mime)) blob = file.getBlob();
-  else throw new Error("Brand Astra can check Google Slides, Google Docs, PowerPoint (.pptx), PDF and PNG, JPG or WEBP files. Export this file to one of those and share the link.");
+  if ([MimeType.GOOGLE_SLIDES, MimeType.GOOGLE_DOCS, MimeType.GOOGLE_SHEETS, MimeType.GOOGLE_DRAWINGS].indexOf(mime) >= 0) blob = file.getAs(MimeType.PDF);
+  else if (/^application\/vnd\.google-apps\./.test(mime)) throw new Error("This kind of Google file can't be downloaded. Export it as PDF and upload that instead.");
+  else blob = file.getBlob();
   const bytes = blob.getBytes();
-  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 15 MB. Compress the pictures or split it, then try again.");
+  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 25 MB. Compress the pictures or split it, then try again.");
   const converted = blob.getContentType() === MimeType.PDF && mime !== MimeType.PDF;
   return { name: file.getName() + (converted ? ".pdf" : ""), mime: blob.getContentType(), b64: Utilities.base64Encode(bytes) };
 }
@@ -920,11 +923,10 @@ function uploadsFolder_() {
 }
 function uploadForQc(name, mime, b64) {
   const email = email_();
-  const types = { "image/png": 5, "image/jpeg": 5, "image/webp": 5, "application/pdf": 15, [PPTX_MIME_]: 15 };
-  if (!types[mime]) throw new Error("Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.");
+  mime = /^[\w.+-]+\/[\w.+-]+$/.test(String(mime || "")) ? String(mime).toLowerCase() : "application/octet-stream";
   const bytes = Utilities.base64Decode(String(b64 || ""));
   if (!bytes.length) throw new Error("That file is empty.");
-  if (bytes.length > types[mime] * 1024 * 1024) throw new Error(types[mime] === 15 ? "This file is over 15 MB. Compress it, or share it as a Google Drive link instead." : "This image is over 5 MB. Export a smaller version.");
+  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 25 MB. Compress it, or share it as a Google Drive link instead.");
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HHmm");
   const file = uploadsFolder_().createFile(Utilities.newBlob(bytes, mime, `${stamp} · ${email.split("@")[0]} · ${str_(name, 80) || "upload"}`));
   file.setDescription("Uploaded to Brand Astra by " + email);

@@ -4,6 +4,9 @@
 //   PDF (also Google Slides and Docs, exported by the server): opened with pdf.js; fonts, colours, gradients and pictures read
 //     from the drawing operations, text and positions from the text layer, and every page rendered for pixel checks.
 //   Images (PNG, JPG, WEBP): pixels only (size, colours, corners, the template bar).
+//   Word (.docx): opened with JSZip; fonts, sizes, weights, colours, shading, page size and text from the document XML.
+//   HTML: laid out in a sandboxed frame (no scripts run); fonts, colours, gradients, pictures and text from the computed styles.
+//   Anything else is kept for the brand team; only pasted copy is checked.
 // Rules a computer can't judge reliably (logo artwork, imagery, alignment, proofreading) are marked for the brand team.
 // The same file always gets the same result, and every lost point names the measurement behind it.
 
@@ -415,14 +418,138 @@ const BRAND_CHECK = (() => {
     return out;
   }
 
+  // Word (.docx): styles resolved the way Word does (document defaults → paragraph style → character style → the run itself).
+  async function readDocx(file, onStage) {
+    let Z; try { Z = await jszip(); } catch (e) { throw new Error("Couldn't load the Word reader. Check your internet connection and try again, or upload a PDF export."); }
+    onStage && onStage("Reading the Word document");
+    const zip = await Z.loadAsync(file);
+    const xmlOf = async (p) => { const f = zip.file(p); return f ? new DOMParser().parseFromString(await f.async("string"), "application/xml") : null; };
+    const main = await xmlOf("word/document.xml");
+    if (!main) throw new Error("This Word file couldn't be read. Save it again as .docx, or download it as PDF and upload that.");
+    const styles = await xmlOf("word/styles.xml"), theme = await xmlOf("word/theme/theme1.xml");
+    const A = "http://schemas.openxmlformats.org/drawingml/2006/main";
+    const themeFont = (kind) => { const f = theme && theme.getElementsByTagNameNS(A, kind)[0]; const l = f && f.getElementsByTagNameNS(A, "latin")[0]; return l ? l.getAttribute("typeface") : null; };
+    const minor = themeFont("minorFont") || "Calibri", major = themeFont("majorFont") || minor;
+    const kids = (el, name) => el ? [...el.childNodes].filter((n) => n.localName === name) : [];
+    const kid = (el, name) => kids(el, name)[0] || null;
+    const att = (el, name) => { if (!el) return null; for (const a of el.attributes) if (a.localName === name) return a.value; return null; };
+    const on = (el) => !!el && !/^(0|false|off)$/i.test(att(el, "val") || "");
+    const rpr = (r) => { const o = {}; if (!r) return o;
+      const f = kid(r, "rFonts"); if (f) { const th = att(f, "asciiTheme") || att(f, "hAnsiTheme"); o.font = att(f, "ascii") || att(f, "hAnsi") || (th ? (/major/i.test(th) ? major : minor) : undefined); if (!o.font) delete o.font; }
+      const sz = kid(r, "sz"); if (sz && att(sz, "val")) o.sz = Number(att(sz, "val")) / 2;
+      const b = kid(r, "b"); if (b) o.b = on(b);
+      const c = kid(r, "color"); if (c && att(c, "val") && att(c, "val") !== "auto") o.color = "#" + att(c, "val").toUpperCase();
+      const cp = kid(r, "caps"); if (cp) o.caps = on(cp);
+      const u = kid(r, "u"); if (u) o.u = (att(u, "val") || "single") !== "none";
+      const shd = kid(r, "shd"); if (shd && att(shd, "fill") && !/^auto$/i.test(att(shd, "fill"))) o.shd = "#" + att(shd, "fill").toUpperCase();
+      return o; };
+    const S = {}; let defPara = null;
+    if (styles) for (const st of styles.getElementsByTagNameNS("*", "style")) {
+      const id = att(st, "styleId"); if (!id) continue;
+      const pPr = kid(st, "pPr"); const shd = kid(pPr, "shd");
+      S[id] = { type: att(st, "type"), based: att(kid(st, "basedOn"), "val"), r: rpr(kid(st, "rPr")), shd: shd && att(shd, "fill") && !/^auto$/i.test(att(shd, "fill")) ? "#" + att(shd, "fill").toUpperCase() : null, name: att(kid(st, "name"), "val") || id };
+      if (att(st, "default") === "1" && att(st, "type") === "paragraph") defPara = id;
+    }
+    const chain = (id, depth) => { const st = id && S[id]; if (!st || depth > 12) return {}; return Object.assign({}, chain(st.based, (depth || 0) + 1), st.r, st.shd ? { pshd: st.shd } : {}); };
+    const dd = styles && styles.getElementsByTagNameNS("*", "rPrDefault")[0];
+    const defaults = Object.assign({ font: minor, sz: 11 }, rpr(dd ? kid(dd, "rPr") : null));
+    const bgEl = main.getElementsByTagNameNS("*", "background")[0];
+    const pageBg = bgEl && att(bgEl, "color") && att(bgEl, "color") !== "auto" ? "#" + att(bgEl, "color").toUpperCase() : "#FFFFFF";
+    const sect = main.getElementsByTagNameNS("*", "pgSz")[0];
+    const out = { kind: "docx", w: sect ? Number(att(sect, "w")) || 0 : 0, h: sect ? Number(att(sect, "h")) || 0 : 0, pages: [], textKnown: true, styleKnown: true, notes: [] };
+    const pg = { n: 1, texts: [], images: [], fills: [{ hex: pageBg, area: 1, bg: 1 }], gradients: [], raster: 0, bg: pageBg };
+    const parts = [["body", main]];
+    for (const name of Object.keys(zip.files).filter((n) => /^word\/(header|footer)\d*\.xml$/.test(n)).sort()) parts.push([/footer/.test(name) ? "footer" : "header", await xmlOf(name)]);
+    let paraN = 0; const totalP = parts.reduce((s2, [, d]) => s2 + (d ? d.getElementsByTagNameNS("*", "p").length : 0), 0) || 1;
+    parts.forEach(([where, d]) => { if (!d) return;
+      for (const p of d.getElementsByTagNameNS("*", "p")) {
+        paraN++; const pPr = kid(p, "pPr"); const ps = att(kid(pPr, "pStyle"), "val") || defPara;
+        const pst = chain(ps); const pShd = kid(pPr, "shd"); const pBg = pShd && att(pShd, "fill") && !/^auto$/i.test(att(pShd, "fill")) ? "#" + att(pShd, "fill").toUpperCase() : pst.pshd || null;
+        const runs = [];
+        for (const r of p.getElementsByTagNameNS("*", "r")) {
+          const t = [...r.childNodes].map((n) => n.localName === "t" ? n.textContent : n.localName === "tab" ? " " : n.localName === "br" ? " " : "").join(""); if (!t) continue;
+          const rp = kid(r, "rPr"); const own = rpr(rp); const rs = att(kid(rp, "rStyle"), "val");
+          const link = (r.parentNode && r.parentNode.localName === "hyperlink") || /hyperlink/i.test(rs || "");
+          const e = Object.assign({}, defaults, pst, chain(rs), own); delete e.pshd;
+          const last = runs[runs.length - 1];
+          if (last && last.font === e.font && last.sz === e.sz && last.b === e.b && last.color === e.color && last.link === link) last.str += t;
+          else runs.push(Object.assign({ str: t, link }, e));
+        }
+        runs.forEach((r) => {
+          if (!hasWords(r.str)) return;
+          const fg = r.color || "#000000", bg = r.shd || pBg || pageBg;
+          pg.texts.push({ str: r.str, para: where + paraN, x: 0.1, y: paraN / totalP, w: 0.8, h: 0.01, size: (r.sz || 11) / 1000, pt: r.sz || 11, font: r.font || minor, weight: weightOf(r.font, r.b), fg, bg, colour: fg, caps: !!r.caps, underline: !!r.u && !r.link, footer: where === "footer" || FOOTER.test(r.str) });
+          pg.fills.push({ hex: fg, text: r.str.length });
+          if (r.shd) pg.fills.push({ hex: r.shd, area: 0.005 });
+        });
+        if (pBg) pg.fills.push({ hex: pBg, area: 0.01 });
+      }
+    });
+    const media = Object.keys(zip.files).filter((n) => /^word\/media\//.test(n)).length;
+    if (media) out.notes.push(`${plural(media, "picture")} in the document: the brand team checks them by eye.`);
+    out.pages.push(pg);
+    return out;
+  }
+
+  // HTML: laid out in a hidden, sandboxed frame. "allow-same-origin" without "allow-scripts" lets the check read the layout while no script in the file runs.
+  async function readHtml(file, onStage) {
+    onStage && onStage("Laying out the HTML page");
+    const src = await file.text(); const W = 1280;
+    const fr = document.createElement("iframe");
+    fr.setAttribute("sandbox", "allow-same-origin"); fr.setAttribute("aria-hidden", "true"); fr.tabIndex = -1;
+    fr.style.cssText = `position:fixed;left:-30000px;top:0;width:${W}px;height:1000px;border:0;visibility:hidden;pointer-events:none`;
+    fr.srcdoc = src; document.body.append(fr);
+    try {
+      await new Promise((res) => { const t = setTimeout(res, 8000); fr.onload = () => { clearTimeout(t); res(); }; });
+      const d = fr.contentDocument, win = fr.contentWindow;
+      if (!d || !d.body) throw new Error("This HTML file couldn't be opened.");
+      try { await Promise.race([d.fonts.ready, new Promise((r) => setTimeout(r, 3000))]); } catch (e) {}
+      const H = Math.max(1000, d.documentElement.scrollHeight, d.body.scrollHeight);
+      const hex = (c) => { const m2 = String(c || "").match(/rgba?\(([^)]+)\)/); if (!m2) return null; const v = m2[1].split(/[\s,/]+/).filter(Boolean).map(Number); if (v.length > 3 && v[3] === 0) return null; return toHex(v[0], v[1], v[2]); };
+      const bgOf = (el) => { for (let e = el; e && e.nodeType === 1; e = e.parentElement) { const b = hex(win.getComputedStyle(e).backgroundColor); if (b) return b; } return "#FFFFFF"; };
+      const pageBg = bgOf(d.body);
+      const pg = { n: 1, texts: [], images: [], fills: [{ hex: pageBg, area: 1, bg: 1 }], gradients: [], raster: 0, bg: pageBg };
+      const els = [...d.body.querySelectorAll("*")].slice(0, 5000); let para = 0;
+      els.forEach((el) => {
+        const cs = win.getComputedStyle(el); if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) return;
+        const r = el.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return;
+        const box = { x: r.left / W, y: (r.top + win.scrollY) / H, w: r.width / W, h: r.height / H };
+        const b = hex(cs.backgroundColor); if (b) pg.fills.push({ hex: b, area: Math.min(1, box.w * box.h), box });
+        if (/gradient\(/.test(cs.backgroundImage)) pg.gradients.push({ stops: (cs.backgroundImage.match(/rgba?\([^)]+\)/g) || []).map(hex).filter(Boolean), where: box });
+        if (el.tagName === "IMG" && el.naturalWidth > 0) {
+          const fill = !cs.objectFit || cs.objectFit === "fill";
+          pg.images.push({ x: box.x, y: box.y, w: box.w, h: box.h, pxW: el.naturalWidth, pxH: el.naturalHeight, vis: box.w * box.h, shownW: r.width, distort: fill ? Math.abs((el.naturalWidth / el.naturalHeight) / (r.width / r.height) - 1) : 0 });
+        }
+        const own = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").replace(/\s+/g, " ").trim();
+        if (!hasWords(own)) return;
+        const fam = cs.fontFamily.split(",")[0].replace(/["']/g, "").trim() || "(browser default)";
+        const fw = Number(cs.fontWeight) || 400; const size = parseFloat(cs.fontSize) || 16; const fg = hex(cs.color) || "#000000";
+        para++;
+        pg.texts.push({ str: own, para: "h" + para, x: box.x, y: box.y, w: box.w, h: box.h, size: size / 1000, pt: size, font: fam, weight: fw >= 800 ? "extrabold" : fw >= 700 ? "bold" : fw >= 600 ? "semibold" : fw >= 500 ? "medium" : fw <= 300 ? "light" : "regular",
+          fg, bg: bgOf(el), colour: fg, caps: cs.textTransform === "uppercase", underline: /underline/.test(cs.textDecorationLine || cs.textDecoration) && !el.closest("a"), shadow: !!cs.textShadow && cs.textShadow !== "none", footer: FOOTER.test(own) });
+        pg.fills.push({ hex: fg, text: own.length });
+      });
+      pg.raster = Math.min(1, pg.images.reduce((s2, im) => s2 + Math.min(1, im.w * im.h), 0));
+      return { kind: "html", w: null, h: null, pages: [pg], textKnown: true, styleKnown: true, notes: ["HTML is laid out at 1280 px wide with its scripts switched off; check how it looks on phones by eye."] };
+    } finally { fr.remove(); }
+  }
+
+  /** A file the check can't open: kept for the brand team; only the pasted copy is checked. */
+  function readOther(file) {
+    const ext = (String(file.name || "").match(/\.([a-z0-9]{1,8})$/i) || [, ""])[1].toUpperCase();
+    return { kind: "other", w: null, h: null, pages: [{ n: 1, texts: [], images: [], fills: [], gradients: [], raster: 0 }], textKnown: false, styleKnown: false,
+      notes: [`Brand Astra can't look inside ${ext ? ext + " files" : "this kind of file"}, so the brand team will check it by eye. To check the wording now, paste the key text in the box below. For a full automatic check, upload a PDF, PowerPoint, Word, HTML or image version.`] };
+  }
+
   async function read(file, onStage) {
     const name = file.name || "";
     const head = new Uint8Array(await file.slice(0, 4).arrayBuffer());
-    if (/\.pptx$/i.test(name) || /presentationml/.test(file.type) || (head[0] === 0x50 && head[1] === 0x4B && !/\.pdf$/i.test(name))) return readPptx(file, onStage);
+    if (/\.docx$/i.test(name) || /wordprocessingml/.test(file.type)) return readDocx(file, onStage);
+    if (/\.html?$/i.test(name) || file.type === "text/html") return readHtml(file, onStage);
+    if (/\.pptx$/i.test(name) || /presentationml/.test(file.type)) return readPptx(file, onStage);
     if (file.type === "application/pdf" || /\.pdf$/i.test(name) || (head[0] === 0x25 && head[1] === 0x50)) return readPdf(file, onStage);
-    if (/^image\//.test(file.type) || /\.(png|jpe?g|webp)$/i.test(name)) return readImage(file);
-    if (/\.(ppt|key)$/i.test(name)) throw new Error("Save the deck as .pptx (PowerPoint 2007 or later) or export it as PDF, then upload that.");
-    throw new Error("Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.");
+    if (/^image\/(png|jpeg|webp)$/.test(file.type) || /\.(png|jpe?g|webp)$/i.test(name)) return readImage(file);
+    return readOther(file);
   }
 
   // ---------- the rules ----------
@@ -442,12 +569,14 @@ const BRAND_CHECK = (() => {
     const allText = pages.map(pageText).join("\n\n");
     const extra = [opts.title || "", file.name || "", opts.copy || ""].join(" ");
     const ctxFor = (w) => { const k = Number(String(w).replace(/\D/g, "")); const pg = pages.find((p) => p.n === k); return (pg ? pageText(pg) : allText) + " " + extra; };
-    const label = (pg) => (doc.kind === "pptx" ? "slide " : "page ") + (pg.slide || pg.n);
+    const label = (pg) => doc.kind === "docx" ? "the document" : doc.kind === "html" ? "the page" : (doc.kind === "pptx" ? "slide " : "page ") + (pg.slide || pg.n);
+    const blind = doc.kind === "other";                   // nothing inside the file can be measured
     const facts = { kind: doc.kind, pages: doc.total || n, notes: doc.notes.slice() };
     const W = doc.w, H = doc.h; const ratio = W && H ? W / H : null;
     facts.ratio = ratio ? Number(ratio.toFixed(3)) : null;
     if (doc.kind === "image") facts.size = `${W} × ${H} px`;
 
+    if (!blind) {   // ---- everything measured from the file itself ----
     // Y1 · size and ratio (and, for exported images, enough pixels)
     const want = RATIO[format];
     if (want && ratio && format === "document") {
@@ -466,12 +595,17 @@ const BRAND_CHECK = (() => {
     const list = [];
     pages.forEach((pg) => {
       const w = label(pg);
-      pg.fills.forEach((f) => { if (f.area >= 0.002 || f.text || f.line || f.bg) list.push({ hex: f.hex, where: w, count: f.text ? f.text / 100 : f.area * 100 || 0.1 }); });
+      // In a PDF, small vector shapes are usually pieces of partner logos and award badges: they're reported, not failed.
+      // Shape outlines overstate the painted area (a logo's letters are many overlapping shapes), so the rendered page decides where it can.
+      const painted = (f) => { if (!pg.px || !pg.colours) return f.area; const near = pg.colours.filter((c) => c.pct != null && !c.vector && BRAND.dist(c.hex, f.hex) <= 8); return near.length ? Math.min(f.area, near.reduce((t, c) => t + c.pct, 0) / 100) : Math.min(f.area, 0.004); };
+      const smallVector = (f) => doc.kind === "pdf" && !f.text && !f.bg && painted(f) < 0.015;
+      pg.fills.forEach((f) => { if (smallVector(f)) { if (f.area >= 0.005) (pg.colours = pg.colours || []).push({ hex: f.hex, pct: Math.round(painted(f) * 1000) / 10, where: w, vector: 1 }); return; }
+        if (f.area >= 0.002 || f.text || f.line || f.bg) list.push({ hex: f.hex, where: w, count: f.text ? f.text / 100 : f.area * 100 || 0.1 }); });
       (pg.colours || []).filter((c) => c.pct >= BRAND.PIXEL_MIN_PCT).forEach((c) => list.push({ hex: c.hex, where: w, count: c.pct }));
     });
     const cf = BRAND.colourFindings(list, ctxFor);
     m.C1 = cf.measured.C1; m.C2 = cf.measured.C2;
-    const sources = doc.kind === "pptx" ? "text, shapes, lines and backgrounds in the slide file" : doc.kind === "pdf" ? "text and shape colours in the PDF, plus flat areas covering 3% or more of a page" : "flat areas covering 3% or more of the image";
+    const sources = doc.kind === "pptx" ? "text, shapes, lines and backgrounds in the slide file" : doc.kind === "pdf" ? "text and shape colours in the PDF, plus flat areas covering 3% or more of a page" : doc.kind === "docx" ? "text colours and shading in the document" : doc.kind === "html" ? "text, background and button colours on the page" : "flat areas covering 3% or more of the image";
     m.C1.evidence += ` Checked: ${sources}.` + (doc.kind === "pptx" && pages.some((p) => p.images.length) ? " Colours inside pictures aren't measured." : "");
     const smallOff = []; pages.forEach((pg) => smallOff.push(...BRAND.smallOffPalette(pg.colours || [], () => ctxFor(label(pg)))));
     if (smallOff.length) m.C1.evidence += ` Smaller off-palette areas (under 3%, may be a photo): ${smallOff.slice(0, 6).map((o) => `${o.hex} (${o.count}%)`).join(", ")}.`;
@@ -496,7 +630,7 @@ const BRAND_CHECK = (() => {
       pg.texts.forEach((t) => {
         if (t.footer || t.str.replace(/\W/g, "").length < 3 || lowC.length > 40) return;
         let fg = null, bg = null;
-        if (doc.kind === "pdf") { fg = t.fg; bg = t.bg; } else if (doc.kind === "pptx" && t.colour) {
+        if (doc.kind === "pdf" || doc.kind === "html" || doc.kind === "docx") { fg = t.fg; bg = t.bg; } else if (doc.kind === "pptx" && t.colour) {
           if (t.behind) bg = t.behind;
           else { const under = pg.fills.filter((f) => f.box && !f.bg && t.x >= f.box.x - 0.005 && t.y >= f.box.y - 0.005 && t.x + t.w <= f.box.x + f.box.w + 0.005 && t.y + t.h <= f.box.y + f.box.h + 0.005).pop(); bg = under ? under.hex : pg.bgPicture || pg.images.some((im) => !im.inherited && im.x <= t.x && im.y <= t.y && im.x + im.w >= t.x + t.w && im.y + im.h >= t.y + t.h) ? null : pg.bg; }
           fg = t.colour;
@@ -506,7 +640,7 @@ const BRAND_CHECK = (() => {
         if (got < 3 * (doc.kind === "pdf" ? 0.92 : 1)) lowC.push({ w: label(pg), got, need: 3, str: t.str.trim().slice(0, 40), fg, bg });
       });
     });
-    const contrastKnown = doc.kind === "pptx" || (doc.kind === "pdf" && pages.some((p) => p.px));
+    const contrastKnown = doc.kind === "pptx" || doc.kind === "html" || doc.kind === "docx" || (doc.kind === "pdf" && pages.some((p) => p.px));
     if (lowC.length) { lowC.sort((a, b) => a.got / a.need - b.got / b.need);
       set("C4", "fail", `Hard to read: ${lowC.slice(0, 4).map((x) => `“${x.str}” ${x.fg} on ${x.bg}, ${x.got.toFixed(1)}:1`).join("; ")}. Text needs at least 3:1 against its background (4.5:1 for body text is the target).`, [...new Set(lowC.map((x) => x.w))].slice(0, 6).join(", "), "Use black or white text on coloured backgrounds, or a darker palette colour, to reach 4.5:1 (3:1 for large headlines).");
       facts.contrast = lowC.slice(0, 6).map((x) => ({ where: x.w, ratio: Number(x.got.toFixed(1)), need: x.need, text: x.str })); }
@@ -558,7 +692,9 @@ const BRAND_CHECK = (() => {
       if (pg.px) { const rg = region(pg.px, 0.86, 0.02, 0.985, 0.16); return !!rg && rg.content >= 0.015; }
       return doc.kind === "pptx" ? pg.fills.some((f) => f.box && !f.bg && f.box.x >= 0.8 && f.box.y <= 0.15 && f.box.w <= 0.15) : false;
     };
-    const inner = n >= 3 ? pages.slice(1, -1) : n === 2 ? pages.slice(1) : pages;
+    // A full-picture slide (a campaign photo or section opener, as in the Recykal deck) carries its own layout: no inner-slide title, mark or corner accents.
+    const photoSlide = (pg) => pg.bgPicture || pg.raster >= 0.7 || pg.images.some((im) => !im.inherited && (im.vis != null ? im.vis : im.w * im.h) >= 0.5);
+    const inner = (n >= 3 ? pages.slice(1, -1) : n === 2 ? pages.slice(1) : pages).filter((pg) => !photoSlide(pg));
     if (isSlides) {
       const probs = []; let unsure = false;
       if (n >= 2) {
@@ -579,16 +715,16 @@ const BRAND_CHECK = (() => {
         if (doc.textKnown) { const ts = pg.texts.filter((t) => !t.footer && hasWords(t.str)); if (ts.length) { const top = ts.reduce((a, b) => (b.size > a.size ? b : a)); if (!(top.y < 0.3 && top.x < 0.5)) noTitle.push(pg.slide || pg.n); } }
         if (!markOf(pg)) noMark.push(pg.slide || pg.n);
       });
-      if (noTitle.length) probs.push(`the title isn't top-left on ${pagesLabel(noTitle, "slide")}`);
-      if (noMark.length) probs.push(`no Recykal mark top-right on ${pagesLabel(noMark, "slide")}`);
+      if (noTitle.length) probs.push(`the slide title isn't at the top left on ${pagesLabel(noTitle, "slide")}`);
+      // The small mark top-right is optional: the 2026 Brand Deck Template's content slides don't carry it (the brand team checks the logo by eye).
       facts.markMissing = noMark;
-      if (probs.length) set("Y2", "fail", probs.join("; ").replace(/^./, (c) => c.toUpperCase()) + ".", "", "Rebuild on the master deck: cover on black with the full logo, title top-left and the Recykal mark top-right on inner slides, and the “Thank You!” closing slide with the contact details.");
-      else if (!unsure && (doc.textKnown || n === 1)) set("Y2", n === 1 && !doc.textKnown ? "unsure" : "pass", n === 1 ? "The Recykal mark is top-right" + (doc.textKnown ? " and the title is top-left." : "; the title position can't be read from an image.") : "Cover on black, titles top-left, Recykal mark top-right and a “Thank You!” closing slide.");
+      if (probs.length) set("Y2", "fail", probs.join("; ").replace(/^./, (c) => c.toUpperCase()) + ".", "", "Start from the Recykal Brand Deck Template: a black cover with the full logo, the slide title at the top left of each content slide, and the “Thank You!” slide at the end.");
+      else if (!unsure && (doc.textKnown || n === 1)) set("Y2", n === 1 && !doc.textKnown ? "unsure" : "pass", n === 1 ? "The Recykal mark is top-right" + (doc.textKnown ? " and the title is top-left." : "; the title position can't be read from an image.") : "Cover on black, titles at the top left and a “Thank You!” closing slide.");
 
       if (doc.textKnown) {
         const missing = (n >= 3 ? pages.slice(0, -1) : pages).filter((pg) => { const t = pageText(pg); return !(/Private\s*(&|and)\s*Confidential/i.test(t) && /©\s*\d{4}/.test(t)); }).map((pg) => pg.slide || pg.n);
         facts.footerMissing = missing;
-        if (missing.length) set("Y3", "fail", `No “Private & Confidential” / “© ${BRAND.year}, All rights reserved” footer on ${pagesLabel(missing, "slide")}.`, pagesLabel(missing, "slide"), "Rebuild these slides on the master deck layouts, or add the footer exactly as in the master deck.");
+        if (missing.length) set("Y3", "fail", `No “Private & Confidential” / “© ${BRAND.year}, All rights reserved” footer on ${pagesLabel(missing, "slide")}.`, pagesLabel(missing, "slide"), "Use the Brand Deck Template layouts, which already have the footer, or copy the footer from another slide.");
         else set("Y3", "pass", "Every slide carries the footer.");
       }
 
@@ -602,7 +738,7 @@ const BRAND_CHECK = (() => {
         }
         if (tl === false || br === false) noAccent.push(pg.slide || pg.n); else if (tl == null || br == null) accentUnsure = true;
       });
-      if (noAccent.length) set("Y4", "fail", `The green diagonal top-left or the purple diagonal bottom-right is missing on ${pagesLabel(noAccent, "slide")}.`, pagesLabel(noAccent, "slide"), "Use the master deck layouts, which carry both accents.");
+      if (noAccent.length) set("Y4", "fail", `The green shape in the top-left corner or the purple shape in the bottom-right corner is missing on ${pagesLabel(noAccent, "slide")}.`, pagesLabel(noAccent, "slide"), "Use the Brand Deck Template layouts, which already have both corner shapes.");
       else if (!accentUnsure && inner.length) set("Y4", "pass", "The master deck accents are in place.");
     }
 
@@ -659,6 +795,10 @@ const BRAND_CHECK = (() => {
     const stock = (allText + " " + (opts.copy || "")).match(STOCK);
     if (stock) set("I5", "fail", `“${stock[0]}” appears in the file: a stock-photo watermark or credit.`, "", "Replace it with a licensed or Recykal-owned image.");
 
+    }   // ---- end of what's measured from the file ----
+
+    if (doc.kind === "docx" || doc.kind === "html") Object.values(m).forEach((x) => { if (x) x.where = ""; });   // one page: "where" adds nothing
+
     // W1–W10 · copy: the file's text plus anything pasted
     const text = [allText, opts.copy || ""].join("\n");
     const copyHits = BRAND.copyMeasured(text, format, audience, m);
@@ -668,7 +808,7 @@ const BRAND_CHECK = (() => {
       else set("W8", "pass", "No unsupported superlatives.");
     }
     facts.copy = copyHits.slice(0, 15);
-    if (!doc.textKnown && !opts.copy) facts.notes.push("Images have no readable text: paste the key copy to check names, figures and spelling, or upload a PDF export.");
+    if (!blind && !doc.textKnown && !opts.copy) facts.notes.push("Images have no readable text: paste the key copy to check names, figures and spelling, or upload a PDF export.");
 
     // Everything else: the brand team checks it by eye.
     const results = {}, checks = [];
@@ -686,9 +826,11 @@ const BRAND_CHECK = (() => {
     const measured = checks.filter((c) => c.by === "measured");
     const criteria = {}; BRAND.groups.forEach(([g]) => { criteria[g] = { rating: ev.qc[g], feedback: fails.filter((c) => R[c.id].g === g).map((c) => c.evidence).join(" ").slice(0, 600) || "No measured problem." }; });
     const decision = ev.score < 85 ? ev.decision : "pending";
-    const summary = fails.length
-      ? `${plural(fails.length, "rule")} failed on exact measurements, most importantly “${R[fails[0].id].t}”. ${eye.length ? `The brand team checks ${plural(eye.length, "more rule")} by eye.` : ""}`
-      : `All ${measured.length} measured rules pass. ${eye.length ? `The brand team checks the other ${plural(eye.length, "rule")} (logo, imagery and layout details) by eye before it's approved.` : ""}`;
+    const summary = blind
+      ? "Brand Astra couldn't look inside this file, so the brand team will check it by eye."
+      : fails.length
+      ? `${fails.length === 1 ? "1 thing" : fails.length + " things"} to fix before you submit.`
+      : "Nothing to fix in what Brand Astra can check.";
     const report = { v: 3, mode: "auto", format, audience, summary: summary.trim(), checks, criteria,
       fixes: fails.map((c) => (c.where ? c.where + ": " : "") + (c.fix || c.evidence)).slice(0, 8),
       deductions: ev.deductions, needsHuman: ev.needsHuman, eye: eye.map((c) => c.id), facts, checkedAt: new Date().toISOString(), file: String(file.name || "").slice(0, 120) };

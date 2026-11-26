@@ -529,7 +529,7 @@ function setup() {
 const FORMAT_KEYS_ = ["slide", "square", "portrait", "story", "landscape", "document", "other"];
 const SEV_ORDER_ = { critical: 0, major: 1, minor: 2 };
 const PPTX_MIME_ = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-const QC_FILE_LIMIT_ = 15 * 1024 * 1024;
+const QC_FILE_LIMIT_ = 25 * 1024 * 1024;   // any file up to 25 MB; the page checks PowerPoint, PDF, Word, HTML and images in full
 
 function fileIdFromLink_(link) {
   const m = String(link).match(/\/d\/([A-Za-z0-9_-]{20,})/) || String(link).match(/[?&]id=([A-Za-z0-9_-]{20,})/);
@@ -548,11 +548,11 @@ function fileForQc(link) {
   if (!isGoogleLink_(link)) throw new Error("Use a Google Slides, Docs or Drive link.");
   const file = openLinkedFile_(link); const mime = file.getMimeType();
   let blob;
-  if (mime === MimeType.GOOGLE_SLIDES || mime === MimeType.GOOGLE_DOCS) blob = file.getAs(MimeType.PDF);
-  else if (mime === MimeType.PDF || mime === PPTX_MIME_ || /^image\/(png|jpeg|webp)$/.test(mime)) blob = file.getBlob();
-  else throw new Error("Brand Astra can check Google Slides, Google Docs, PowerPoint (.pptx), PDF and PNG, JPG or WEBP files. Export this file to one of those and share the link.");
+  if ([MimeType.GOOGLE_SLIDES, MimeType.GOOGLE_DOCS, MimeType.GOOGLE_SHEETS, MimeType.GOOGLE_DRAWINGS].indexOf(mime) >= 0) blob = file.getAs(MimeType.PDF);
+  else if (/^application\/vnd\.google-apps\./.test(mime)) throw new Error("This kind of Google file can't be downloaded. Export it as PDF and upload that instead.");
+  else blob = file.getBlob();
   const bytes = blob.getBytes();
-  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 15 MB. Compress the pictures or split it, then try again.");
+  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 25 MB. Compress the pictures or split it, then try again.");
   const converted = blob.getContentType() === MimeType.PDF && mime !== MimeType.PDF;
   return { name: file.getName() + (converted ? ".pdf" : ""), mime: blob.getContentType(), b64: Utilities.base64Encode(bytes) };
 }
@@ -618,11 +618,10 @@ function uploadsFolder_() {
 }
 function uploadForQc(name, mime, b64) {
   const email = email_();
-  const types = { "image/png": 5, "image/jpeg": 5, "image/webp": 5, "application/pdf": 15, [PPTX_MIME_]: 15 };
-  if (!types[mime]) throw new Error("Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.");
+  mime = /^[\w.+-]+\/[\w.+-]+$/.test(String(mime || "")) ? String(mime).toLowerCase() : "application/octet-stream";
   const bytes = Utilities.base64Decode(String(b64 || ""));
   if (!bytes.length) throw new Error("That file is empty.");
-  if (bytes.length > types[mime] * 1024 * 1024) throw new Error(types[mime] === 15 ? "This file is over 15 MB. Compress it, or share it as a Google Drive link instead." : "This image is over 5 MB. Export a smaller version.");
+  if (bytes.length > QC_FILE_LIMIT_) throw new Error("This file is over 25 MB. Compress it, or share it as a Google Drive link instead.");
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HHmm");
   const file = uploadsFolder_().createFile(Utilities.newBlob(bytes, mime, `${stamp} · ${email.split("@")[0]} · ${str_(name, 80) || "upload"}`));
   file.setDescription("Uploaded to Brand Astra by " + email);

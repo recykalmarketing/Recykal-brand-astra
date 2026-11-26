@@ -25,9 +25,13 @@ const MISSING = PROD ? [!process.env.DATABASE_URL && "DATABASE_URL (the Neon con
 
 // The functions of Code.gs the page may call. Everything else in Code.gs is internal.
 const API = new Set(["getState", "write", "saveProfile", "setMarketing", "requestMarketingAccess", "saveAutoCheck", "uploadForQc", "fileForQc", "logDownload", "getDownloads"]);
-const UPLOAD_TYPES = { "image/png": 5, "image/jpeg": 5, "image/webp": 5, "application/pdf": 15, "application/vnd.openxmlformats-officedocument.presentationml.presentation": 15 };
+// Uploads: any file up to 25 MB. Only PDFs and pictures are ever shown inline; every other file (HTML included) downloads
+// as an attachment inside a sandbox, so nothing in an upload can run on Brand Astra's own address.
+const UPLOAD_MAX = 25 * 1048576;
+const INLINE_TYPES = new Set(["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"]);
+const cleanMime = (m) => /^[\w.+-]+\/[\w.+-]+$/.test(String(m || "")) ? String(m).toLowerCase() : "application/octet-stream";
 const PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-const GOOGLE_EXPORT = { "application/vnd.google-apps.presentation": "application/pdf", "application/vnd.google-apps.document": "application/pdf" };
+const GOOGLE_EXPORT = { "application/vnd.google-apps.presentation": "application/pdf", "application/vnd.google-apps.document": "application/pdf", "application/vnd.google-apps.drawing": "application/pdf", "application/vnd.google-apps.spreadsheet": "application/pdf" };
 
 const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -131,7 +135,7 @@ async function main() {
   });
 
   // ---------- the app's server functions ----------
-  server.post("/api/:fn", express.json({ limit: "25mb" }), async (req, res) => {
+  server.post("/api/:fn", express.json({ limit: "36mb" }), async (req, res) => {
     const email = signedIn(req);
     if (!email) return res.status(401).json({ error: "Your sign-in has expired. Sign in again." });
     // Only this page may call the API: a same-origin request with the app's header (a cross-site form can't send either).
@@ -155,10 +159,10 @@ async function main() {
 
   /** An upload for the brand check and the brand team: kept in the database, opened by anyone at Recykal with the link. */
   async function uploadForQc(email, name, mime, b64) {
-    if (!UPLOAD_TYPES[mime]) throw new Error("Upload a PowerPoint (.pptx), a PDF, or a PNG, JPG or WEBP image.");
+    mime = cleanMime(mime);
     const bytes = Buffer.from(String(b64 || ""), "base64");
     if (!bytes.length) throw new Error("That file is empty.");
-    if (bytes.length > UPLOAD_TYPES[mime] * 1048576) throw new Error(UPLOAD_TYPES[mime] === 15 ? "This file is over 15 MB. Compress the pictures, or share it as a Google Drive link instead." : "This image is over 5 MB. Export a smaller version.");
+    if (bytes.length > UPLOAD_MAX) throw new Error("This file is over 25 MB. Compress the pictures, or share it as a Google Drive link instead.");
     const id = crypto.randomBytes(12).toString("base64url");
     const stamp = app.formatDate(new Date(), "Asia/Kolkata", "yyyy-MM-dd HHmm");
     await store.saveFile(id, `${stamp} · ${email.split("@")[0]} · ${String(name || "upload").slice(0, 80)}`, mime, email, bytes);
@@ -183,13 +187,13 @@ async function main() {
     if (!meta.ok) throw new Error("Google Drive didn't answer. Try again in a minute.");
     const info = await meta.json();
     const exportAs = GOOGLE_EXPORT[info.mimeType];
-    if (!exportAs && !UPLOAD_TYPES[info.mimeType]) throw new Error("Brand Astra can check Google Slides, Google Docs, PowerPoint (.pptx), PDF and PNG, JPG or WEBP files. Export this file to one of those.");
-    if (Number(info.size) > 15 * 1048576) throw new Error("This file is over 15 MB. Compress the pictures or split it, then try again.");
+    if (!exportAs && /^application\/vnd\.google-apps\./.test(info.mimeType)) throw new Error("This kind of Google file can't be downloaded. Export it as PDF and upload that instead.");
+    if (Number(info.size) > UPLOAD_MAX) throw new Error("This file is over 25 MB. Compress the pictures or split it, then try again.");
     const url = exportAs ? `https://www.googleapis.com/drive/v3/files/${m[1]}/export?mimeType=${encodeURIComponent(exportAs)}` : `https://www.googleapis.com/drive/v3/files/${m[1]}?alt=media&supportsAllDrives=true`;
     const fr = await fetch(url, { headers: auth });
     if (!fr.ok) throw new Error(fr.status === 403 ? "This file is too large for Google to export. Download it as PDF and upload that instead." : "Couldn't download the file from Google Drive. Try again.");
     const bytes = Buffer.from(await fr.arrayBuffer());
-    if (bytes.length > 15 * 1048576) throw new Error("This file is over 15 MB. Compress the pictures or split it, then try again.");
+    if (bytes.length > UPLOAD_MAX) throw new Error("This file is over 25 MB. Compress the pictures or split it, then try again.");
     return { name: info.name + (exportAs ? ".pdf" : ""), mime: exportAs || info.mimeType, b64: bytes.toString("base64") };
   }
 
@@ -198,7 +202,10 @@ async function main() {
     if (!signedIn(req)) return res.redirect("/");
     const f = await store.getFile(req.params.id);
     if (!f) return res.status(404).type("text").send("This file no longer exists.");
-    res.set({ "Content-Type": f.mime, "Content-Disposition": `inline; filename="${String(f.name).replace(/[^\w .()-]/g, "_")}${f.mime === PPTX && !/\.pptx$/i.test(f.name) ? ".pptx" : ""}"`, "Cache-Control": "private, max-age=3600" });
+    const inline = INLINE_TYPES.has(f.mime);
+    res.set({ "Content-Type": inline ? f.mime : "application/octet-stream", "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${String(f.name).replace(/[^\w .()-]/g, "_")}${f.mime === PPTX && !/\.pptx$/i.test(f.name) ? ".pptx" : ""}"`,
+      "Cache-Control": "private, max-age=3600" });
+    if (!inline) res.set("Content-Security-Policy", "sandbox; default-src 'none'");
     res.send(Buffer.from(f.data));
   });
   server.get("/admin/backup", (req, res) => {
