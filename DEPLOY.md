@@ -3,23 +3,27 @@
 Brand Astra is Recykal's brand QC and task dashboard. This repository runs it as a small Node server:
 
 - **Sign-in:** Google, restricted to @recykal.com accounts. On the sign-in page people choose **Employee** or **Brand team**. The brand team is the owners listed in `src/Code.gs` (`CONFIG.ADMINS`) plus anyone added in the app under **Team & access**.
-- **Data:** a free [Neon](https://neon.tech) Postgres database. Render's own free database is deleted after 30 days, so it isn't used.
+- **Data:** a free [Supabase](https://supabase.com) Postgres database. Render's own free database is deleted after 30 days, so it isn't used. (Free Supabase projects pause after a week with no activity; resume them from the Supabase dashboard if that happens.)
 - **Cost:** nothing. Render's free web service sleeps after 15 minutes without visitors, so the first person to open it after a quiet spell waits about a minute.
 
-Setup takes about 30 minutes, in this order: Neon, Render, Google sign-in, then email (optional).
+Setup takes about 30 minutes, in this order: Supabase, Render, Google sign-in, then email (optional).
 
-## 1. Create the database (Neon)
+## 1. Create the database (Supabase)
 
-1. Sign up at **neon.tech** (the free plan; signing in with GitHub is quickest).
-2. Create a project named `brand-astra`. Choose the region **AWS Asia Pacific (Singapore)**, close to Render's Singapore region.
-3. On the project dashboard, click **Connect** and copy the connection string. It looks like `postgresql://…@….neon.tech/neondb?sslmode=require`. Keep it for step 2.
+1. Sign up at **supabase.com** (the free plan; signing in with GitHub is quickest) and click **New project**.
+2. Name it `brand-astra`, click **Generate a password** and save the password somewhere safe, and choose the region closest to your Render service (for example **Southeast Asia (Singapore)**). Click **Create new project** and wait a minute.
+3. Click **Connect** at the top of the project. Under **Connection string**, choose **Session pooler** (Render can't reach the "Direct connection" address) and copy the URI. It looks like `postgresql://postgres.xxxx:[YOUR-PASSWORD]@aws-0-….pooler.supabase.com:5432/postgres`. Put your password in place of `[YOUR-PASSWORD]`. Keep it for step 2.
 
 Brand Astra creates its two tables on first start.
+
+### Moving from another database (e.g. Neon)
+
+In Render → **Environment**: add `MIGRATE_FROM_URL` with the **old** connection string, change `DATABASE_URL` to the **new** Supabase string, and click **Save and deploy**. On its first start the app copies every record and uploaded file into the empty new database; the log says “Copied … records and … files”. If the copy fails, the app doesn't start and the running version keeps using the old database. Afterwards, delete `MIGRATE_FROM_URL` and save.
 
 ## 2. Create the web service (Render)
 
 1. In Render, click **New → Blueprint** and connect this GitHub repository. Render reads `render.yaml` and proposes a free web service named **brand-astra**.
-2. When it asks for values, fill in **DATABASE_URL** with the Neon connection string. Leave the Google and email values empty for now, then click **Apply**.
+2. When it asks for values, fill in **DATABASE_URL** with the Supabase connection string. Leave the Google and email values empty for now, then click **Apply**.
 3. When the deploy finishes, open the service's address, for example `https://brand-astra.onrender.com`. Until every setting is in, it shows the **demo** (sample data kept only in each visitor's browser, no sign-in), so you can share it for previews. Add `/setup` to the address, for example `https://brand-astra.onrender.com/setup`, to see which settings are still missing and the exact redirect address for step 3. Copy that address.
 
 ## 3. Turn on Google sign-in
@@ -55,7 +59,7 @@ The morning digest is sent with the first visit after 9 am each day, because the
 3. Post your first request under **Requests**, and paste your template links under **Brand kit → Templates**.
 4. Share the address with your team. Each person signs in with Google, confirms their name and team, and picks **Employee**.
 
-**Backups:** brand team members can download every record as JSON from the **Download data backup** button on the overview. Neon's free plan also keeps a short restore history.
+**Backups:** brand team members can download every record as JSON from the **Download data backup** button on the overview. Supabase's dashboard also shows the tables under **Table editor**.
 
 ## Making changes
 
@@ -68,7 +72,8 @@ The morning digest is sent with the first visit after 9 am each day, because the
 
 | Name | What it is |
 |---|---|
-| `DATABASE_URL` | Neon connection string (required) |
+| `DATABASE_URL` | Supabase connection string, Session pooler (required) |
+| `MIGRATE_FROM_URL` | Only while moving databases: the old connection string. Remove it after the copy |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in client from step 3 (required) |
 | `SESSION_SECRET` | Created automatically by the blueprint. Changing it signs everyone out |
 | `SMTP_USER`, `SMTP_PASS` | Optional email, step 4 |

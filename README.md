@@ -4,7 +4,7 @@ Recykal's brand QC and task dashboard. Employees check their decks, posts and do
 
 - **The brand check runs in the browser, on the file itself, with no AI.** It reads PowerPoint, PDF and image files and measures 23 of the 36 brand rules exactly: fonts, palette colours, gradients, contrast, size, footers, master-deck structure, margins, pictures and every copy rule. The brand team checks the other 13 by eye before anything is approved.
 - **Sign-in** is Google, restricted to @recykal.com accounts, as an **Employee** or **Brand team** member.
-- **Hosting:** Render (free) with a Neon Postgres database. See [DEPLOY.md](DEPLOY.md).
+- **Hosting:** Render (free) with a Supabase Postgres database. See [DEPLOY.md](DEPLOY.md).
 
 | Path | What it is |
 |---|---|
